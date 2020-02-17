@@ -56,8 +56,8 @@ def plot_fehpass_mention(mentions, reviews, reviews_1star):
 		reviews_1star: Dataframe
 			Datafram with records of reviews in english where the FEH pass in mentionned rated as 1 star
 	"""
-	print(f"Pourcentage of reviews in english where FEH pass is mentionned: {len(mentions) / len(reviews) * 100}")
-	print(f"({len(mentions)}/{len(reviews)} reviews)")
+	print(f"Pourcentage of reviews in english where FEH pass is mentionned: {len(reviews) / len(mentions) * 100}")
+	print(f"({len(reviews)}/{len(mentions)} reviews)")
 	print(
 		f"Pourcentage of reviews scored as 1 star where FEH pass is mentionned: "
 		f"{len(reviews_1star) / len(mentions) * 100}"
