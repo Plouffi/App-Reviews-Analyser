@@ -2,6 +2,25 @@ from typing import List, Tuple
 import numpy as np
 import Image.make_image as make_image
 import re
+reg_token = re.compile(r"(?u)\b\w+\b")
+
+
+def n_grams(tokens, n):
+	if n == 1:
+		return tokens
+	if len(tokens) <= n:
+		return ' '.join(tokens)
+	return [' '.join(tokens[i:i + n]) for i in range(len(tokens) - n)]
+
+
+def tokenize(content: str) -> List[str]:
+	"""
+		Method to tokenize the review's content. Find all words and return them as a list of lowered string.
+		Return
+		----------
+			List[str]
+	"""
+	return reg_token.findall(content.lower())
 
 
 class Cloud:
@@ -21,20 +40,10 @@ class Cloud:
 	"""
 	counts: np.ndarray
 
-	def __init__(self, alpha=1, words=50):
+	def __init__(self, alpha=1, n=2):
 		self.voc = {}
 		self.alpha = alpha
-		self.words = words
-		self.reg_token = re.compile(r"(?u)\b\w+\b")
-
-	def tokenize(self, content: str) -> List[str]:
-		"""
-			Method to tokenize the review's content. Find all words and return them as a list of lowered string.
-			Return
-			----------
-				List[str]
-		"""
-		return self.reg_token.findall(content.lower())
+		self.n = n
 
 	def load_reviews(self, *data_reviews):
 		"""
@@ -44,12 +53,15 @@ class Cloud:
 				*data_reviews
 				2 set of data reviews (1 for reviews before FEH pass, 1 after)
 		"""
-		# Start by tokenized review's content and build vocabulary
+		# Start by tokenizing review's content and build vocabulary
 		tk_data_reviews = []
 		for reviews in data_reviews:
 			tk_reviews = []
 			for review in reviews:
-				tokenized_review = self.tokenize(review["content"] if isinstance(review["content"], str) else '')
+				tokenized_review = n_grams(
+					tokenize(review["content"] if isinstance(review["content"], str) else ''),
+					self.n
+				)
 				for token in tokenized_review:
 					if token not in self.voc:
 						self.voc[token] = len(self.voc)
@@ -70,7 +82,7 @@ class Cloud:
 		vector_words = np.sum(self.counts, 1)
 		self.counts = self.counts/vector_words[:, None]
 
-	def word_cloud(self, index: int) -> List[Tuple[str, float]]:
+	def word_cloud(self, index: int, words: int = 50) -> List[Tuple[str, float]]:
 		"""
 			Method to return the 50 words of each set of reviews.
 			Parameter
@@ -82,7 +94,7 @@ class Cloud:
 		# it works, don't ask what kind of black magic is it
 		return [
 			(list(self.voc.keys())[i], counts[i])
-			for i in np.argpartition(counts, -self.words)[-self.words:]
+			for i in np.argpartition(counts, -words)[-words:]
 		]
 
 	def cloud(self):
