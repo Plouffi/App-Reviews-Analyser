@@ -9,7 +9,7 @@ def n_grams(tokens, n):
 	if n == 1:
 		return tokens
 	if len(tokens) <= n:
-		return ' '.join(tokens)
+		return [' '.join(tokens)]
 	return [' '.join(tokens[i:i + n]) for i in range(len(tokens) - n)]
 
 
