@@ -37,3 +37,5 @@ jobs:
     - name: Get reviews
       run: |
         python main.py get_reviews
+        python main.py compute_data
+        python main.py wordcloud
