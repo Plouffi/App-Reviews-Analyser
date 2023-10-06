@@ -132,7 +132,7 @@ class DataManager:
 		"""
 		date = self.feh_pass_date if date is None else date
 		mask_language = self.df["language"] == language if language in self.config["languages"] else "en"
-		mask_period = self.df.index < date if period is "before" else self.df.index >= date
+		mask_period = self.df.index < date if period == "before" else self.df.index >= date
 		mask_score = self.df["score"] == score if 0 < score <= 5 else self.df["score"].isin([1, 2, 3, 4, 5])
 		mask = mask_language & mask_period & mask_score
 
