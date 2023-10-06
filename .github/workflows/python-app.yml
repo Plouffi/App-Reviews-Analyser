@@ -38,4 +38,4 @@ jobs:
       run: |
         python main.py get_reviews
         python main.py compute_data
-        python main.py wordcloud
+        python main.py word_cloud
