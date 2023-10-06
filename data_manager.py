@@ -102,7 +102,7 @@ class DataManager:
 		series_reviews = []
 		for review in reviews:
 			series_reviews.append(pd.Series(review.items(), index=self.df.columns))
-		self.df = self.df.append(reviews, ignore_index=True)
+		self.df = self.df._append(reviews, ignore_index=True)
 
 	def get_reviews(self):
 		"""
