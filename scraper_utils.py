@@ -60,7 +60,7 @@ def reviews(
 			return []
 		return json.loads(match[0][2])[0]
 
-	url = URLFormats.Reviews.build_url(lang=lang)
+	url = URLFormats.Reviews.build_url(lang=lang, country="US")
 
 	if count < 200:
 		_count = count
