@@ -99,7 +99,7 @@ class Cloud:
 
 	def cloud(self):
 		image = make_image.simple_image(self.word_cloud(0))
-		image.save(fp=f"./ressources/before_fehp_word_cloud.png", format="PNG")
+		image.save(fp=f"./static/before_fehp_word_cloud.png", format="PNG")
 
 		image = make_image.simple_image(self.word_cloud(1))
-		image.save(fp=f"./ressources/after_fehp_word_cloud.png", format="PNG")
+		image.save(fp=f"./static/after_fehp_word_cloud.png", format="PNG")

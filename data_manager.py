@@ -4,66 +4,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from datetime import datetime as dt
-
-
-def plot_score_distribution(reviews_distribution, nb_reviews):
-	"""
-	Plot a bar chart showing reviews' score ditribution.
-		Parameters
-		----------
-		reviews_distribution : List(List(float))
-			A 2-dimensionnal array representing score distribution before and after FEH pass.
-			Shape should be (2, 5) 2--> before/after // 5--> score range
-		nb_reviews : List(int)
-			An array stocking the number of reviews published before and after FEH pass
-	"""
-	# data to plot
-	data = np.array(reviews_distribution)
-	data = data.T
-
-	# plot grid
-	plt.rc("grid", ls="-", color="#ced6e0")
-	plt.grid(axis="y", zorder=0)
-
-	# plot data
-	index = np.arange(2)
-	bar_width = 0.1
-	colors = ["#78e08f", "#9fc552", "#bfa525", "#d87e1d", "#e55039"]
-	labels = ["5 stars", "4 stars", "3 stars", "2 stars", "1 star"]
-	for i, color, label in zip(range(0, 5), colors, labels):
-		plt.bar(index + i * bar_width, data[i], bar_width, color=color, label=label, zorder=3)
-
-	# add labels and legends
-	plt.ylabel("% of reviews")
-	plt.ylim(0, 100)
-	plt.title("% of reviews by score before and after FEH Pass announcement")
-	plt.xticks(index + 2 * bar_width, ("Before FEH Pass", "After FEH Pass"))
-	plt.text(0, 80, "%s reviews" % '{:,}'.format(nb_reviews[0]).replace(',', ' '))
-	plt.text(1, 60, "%s reviews" % '{:,}'.format(nb_reviews[1]).replace(',', ' '))
-	plt.legend()
-	plt.show()
-
-
-def plot_fehpass_mention(mentions, reviews, reviews_1star):
-	"""
-	Display in terminal some stats about FEH pass mentions.
-		Parameters
-		----------
-		mentions : Dataframe
-			Datafram with records of reviews in english where the FEH pass in mentionned
-		reviews : Dataframe
-			Datafram with records of reviewspublished after the FEH pass
-		reviews_1star: Dataframe
-			Datafram with records of reviews in english where the FEH pass in mentionned rated as 1 star
-	"""
-	print(f"Pourcentage of reviews in english where FEH pass is mentionned: {len(reviews) / len(mentions) * 100}")
-	print(f"({len(reviews)}/{len(mentions)} reviews)")
-	print(
-		f"Pourcentage of reviews scored as 1 star where FEH pass is mentionned: "
-		f"{len(reviews_1star) / len(mentions) * 100}"
-	)
-	print(f"({len(reviews_1star)}/{len(mentions)} reviews)")
-
+import matplotlib
+matplotlib.use('agg')
 
 class DataManager:
 	"""
@@ -276,12 +218,48 @@ class DataManager:
 		plt.title("Cumulative mean and rolling average on FEH score from playstore")
 
 		# display
-		plt.show()
+		return plt.gcf()
+	
+	def plot_score_distribution(self, reviews_distribution, nb_reviews):
+		"""
+		Plot a bar chart showing reviews' score ditribution.
+			Parameters
+			----------
+			reviews_distribution : List(List(float))
+				A 2-dimensionnal array representing score distribution before and after FEH pass.
+				Shape should be (2, 5) 2--> before/after // 5--> score range
+			nb_reviews : List(int)
+				An array stocking the number of reviews published before and after FEH pass
+		"""
+		# data to plot
+		data = np.array(reviews_distribution)
+		data = data.T
 
-	def plot_overall_stats(self):
+		# plot grid
+		plt.rc("grid", ls="-", color="#ced6e0")
+		plt.grid(axis="y", zorder=0)
+
+		# plot data
+		index = np.arange(2)
+		bar_width = 0.1
+		colors = ["#78e08f", "#9fc552", "#bfa525", "#d87e1d", "#e55039"]
+		labels = ["5 stars", "4 stars", "3 stars", "2 stars", "1 star"]
+		for i, color, label in zip(range(0, 5), colors, labels):
+			plt.bar(index + i * bar_width, data[i], bar_width, color=color, label=label, zorder=3)
+
+		# add labels and legends
+		plt.ylabel("% of reviews")
+		plt.ylim(0, 100)
+		plt.title("% of reviews by score before and after FEH Pass announcement")
+		plt.xticks(index + 2 * bar_width, ("Before FEH Pass", "After FEH Pass"))
+		plt.text(0, 80, "%s reviews" % '{:,}'.format(nb_reviews[0]).replace(',', ' '))
+		plt.text(1, 60, "%s reviews" % '{:,}'.format(nb_reviews[1]).replace(',', ' '))
+		plt.legend()
+		return plt.gcf()
+		
+	def plot_refresh(self):
 		"""
-			Method to print basic statistics in the terminal
+			Refresh the current plot
 		"""
-		mean, number_of_reviews = self.compute_mean()
-		print(f"Number of reviews: {number_of_reviews}")
-		print(f"Mean: {mean}")
+		plt.clf()
+		plt.cla()

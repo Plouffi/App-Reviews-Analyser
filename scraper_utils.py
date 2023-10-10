@@ -52,8 +52,8 @@ def reviews(
 			)
 
 		dom = _post(url, payload, {"content-type": "application/x-www-form-urlencoded"})
-
-		match = json.loads(Regex.REVIEWS.findall(dom)[0])
+		reg = Regex.REVIEWS.findall(dom)
+		match = json.loads(reg[0])
 		try:
 			pagination_token = json.loads(match[0][2])[-1][-1]
 		except TypeError:

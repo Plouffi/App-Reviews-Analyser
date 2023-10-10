@@ -10,10 +10,25 @@ The goal of this tool is to visualize how much this pass has impacting the PlayS
 # How to run it
 1. Clone the project wherever you want
 2. Install the requirements listed in `requirements.txt` with `pip`
-3. Run the following commands with Python 3.5+
-   - `main.py get_reviews` to fetch reviews from the Playstore (**need to be done first**)
-   - `main.py compute_data` to computing statistics and plot graphs
-   - `main.py word_cloud` to create word_cloud based on reviews' content
+3. Run the following commands with Python 3.10+
+   - `python -m flask run -h localhost -p 8080` to launch Flask server
+
+# Flask API
+
+- **GET** `/getReviews`
+  - Fetch reviews from Fire Emblem Heroes app and save them in resources/out.csv ***(need to be done first)***
+
+- **GET** `/compute/scoreDistribution`
+  - Return an image of a bar chart representing the score distribution before and after FEH Pass
+
+- **GET** `/compute/means`
+  - Return an image of a graph of the cumulative means of score reviews
+
+- **GET** `/compute/stats`
+  - Return a string JSON with differents stats
+
+- **GET** `/wordcloud`
+  - Return a HTML page with 2 wordclouds from reviews data
 
 # Powered by:
 
