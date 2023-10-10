@@ -37,3 +37,8 @@ jobs:
     - name: Get reviews
       run: |
         python app.py
+    - name: Extract fetch result
+        uses: actions/upload-artifact@v3
+        with:
+          name: extract-fetch-results
+          path: /ressources/out.csv
