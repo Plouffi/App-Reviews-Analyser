@@ -36,6 +36,4 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Get reviews
       run: |
-        python main.py get_reviews
-        python main.py compute_data
-        python main.py word_cloud
+        python app
