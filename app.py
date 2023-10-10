@@ -7,7 +7,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import io
 import json
 
-app = Flask(__name__)
+#app = Flask(__name__)
 
 def load_config():
 	with open("./ressources/config.json") as f:
@@ -19,7 +19,7 @@ def save_last_import():
 	with open("./ressources/copy.txt", "w") as file:
 		file.write(dt.today().strftime('%d/%m/%Y'))
 
-@app.route('/getReviews')
+# @app.route('/getReviews')
 def get_reviews():
 	"""
 		Method to fecth reviews from the Playstore
@@ -32,7 +32,7 @@ def get_reviews():
 	dm.export()
 	return "OK", 200
 
-@app.route('/compute/scoreDistribution', methods=['GET'])
+#@app.route('/compute/scoreDistribution', methods=['GET'])
 def compute_score_distribution():
 	"""
 		Method to compute scoren distribution from reviews data
@@ -57,7 +57,7 @@ def compute_score_distribution():
 	except FileNotFoundError:
 		return f"File '{config['export_path']}' not found. Launch scrapping process to create it", 500
 
-@app.route('/compute/means', methods=['GET'])
+#@app.route('/compute/means', methods=['GET'])
 def compute_means():
 	"""
 		Method to compute statistics from reviews data
@@ -84,7 +84,7 @@ def compute_means():
 	except FileNotFoundError:
 		return f"File '{config['export_path']}' not found. Launch scrapping process to create it", 500
 	
-@app.route('/compute/stats', methods=['GET'])
+#@app.route('/compute/stats', methods=['GET'])
 def compute_overall_stats():
 	"""
 		Method to compute statistics from reviews data
@@ -112,7 +112,7 @@ def compute_overall_stats():
 	except FileNotFoundError:
 		return f"File '{config['export_path']}' not found. Launch scrapping process to create it", 500
 
-@app.route('/wordcloud', methods=['GET'])
+#@app.route('/wordcloud', methods=['GET'])
 def make_wordcloud():
 	"""
 		Method to generate a word cloud. Images are save in "ressources" directory.
@@ -136,4 +136,5 @@ def make_wordcloud():
 
 
 if __name__ == "__main__":
-	app.run()
+	get_reviews()
+	#app.run()

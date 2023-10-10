@@ -5,6 +5,15 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from datetime import datetime as dt
 import matplotlib
+
+import smtplib
+from pathlib import Path
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email.mime.text import MIMEText
+from email.utils import COMMASPACE, formatdate
+from email import encoders
+
 matplotlib.use('agg')
 
 class DataManager:
@@ -94,7 +103,30 @@ class DataManager:
 		"""
 		Method to export reviews in csv.
 		"""
-		self.df.to_csv(self.config["export_path"], index=False)
+		# self.df.to_csv(self.config["export_path"], index=False)
+
+		msg = MIMEMultipart()
+		msg['From'] = 'send_from'
+		msg['To'] = COMMASPACE.join("dumasremietu@gmail.com")
+		msg['Date'] = formatdate(localtime=True)
+		msg['Subject'] = "export_scraping"
+
+		msg.attach(MIMEText("Hello"))
+		path = self.config["export_path"]
+	
+		part = MIMEBase('application', "octet-stream")
+		with open(path, 'rb') as file:
+			part.set_payload(file.read())
+		encoders.encode_base64(part)
+		part.add_header('Content-Disposition',
+						'attachment; filename={}'.format(Path(path).name))
+		msg.attach(part)
+
+		smtp = smtplib.SMTP("localhost", 583)
+		smtp.starttls()
+		smtp.login('', '')
+		smtp.sendmail(msg['From'], msg['To'], msg.as_string())
+		smtp.quit()
 		print(f"Reviews exported in '{self.config['export_path']}'. Total: {len(self.df.index)} records.")
 
 	def get_num_reviews(self) -> int:
