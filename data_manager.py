@@ -1,10 +1,11 @@
 from typing import Dict, Tuple, List
 import numpy as np
 import pandas as pd
+from datetime import datetime as dt
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-from datetime import datetime as dt
 import matplotlib
+from matplotlib import axes
 
 matplotlib.use('agg')
 
@@ -53,31 +54,30 @@ class DataManager:
 		"""
 		return self.df
 
-	def get_reviews_as_dict(self, language: str = "en", date: dt = None, period: str = "after", score: int = -1) -> Dict:
+	def get_reviews_as_dict(self, start_date: dt, end_date: dt, language: str = "en", score: int = -1) -> Dict:
 		"""
 		Method to research reviews by passing parameters (language, date, period, score). Return them as a dictionnary
 			Parameters
 			----------
+			start_date : datetime
+				Research parameter: date where we start the research.
+			end_date : datetime
+				Research parameter: date where we end the research.
 			language : str = "en"
 				Research parameter: review's language. Set up to "en" if language doesn't exist in configuration file.
-			date : datetime = None
-				Research parameter: date where we start the research. Default date is set to feh pass announcement.
-			period : str = "after"
-				Research parameter: "direction" of the date research. "before" --> all reviews before the date
 				/ "after" same logic
 			score : int = -1
 				Research parameter: review's score. Can be in [1...5] or anything else to have all range
-
 			Returns
 			-------
 				Dict
 					A dictionnary of reviews
 		"""
-		date = self.feh_pass_date if date is None else date
 		mask_language = self.df["language"] == language if language in self.config["languages"] else "en"
-		mask_period = self.df.index < date if period == "before" else self.df.index >= date
+		mask_start_period = start_date <= self.df.index
+		mask_end_period = self.df.index < end_date
 		mask_score = self.df["score"] == score if 0 < score <= 5 else self.df["score"].isin([1, 2, 3, 4, 5])
-		mask = mask_language & mask_period & mask_score
+		mask = mask_language & mask_start_period & mask_end_period & mask_score
 
 		return self.df.loc[mask].to_dict('records')
 
@@ -120,27 +120,40 @@ class DataManager:
 		dfpy = self.df["score"].to_numpy()
 		return np.mean(dfpy), len(dfpy)
 
-	def compute_rolling_mean(self) -> pd.Series:
+	def compute_rolling_mean(self, time_delta: int, nb_ignore: int = 1000) -> pd.Series:
 		"""
-		Method to compute rolling mean of reviews' score. The windows is set to 1 month because it's almost the
-		frequency of FEH updates
+		Method to compute rolling mean of reviews' score. Time_delta parameters define the rolling time window in days to compute result,
+		nb_ignore parameter remove an arbitrary amount of data in head to avoid irrelevant data while computing first values.
+		For more infos about time window, see https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases
 			Returns
 			-------
 				pd.Series
 		"""
-		# iloc[1000:] remove an arbitrary amount of data in head to avoid irrelevant data while computing first values
-		return self.df["score"].iloc[1000:].rolling("30D").mean()
+		time_delta = str(time_delta) + 'D'
+		return self.df["score"].iloc[nb_ignore:].rolling(time_delta).mean()
 
-	def compute_cumulative_mean(self) -> pd.Series:
+	def compute_cumulative_mean(self, nb_ignore: int = 1000) -> pd.Series:
 		"""
 		Method to compute cumulative mean of reviews' score.
+		nb_ignore parameter remove an arbitrary amount of data in head to avoid irrelevant data while computing first values.
 			Returns
 			-------
 				pd.Series
 		"""
-		# iloc[1000:] remove an arbitrary amount of data in head to avoid irrelevant data while computing first values
-		return self.df["score"].iloc[1000:].expanding().mean()
+		return self.df["score"].iloc[nb_ignore:].expanding().mean()
 
+	def compute_rolling_sum(self, time_delta: int, nb_ignore: int = 1000) -> pd.Series:
+		"""
+		Method to compute rolling sum of reviews. Time_delta parameters define the rolling time window in days to compute result,
+		nb_ignore parameter remove an arbitrary amount of data in head to avoid irrelevant data while computing first values.
+		For more infos about time window, see https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases
+			Returns
+			-------
+				pd.Series
+		"""
+		time_delta = str(time_delta) + 'D'
+		return self.df["score"].iloc[nb_ignore:].rolling(time_delta).count()
+	
 	def compute_score_distribution(self) -> Tuple[List[List[float]], List[int]]:
 		"""
 		Method to compute score distribution before and after FEH pass.
@@ -165,7 +178,7 @@ class DataManager:
 		return [get_score_distribution(before_fp), get_score_distribution(after_fp)], [len(before_fp), len(after_fp)]
 
 	def compute_fehpass_mention(self) -> Tuple[pd.Series,  pd.Series, pd.Series]:
-		"""
+		""",
 		Method to compute stats about FEH pass mentions in english reviews. Native detection, check if the content one
 		of the keywords defined in the configuration file.
 			Returns
@@ -189,34 +202,34 @@ class DataManager:
 		Method to plot the graph displaying curves of rolling average and cumulative mean.
 		"""
 		# plot grid
-		plt.rc("grid", ls="--", color="#ced6e0")
-		plt.grid()
 
 		# plot feh pass announcement
-		plt.axvline(x=self.feh_pass_date, ls="--", color="#e55039", linewidth=1, label="Feh Pass announcement")
+		# plt.axvline(x=self.feh_pass_date, ls="--", color="#e55039", linewidth=1, label="Feh Pass announcement")
+		
+		fig, ax_score = plt.subplots()
+		#ax_score = axes.Axes()
+		ax_score.set_ylabel('Score')
+		ax_score.set_ylim(1,5)
 
 		# plot data
-		for ((k, v), color) in zip(stats.items(), ["#009432", "#9980FA"]):
-			plt.plot(v, label=k, color=color)
+		for ((k, v), color, i) in zip(stats.items(), ["#009432", "#9980FA", "#E55039"], range(3)):
+			if i < 2:
+				ax_score.plot(v, label=k, color=color)
+			else:
+				# Last set of data has a different scale so we make an other y axis
+				ax_reviews = ax_score.twinx()
+				ax_reviews.set_ylabel("Number of review", labelpad=15)
+				reviews_max = v.max()
+				ax_reviews.set_ylim(0, reviews_max * 11/10) 
+				ax_reviews.plot(v, label=k, color=color)
 
 		# format date labels
 		ax = plt.gca()
 		formatter = mdates.DateFormatter("%b %Y")
 		ax.xaxis.set_major_formatter(formatter)
-		plt.xticks(rotation=25, ha="right", rotation_mode="anchor")
-		# set up limit
-		plt.ylim(1, 5)
+
 		plt.xlim(dt.strptime(self.config["feh_release_date"], "%Y-%m-%d %I:%M%p"))
-		# add legends and label
-		plt.legend(loc="best")
-		plt.xlabel("Time")
-		plt.ylabel("Score")
-		plt.text(
-			dt.strptime("2017-05-01 01:00AM", "%Y-%m-%d %I:%M%p"),
-			2,
-			"%s reviews" % '{:,}'.format(self.get_num_reviews()).replace(',', ' ')
-		)
-		plt.title("Cumulative mean and rolling average on FEH score from playstore")
+		plt.title("Cumulative mean, rolling average and cumulative number \n of reviews on FEH score from playstore")
 
 		# display
 		return plt.gcf()

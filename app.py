@@ -7,19 +7,18 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import io
 import json
 
-#app = Flask(__name__)
+app = Flask(__name__)
 
 def load_config():
 	with open("./ressources/config.json") as f:
 		config = json.load(f)
 	return config
 
-
 def save_last_import():
 	with open("./ressources/copy.txt", "w") as file:
 		file.write(dt.today().strftime('%d/%m/%Y'))
 
-# @app.route('/getReviews')
+@app.route('/getReviews')
 def get_reviews():
 	"""
 		Method to fecth reviews from the Playstore
@@ -32,7 +31,7 @@ def get_reviews():
 	dm.export()
 	return "OK", 200
 
-#@app.route('/compute/scoreDistribution', methods=['GET'])
+@app.route('/compute/scoreDistribution', methods=['GET'])
 def compute_score_distribution():
 	"""
 		Method to compute scoren distribution from reviews data
@@ -57,11 +56,15 @@ def compute_score_distribution():
 	except FileNotFoundError:
 		return f"File '{config['export_path']}' not found. Launch scrapping process to create it", 500
 
-#@app.route('/compute/means', methods=['GET'])
+@app.route('/compute/means', methods=['GET'])
 def compute_means():
 	"""
 		Method to compute statistics from reviews data
 	"""
+	# Retrieve url parameters
+	time_delta = int(request.args.get('timeDelta')) if request.args.get('timeDelta') is not None else 30
+	nb_ignore = int(request.args.get('ignore')) if request.args.get('ignore') is not None else 0
+
 	config = load_config()
 	dm = DataManager(config)
 	try:
@@ -71,7 +74,8 @@ def compute_means():
 		# computing stats
 		means = {
 			"Cumulative mean": dm.compute_cumulative_mean(),
-			"Rolling average (1month)": dm.compute_rolling_mean()
+			"Rolling average (1 month)": dm.compute_rolling_mean(time_delta, nb_ignore),
+			"Rolling sum of reviews (1 month)": dm.compute_rolling_sum(time_delta, nb_ignore)
 		}
 
 		# Convert plot to PNG image
@@ -84,7 +88,7 @@ def compute_means():
 	except FileNotFoundError:
 		return f"File '{config['export_path']}' not found. Launch scrapping process to create it", 500
 	
-#@app.route('/compute/stats', methods=['GET'])
+@app.route('/compute/stats', methods=['GET'])
 def compute_overall_stats():
 	"""
 		Method to compute statistics from reviews data
@@ -112,21 +116,28 @@ def compute_overall_stats():
 	except FileNotFoundError:
 		return f"File '{config['export_path']}' not found. Launch scrapping process to create it", 500
 
-#@app.route('/wordcloud', methods=['GET'])
+@app.route('/wordcloud', methods=['GET'])
 def make_wordcloud():
 	"""
 		Method to generate a word cloud. Images are save in "ressources" directory.
 	"""
-	alpha = float(request.args.get('alpha'))
+	alpha = float(request.args.get('alpha')) if request.args.get('alpha') is not None else 10
+	n = int(request.args.get('n')) if request.args.get('n') is not None else 2
+	start_date_1 = request.args.get('start1')
+	start_date_2 = request.args.get('start2')
+	end_date_1 = request.args.get('end1')
+	end_date_2 = request.args.get('end2')
+	lang = str(request.args.get('lang'))
+	score = int(request.args.get('score')) if request.args.get('score') is not None else -1
 	config = load_config()
 	dm = DataManager(config)
 	try:
 		# load data in export file (path in config)
 		dm.load()
 
-		reviews_after_fp = dm.get_reviews_as_dict(language="en", period="after")
-		reviews_before_fp = dm.get_reviews_as_dict(language="en", period="before")
-		cloud = Cloud(alpha=alpha)
+		reviews_before_fp = dm.get_reviews_as_dict(start_date=start_date_1, end_date=end_date_1, language=lang, score=score)
+		reviews_after_fp = dm.get_reviews_as_dict(start_date=start_date_2, end_date=end_date_2, language=lang, score=score)
+		cloud = Cloud(alpha=alpha, n=n)
 		cloud.load_reviews(reviews_before_fp, reviews_after_fp)
 		cloud.cloud()
 		return render_template('wordcloud.html')
@@ -136,5 +147,5 @@ def make_wordcloud():
 
 
 if __name__ == "__main__":
-	get_reviews()
-	#app.run()
+	#get_reviews()
+	app.run()
