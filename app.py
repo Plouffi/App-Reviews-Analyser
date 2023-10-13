@@ -36,6 +36,7 @@ def compute_score_distribution():
 	"""
 		Method to compute scoren distribution from reviews data
 	"""
+	date = request.args.get('date')
 	config = load_config()
 	dm = DataManager(config)
 	try:
@@ -43,10 +44,10 @@ def compute_score_distribution():
 		dm.load()
 
 		# computing stats
-		score_distribution, review_distribution = dm.compute_score_distribution()
+		score_distribution, review_distribution = dm.compute_score_distribution(date=date)
 
 		# Convert plot to PNG image
-		figure_plot_SD = dm.plot_score_distribution(score_distribution, review_distribution)
+		figure_plot_SD = dm.plot_score_distribution(score_distribution, review_distribution, date=date)
 		image_plot_SD = io.BytesIO()
 		FigureCanvas(figure_plot_SD).print_png(image_plot_SD)
 		dm.plot_refresh()

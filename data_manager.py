@@ -2,6 +2,7 @@ from typing import Dict, Tuple, List
 import numpy as np
 import pandas as pd
 from datetime import datetime as dt
+from datetime import timedelta
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib
@@ -154,9 +155,9 @@ class DataManager:
 		time_delta = str(time_delta) + 'D'
 		return self.df["score"].iloc[nb_ignore:].rolling(time_delta).count()
 	
-	def compute_score_distribution(self) -> Tuple[List[List[float]], List[int]]:
+	def compute_score_distribution(self, date: dt) -> Tuple[List[List[float]], List[int]]:
 		"""
-		Method to compute score distribution before and after FEH pass.
+		Method to compute score distribution before and after the date parameter. If date is None, it is considered as tomorrow
 			Returns
 			-------
 			List(List(int))
@@ -166,16 +167,19 @@ class DataManager:
 				An array stocking the number of reviews published before and after FEH pass
 		"""
 		def get_score_distribution(data):
+			if data is None:
+				return None
 			score_distribution = []
 			for i in range(5, 0, -1):
 				pourcent = len(data.loc[data["score"] == i]) / len(data) * 100
 				score_distribution.append(pourcent)
 			return score_distribution
 
-		before_fp = self.df.loc[(self.df.index < self.feh_pass_date)]
-		after_fp = self.df.loc[(self.df.index >= self.feh_pass_date)]
+		tomorrow = dt.now() + timedelta(1)
+		before_fp = self.df.loc[(self.df.index < date)] if date is not None else self.df.loc[(self.df.index < tomorrow)]
+		after_fp = self.df.loc[(self.df.index >= date)] if date is not None else None
 
-		return [get_score_distribution(before_fp), get_score_distribution(after_fp)], [len(before_fp), len(after_fp)]
+		return [get_score_distribution(before_fp), get_score_distribution(after_fp)], [len(before_fp), len(after_fp) if date is not None else 0]
 
 	def compute_fehpass_mention(self) -> Tuple[pd.Series,  pd.Series, pd.Series]:
 		""",
@@ -234,17 +238,20 @@ class DataManager:
 		# display
 		return plt.gcf()
 	
-	def plot_score_distribution(self, reviews_distribution, nb_reviews):
+	def plot_score_distribution(self, reviews_distribution: List[List[float]], nb_reviews: List[int], date: dt):
 		"""
 		Plot a bar chart showing reviews' score ditribution.
 			Parameters
 			----------
 			reviews_distribution : List(List(float))
-				A 2-dimensionnal array representing score distribution before and after FEH pass.
+				A 2-dimensionnal array representing score distribution before and after date.
 				Shape should be (2, 5) 2--> before/after // 5--> score range
 			nb_reviews : List(int)
-				An array stocking the number of reviews published before and after FEH pass
+				An array stocking the number of reviews published before and after date
 		"""
+		# remove the "after" data if date is None
+		if date is None:
+			reviews_distribution.pop()
 		# data to plot
 		data = np.array(reviews_distribution)
 		data = data.T
@@ -254,7 +261,7 @@ class DataManager:
 		plt.grid(axis="y", zorder=0)
 
 		# plot data
-		index = np.arange(2)
+		index = np.arange(2 if date is not None else 1)
 		bar_width = 0.1
 		colors = ["#78e08f", "#9fc552", "#bfa525", "#d87e1d", "#e55039"]
 		labels = ["5 stars", "4 stars", "3 stars", "2 stars", "1 star"]
@@ -264,10 +271,15 @@ class DataManager:
 		# add labels and legends
 		plt.ylabel("% of reviews")
 		plt.ylim(0, 100)
-		plt.title("% of reviews by score before and after FEH Pass announcement")
-		plt.xticks(index + 2 * bar_width, ("Before FEH Pass", "After FEH Pass"))
-		plt.text(0, 80, "%s reviews" % '{:,}'.format(nb_reviews[0]).replace(',', ' '))
-		plt.text(1, 60, "%s reviews" % '{:,}'.format(nb_reviews[1]).replace(',', ' '))
+		title = " before and after " + date if date is not None else ""
+		plt.title("% of reviews by score" + title)
+		if date is not None:
+			tickBefore = "%s reviews" % '{:,}'.format(nb_reviews[0]).replace(',', ' ') + "\n before " + date
+			tickAfter = "%s reviews" % '{:,}'.format(nb_reviews[1]).replace(',', ' ') + "\n after " + date
+			plt.xticks(index + 2 * bar_width, (tickBefore, tickAfter))
+		else:
+			plt.xticks(index + 2 * bar_width, ["%s reviews" % '{:,}'.format(nb_reviews[0]).replace(',', ' ')])
+
 		plt.legend()
 		return plt.gcf()
 		
