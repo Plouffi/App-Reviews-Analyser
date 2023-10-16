@@ -28,7 +28,7 @@ A small tool to analyse reviews on playstore.
 - **GET** `/compute/stats`
   - Return a string JSON with differents stats
 
-- **GET** `/wordcloud?alpha=int&n=int&lang=str&score=int&start1=str&end1=str&start2=str&end2=str`
+- **GET** `/wordcloud/computeWords?alpha=int&n=int&lang=str&score=int&start1=str&end1=str&start2=str&end2=str`
   - Return a HTML page with 2 wordclouds from reviews data
   - URL parameters:
     - alpha: positive int - Parameters to reduce noises in data
@@ -39,6 +39,11 @@ A small tool to analyse reviews on playstore.
     - end1: str - First period end date to compare
     - start2: str - Second period start date to compare
     - end2: str - Second period end date to compare
+
+- **POST** `/wordcloud/generateImage`
+  - Return a HTML page with 2 wordclouds from reviews data
+  - Request:
+    - TODO
 
 # Powered by:
 
