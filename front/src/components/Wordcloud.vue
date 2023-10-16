@@ -29,7 +29,7 @@ const languages = ref([
 async function fecthWordcloud() {
     const params: {[k: string]: any} = {}
     params.alpha = alpha.value
-    params.nToken = nToken.value
+    params.n = nToken.value
     params.lang = lang.value
     if (!isNaN(score.value)) {
         params.score = score.value
@@ -85,7 +85,7 @@ const computeWordcloud = async () => {
         <div class="col">
 			<label for="start1" class="form-label">Start date 1</label>
 			<VueDatePicker v-model="start1" class="form-control" name="start1" aria-describedby="start1Help" placeholder="Start date..."></VueDatePicker>
-			<small id="start1Help" class="form-text text-muted">First period Start date to compare</small>
+			<small id="start1Help" class="form-text text-muted">First period start date to compare</small>
 		</div>
         <div class="col">
 			<label for="end1" class="form-label">End date 1</label>
