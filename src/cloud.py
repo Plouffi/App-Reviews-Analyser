@@ -1,6 +1,5 @@
 from typing import List, Tuple
 import numpy as np
-import Image.make_image as make_image
 import re
 reg_token = re.compile(r"(?u)\b\w+\b")
 
@@ -96,10 +95,6 @@ class Cloud:
 			(list(self.voc.keys())[i], counts[i])
 			for i in np.argpartition(counts, -words)[-words:]
 		]
-
-	def cloud(self):
-		image = make_image.simple_image(self.word_cloud(0))
-		image.save(fp=f"./static/before_fehp_word_cloud.png", format="PNG")
-
-		image = make_image.simple_image(self.word_cloud(1))
-		image.save(fp=f"./static/after_fehp_word_cloud.png", format="PNG")
+	
+	def get_words(self) -> List[List[Tuple[str, float]]]:
+		return [self.word_cloud(0), self.word_cloud(1)]

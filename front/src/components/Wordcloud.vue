@@ -12,7 +12,8 @@ const start1 = ref()
 const end1 = ref()
 const start2 = ref()
 const end2 = ref()
-const wordcloud = ref("")
+const wordcloudImage1 = ref("")
+const wordcloudImage2 = ref("")
 
 
 const languages = ref([
@@ -26,7 +27,7 @@ const languages = ref([
   { text: 'Spanish', value: 'es' }
 ])
 
-async function fecthWordcloud() {
+async function fecthWords() {
     const params: {[k: string]: any} = {}
     params.alpha = alpha.value
     params.n = nToken.value
@@ -39,13 +40,29 @@ async function fecthWordcloud() {
     params.start2 = start2.value.toLocaleString()
     params.end2 = end2.value.toLocaleString()
     const query = new URLSearchParams(params)
-    const res = await fetch(`http://localhost:5173/api/wordcloud?${query}`)
-    return res.text()
+    const res = await fetch(`http://localhost:5173/api/wordcloud/computeWords?${query}`)
+    return res.json()
+}
+
+async function fetchImageWordcloud(words: [[string, Float32Array]]) {
+  const res = await fetch(`http://localhost:5173/api/wordcloud/generateImage`, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({'words': words})
+  })
+  return res.blob()
 }
 
 const computeWordcloud = async () => {
-  const wordcloudRes = await fecthWordcloud()
-  wordcloud.value = wordcloudRes
+  const wordsRes = await fecthWords()
+  console.log(wordsRes)
+  const image1 = await fetchImageWordcloud(wordsRes[0])
+  wordcloudImage1.value = URL.createObjectURL(image1)
+  const image2 = await fetchImageWordcloud(wordsRes[1])
+  wordcloudImage2.value = URL.createObjectURL(image2)
 }
 </script>
 
@@ -106,7 +123,17 @@ const computeWordcloud = async () => {
     <div class="mb-3">
         <button @click="computeWordcloud()" class="btn btn-primary">Compute</button>
     </div>
-    <div v-html="wordcloud" class="mb-3">
+    <div class="mb-3">
+      <h3>First period</h3>
+      <picture v-if="wordcloudImage1">
+				<source :srcset="wordcloudImage1" type="image/png">
+				<img :src="wordcloudImage1" class="img-fluid" alt="First period wordcloud">
+			</picture>
+      <h3>Second period</h3>
+      <picture v-if="wordcloudImage2">
+				<source :srcset="wordcloudImage2" type="image/png">
+				<img :src="wordcloudImage2" class="img-fluid" alt="Second period wordcloud">
+			</picture>
     </div>
   </div>
 </template>

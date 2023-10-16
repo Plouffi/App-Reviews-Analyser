@@ -2,20 +2,21 @@ from data_manager import DataManager
 from scraper import Scraper
 from datetime import date as dt
 from cloud import Cloud
-from flask import Flask, request, Response, render_template
+from flask import Flask, jsonify, request, Response, render_template
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+import Image.make_image as make_image
 import io
 import json
 
 app = Flask(__name__)
 
 def load_config():
-	with open("./ressources/config.json") as f:
+	with open('./ressources/config.json') as f:
 		config = json.load(f)
 	return config
 
 def save_last_import():
-	with open("./ressources/copy.txt", "w") as file:
+	with open('./ressources/copy.txt', 'w') as file:
 		file.write(dt.today().strftime('%d/%m/%Y'))
 
 @app.route('/getReviews')
@@ -26,10 +27,10 @@ def get_reviews():
 	config = load_config()
 	dm = DataManager(config)
 	s = Scraper(config)
-	reviews = s.get_reviews(config["feh_release_date"])
+	reviews = s.get_reviews(config['feh_release_date'])
 	dm.insert_reviews(reviews)
 	dm.export()
-	return "OK", 200
+	return 'OK', 200
 
 @app.route('/compute/scoreDistribution', methods=['GET'])
 def compute_score_distribution():
@@ -74,9 +75,9 @@ def compute_means():
 
 		# computing stats
 		means = {
-			"Cumulative mean": dm.compute_cumulative_mean(),
-			"Rolling average (1 month)": dm.compute_rolling_mean(time_delta, nb_ignore),
-			"Rolling sum of reviews (1 month)": dm.compute_rolling_sum(time_delta, nb_ignore)
+			'Cumulative mean': dm.compute_cumulative_mean(),
+			'Rolling average (1 month)': dm.compute_rolling_mean(time_delta, nb_ignore),
+			'Rolling sum of reviews (1 month)': dm.compute_rolling_sum(time_delta, nb_ignore)
 		}
 
 		# Convert plot to PNG image
@@ -104,12 +105,12 @@ def compute_overall_stats():
 		means, nb_reviews = dm.compute_mean()
 		review_with_mention, review_in_lang, review_with_mention_1star = dm.compute_fehpass_mention()
 		stats = {
-					"means": means,
-					"nb_reviews": nb_reviews,
-					"review_in_lang": len(review_in_lang),
-					"review_with_mention": len(review_with_mention),
-					"review_with_mention_1star": len(review_with_mention_1star)
-				}
+			'means': means,
+			'nb_reviews': nb_reviews,
+			'review_in_lang': len(review_in_lang),
+			'review_with_mention': len(review_with_mention),
+			'review_with_mention_1star': len(review_with_mention_1star)
+		}
 		
 		# return stats
 		return stats, 200
@@ -117,8 +118,8 @@ def compute_overall_stats():
 	except FileNotFoundError:
 		return f"File '{config['export_path']}' not found. Launch scrapping process to create it", 500
 
-@app.route('/wordcloud', methods=['GET'])
-def make_wordcloud():
+@app.route('/wordcloud/computeWords', methods=['GET'])
+def compute_words():
 	"""
 		Method to generate a word cloud. Images are save in "ressources" directory.
 	"""
@@ -140,13 +141,27 @@ def make_wordcloud():
 		reviews_after_fp = dm.get_reviews_as_dict(start_date=start_date_2, end_date=end_date_2, language=lang, score=score)
 		cloud = Cloud(alpha=alpha, n=n)
 		cloud.load_reviews(reviews_before_fp, reviews_after_fp)
-		cloud.cloud()
-		return render_template('wordcloud.html')
+		return cloud.get_words()
 
 	except FileNotFoundError:
 		print(f"File '{config['export_path']}' not found. Please check provided path is a valid path.")
 
+@app.route('/wordcloud/generateImage', methods=['POST'])
+def generate_wordcloud():
+	"""
+		Method to generate a word cloud from an array of words and frequencies.
+	"""
+	words = request.get_json()['words']
+	print(words)
+	wordcloud = make_image.simple_image(words)
 
-if __name__ == "__main__":
+	# Convert plot to PNG image
+	image = io.BytesIO()
+	wordcloud.save(image, format='PNG')
+
+	return Response(image.getvalue(), mimetype='image/png')
+
+
+if __name__ == '__main__':
 	#get_reviews()
 	app.run()

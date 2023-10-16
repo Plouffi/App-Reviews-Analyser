@@ -5,7 +5,7 @@ import Wordcloud from './Wordcloud.vue'
 </script>
 
 <template>
-  <div class="row">
+  <div id="analyser" class="row">
     <div class="col">
       <ScoreDistribution/>
     </div>
