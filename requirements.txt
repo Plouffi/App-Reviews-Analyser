@@ -1,7 +1,0 @@
-wordcloud
-Pillow
-pandas
-matplotlib
-numpy
-flask
-google-play-scraper == 0.0.2.0
