@@ -14,7 +14,7 @@ async function fecthScoreDistribution() {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({'date': date.value.toLocaleString()})
+    body: JSON.stringify(date.value ? {'date': date.value.toLocaleString()} : {})
   })
   return res.blob()
 }

@@ -3,7 +3,7 @@
 
 <template>
   <div id="home">
-    Home
+    About
   </div>
 </template>
 

@@ -37,7 +37,7 @@ def compute_score_distribution():
 	"""
 		Method to compute scoren distribution from reviews data
 	"""
-	date = request.get_json()['date']
+	date = request.get_json().get('date', None)
 	config = load_config()
 	dm = DataManager(config)
 	try:
@@ -64,8 +64,8 @@ def compute_means():
 		Method to compute statistics from reviews data
 	"""
 	# Retrieve url parameters
-	time_delta = int(request.get_json()['timeDelta']) if request.get_json()['timeDelta'] is not None else 30
-	nb_ignore = int(request.get_json()['ignore']) if request.get_json()['ignore'] is not None else 0
+	time_delta = int(request.get_json().get('timeDelta', 30))
+	nb_ignore = int(request.get_json().get('ignore', 0))
 
 	config = load_config()
 	dm = DataManager(config)
@@ -123,14 +123,14 @@ def compute_words():
 	"""
 		Method to generate a word cloud. Images are save in "ressources" directory.
 	"""
-	alpha = float(request.get_json()['alpha']) if request.get_json()['alpha'] is not None else 10
-	n = int(request.get_json()['n']) if request.get_json()['n'] is not None else 2
+	alpha = float(request.get_json().get('alpha', 10))
+	n = int(request.get_json().get('n', 2))
 	start_date_1 = request.get_json()['start1']
 	start_date_2 = request.get_json()['start2']
 	end_date_1 = request.get_json()['end1']
 	end_date_2 = request.get_json()['end2']
 	lang = str(request.get_json()['lang'])
-	score = int(request.get_json()['score']) if request.get_json()['score'] is not None else -1
+	score = int(request.get_json().get('score', 0))
 	config = load_config()
 	dm = DataManager(config)
 	try:
