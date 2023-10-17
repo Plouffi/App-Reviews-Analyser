@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   version: 1.0.0
-  title: ARA API
+  title: App Reviews Analyzer
   description: API for App Reviews Analyser
 
 components:
@@ -21,13 +21,15 @@ paths:
           in: query
           description: Date to compare score distribution (if empty, no comparaison)
           schema:
-            type: date
+            type: string
       responses:
         '200':
           description: Returns a bar chart as PNG image
           content:
-            image:
-              type: PNG
+            image/png:
+              schema:
+                type: string
+                format: binary
   /compute/means:
     get:
       description: Returns a graphic as PNG image
@@ -46,8 +48,10 @@ paths:
         '200':
           description: Returns a graphic as PNG image
           content:
-            image:
-              type: PNG
+            image/png:
+              schema:
+                type: string
+                format: binary
   /wordcloud/computeWords:
     get:
       description: Returns a 2 set of vocabulary and their frequencies 
@@ -71,27 +75,27 @@ paths:
           in: query
           description: Filter reviews on score (take all if empty or 0)
           schema:
-            type: int
+            type: integer
         - name: start1
           in: query
           description: First period start date to compare
           schema:
-            type: date
+            type: string
         - name: end1
           in: query
           description: First period end date to compare
           schema:
-            type: date
+            type: string
         - name: start2
           in: query
           description: Second period start date to compare
           schema:
-            type: date
+            type: string
         - name: end2
           in: query
           description: Second period end date to compare
           schema:
-            type: date
+            type: string
       responses:
         '200':
           description: Returns a JSON object including the 2 set of vocabulary
@@ -104,7 +108,9 @@ paths:
                   items:
                     type: array
                     items:
-                      type: [string, integer]
+                      oneOf:
+                      - type: string
+                      - type: integer
   /wordcloud/generateImage:
     post:
       description: Returns a wordcloud as PNG image
@@ -117,12 +123,16 @@ paths:
               items:
                 type: array
                 items:
-                  type: [string, integer]
+                  oneOf:
+                    - type: string
+                    - type: integer
       responses:
         '200':
           description: Returns a graphic as PNG image
           content:
-            image:
-              type: PNG
+            image/png:
+              schema:
+                type: string
+                format: binary
 
           
