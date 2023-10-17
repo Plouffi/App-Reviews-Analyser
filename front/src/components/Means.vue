@@ -17,7 +17,14 @@ async function fecthMeans() {
         params.ignore = ignore.value
     }
     const query = new URLSearchParams(params)
-    const res = await fetch(`http://localhost:5173/api/compute/means?${query}`)
+    const res = await fetch('http://localhost:5173/api/compute/means', {
+		method: 'POST',
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(params)
+	})
     return res.blob()
 }
 

@@ -32,12 +32,12 @@ def get_reviews():
 	dm.export()
 	return 'OK', 200
 
-@app.route('/compute/scoreDistribution', methods=['GET'])
+@app.route('/compute/scoreDistribution', methods=['POST'])
 def compute_score_distribution():
 	"""
 		Method to compute scoren distribution from reviews data
 	"""
-	date = request.args.get('date')
+	date = request.get_json()['date']
 	config = load_config()
 	dm = DataManager(config)
 	try:
@@ -58,14 +58,14 @@ def compute_score_distribution():
 	except FileNotFoundError:
 		return f"File '{config['export_path']}' not found. Launch scrapping process to create it", 500
 
-@app.route('/compute/means', methods=['GET'])
+@app.route('/compute/means', methods=['POST'])
 def compute_means():
 	"""
 		Method to compute statistics from reviews data
 	"""
 	# Retrieve url parameters
-	time_delta = int(request.args.get('timeDelta')) if request.args.get('timeDelta') is not None else 30
-	nb_ignore = int(request.args.get('ignore')) if request.args.get('ignore') is not None else 0
+	time_delta = int(request.get_json()['timeDelta']) if request.get_json()['timeDelta'] is not None else 30
+	nb_ignore = int(request.get_json()['ignore']) if request.get_json()['ignore'] is not None else 0
 
 	config = load_config()
 	dm = DataManager(config)
@@ -118,19 +118,19 @@ def compute_overall_stats():
 	except FileNotFoundError:
 		return f"File '{config['export_path']}' not found. Launch scrapping process to create it", 500
 
-@app.route('/wordcloud/computeWords', methods=['GET'])
+@app.route('/wordcloud/computeWords', methods=['POST'])
 def compute_words():
 	"""
 		Method to generate a word cloud. Images are save in "ressources" directory.
 	"""
-	alpha = float(request.args.get('alpha')) if request.args.get('alpha') is not None else 10
-	n = int(request.args.get('n')) if request.args.get('n') is not None else 2
-	start_date_1 = request.args.get('start1')
-	start_date_2 = request.args.get('start2')
-	end_date_1 = request.args.get('end1')
-	end_date_2 = request.args.get('end2')
-	lang = str(request.args.get('lang'))
-	score = int(request.args.get('score')) if request.args.get('score') is not None else -1
+	alpha = float(request.get_json()['alpha']) if request.get_json()['alpha'] is not None else 10
+	n = int(request.get_json()['n']) if request.get_json()['n'] is not None else 2
+	start_date_1 = request.get_json()['start1']
+	start_date_2 = request.get_json()['start2']
+	end_date_1 = request.get_json()['end1']
+	end_date_2 = request.get_json()['end2']
+	lang = str(request.get_json()['lang'])
+	score = int(request.get_json()['score']) if request.get_json()['score'] is not None else -1
 	config = load_config()
 	dm = DataManager(config)
 	try:
@@ -152,7 +152,6 @@ def generate_wordcloud():
 		Method to generate a word cloud from an array of words and frequencies.
 	"""
 	words = request.get_json()['words']
-	print(words)
 	wordcloud = make_image.simple_image(words)
 
 	# Convert plot to PNG image

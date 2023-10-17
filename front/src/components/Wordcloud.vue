@@ -39,20 +39,26 @@ async function fecthWords() {
     params.end1 = end1.value.toLocaleString()
     params.start2 = start2.value.toLocaleString()
     params.end2 = end2.value.toLocaleString()
-    const query = new URLSearchParams(params)
-    const res = await fetch(`http://localhost:5173/api/wordcloud/computeWords?${query}`)
+    const res = await fetch('http://localhost:5173/api/wordcloud/computeWords', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(params)
+    })
     return res.json()
 }
 
 async function fetchImageWordcloud(words: [[string, Float32Array]]) {
-  const res = await fetch(`http://localhost:5173/api/wordcloud/generateImage`, {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({'words': words})
-  })
+  const res = await fetch('http://localhost:5173/api/wordcloud/generateImage', {
+		method: 'POST',
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({'words': words})
+	})
   return res.blob()
 }
 

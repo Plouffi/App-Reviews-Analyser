@@ -8,8 +8,14 @@ const date = ref()
 const scoreDistribution = ref("")
 
 async function fecthScoreDistribution() {
-	const query = date.value ? `?date=${date.value.toLocaleString()}` : ""
-  const res = await fetch(`http://localhost:5173/api/compute/scoreDistribution${query}`)
+  const res = await fetch('http://localhost:5173/api/compute/scoreDistribution', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({'date': date.value.toLocaleString()})
+  })
   return res.blob()
 }
 
