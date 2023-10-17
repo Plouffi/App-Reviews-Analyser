@@ -11,7 +11,7 @@ A small tool to analyse reviews on playstore.
 
 # Flask API
 
-API description can be find [here](https://petstore.swagger.io/?url=https://github.com/Plouffi/App-Reviews-Analyser/blob/master/src/openapi.yaml)
+API description can be find [here](https://github.com/Plouffi/App-Reviews-Analyser/blob/master/src/openapi.yaml)
 
 # Powered by:
 
