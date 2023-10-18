@@ -4,7 +4,7 @@ import ScraperView from './view/Scraper.view.vue';
 import AnalyserView from './view/Analyser.view.vue';
 import AboutView from './view/About.view.vue';
 
-const tab = ref("about")
+const tab = ref("analyser")
 </script>
 
 <template>
@@ -14,8 +14,11 @@ const tab = ref("about")
   </header>
   <v-tabs
     v-model="tab"
-    color="deep-purple-accent-4"
+    bg-color="grey-lighten-3"
+    color="light-blue-darken-2"
     align-tabs="center"
+    class="mb-5 rounded"
+    grow
   >
     <v-tab value="scraper">Scraper</v-tab>
     <v-tab value="analyser">Analyser</v-tab>

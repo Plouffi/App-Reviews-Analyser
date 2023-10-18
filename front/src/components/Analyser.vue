@@ -5,17 +5,19 @@ import Wordcloud from './Wordcloud.vue'
 </script>
 
 <template>
-  <div id="analyser" class="row">
-    <div class="col">
-      <ScoreDistribution/>
-    </div>
-    <div class="col">
-      <Means/>
-    </div>
-    <div class="row">
-      <Wordcloud/>
-    </div>
-  </div>
+  <v-container fluid id="analyser">
+    <v-row dense>
+      <v-col cols="6">
+        <ScoreDistribution />
+      </v-col>
+      <v-col cols="6">
+        <Means />
+      </v-col>
+      <v-col cols="12">
+        <Wordcloud />
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <style scoped>
@@ -28,5 +30,9 @@ h1 {
 
 h3 {
   font-size: 1.2rem;
+}
+
+.v-card {
+  padding: 0 1em;
 }
 </style>

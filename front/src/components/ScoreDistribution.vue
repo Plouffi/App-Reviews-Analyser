@@ -1,54 +1,53 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import VueDatePicker from '@vuepic/vue-datepicker'
-import '@vuepic/vue-datepicker/dist/main.css'
 
 //Request parameter for /scoreDistribution
 const date = ref()
 const scoreDistribution = ref("")
 
 async function fecthScoreDistribution() {
-  const res = await fetch('http://localhost:5173/api/compute/scoreDistribution', {
-    method: 'POST',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(date.value ? {'date': date.value.toLocaleString()} : {})
-  })
-  return res.blob()
+	const res = await fetch('http://localhost:5173/api/compute/scoreDistribution', {
+		method: 'POST',
+		headers: {
+			'Accept': 'application/json',
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(date.value ? { 'date': date.value.toLocaleString() } : {})
+	})
+	return res.blob()
 }
 
 const computeScoreDistribution = async () => {
-  const image = await fecthScoreDistribution()
-  scoreDistribution.value = URL.createObjectURL(image)
+	const image = await fecthScoreDistribution()
+	scoreDistribution.value = URL.createObjectURL(image)
 }
 </script>
 
 <template>
-  <div class="row">
-		<h3>
-			Score Distribution
-		</h3>
-		<div class="input-analyzer mb-3">
-			<label for="date" class="form-label">Date</label>
-			<VueDatePicker v-model="date" class="form-control" name="date" aria-describedby="dateHelp" placeholder="Date..."></VueDatePicker>
-			<small id="dateHelp" class="form-text text-muted">Date to compare score distribution (if empty, no comparaison)</small>
-		</div>
-		<div class="mb-3">
-			<button @click="computeScoreDistribution()" class="btn btn-primary">Compute</button>
-		</div>
+	<v-card title="Score Distribution">
+		<v-container fluid class="input-analyser">
+			<v-row>
+				<v-col cols="12">
+					<v-text-field v-model="date" label="Date" type="datetime-local" variant="underlined"
+						hint="Date to compare score distribution (if empty, no comparaison)">
+					</v-text-field>
+				</v-col>
+			</v-row>
+		</v-container>
+		<v-card-actions>
+			<v-btn @click="computeScoreDistribution()" color="light-blue-darken-2" variant="flat" elevation="4">Compute</v-btn>
+		</v-card-actions>
 		<div class="mb-3">
 			<picture v-if="scoreDistribution.length">
 				<source :srcset="scoreDistribution" type="image/png">
 				<img :src="scoreDistribution" class="img-fluid" alt="Result of score Distribution">
 			</picture>
 		</div>
-  </div>
+	</v-card>
 </template>
 
 <style scoped>
-.input-analyzer {
-  min-height: 120px;
+.input-analyser {
+	min-height: 120px;
 }
 </style>
