@@ -6,7 +6,6 @@ from datetime import timedelta
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib
-from matplotlib import axes
 
 matplotlib.use('agg')
 
@@ -82,11 +81,15 @@ class DataManager:
 
 		return self.df.loc[mask].to_dict('records')
 
-	def load(self):
+	def load(self, path_to_file: str):
 		"""
 		Method to load reviews from csv file. Set up the dataframe's index on "at" column (publication date)
+		Parameters
+			----------
+			path_to_file : str
+				Path to the csv file on server.
 		"""
-		self.df = pd.read_csv(self.config["export_path"])
+		self.df = pd.read_csv(path_to_file)
 		# set up the index on publishing date and sort the dataframe
 		self.df["at"] = pd.to_datetime(self.df["at"])
 		self.df = self.df.set_index("at")
@@ -110,6 +113,16 @@ class DataManager:
 		dfpy = self.df["score"].to_numpy()
 		return len(dfpy)
 
+	def get_first_review_date(self) -> str:
+		"""
+		Method to return the date of the first review
+			Returns
+			-------
+				str
+				The date of the first review
+		"""
+		return str(self.df["at"].first())
+	
 	def compute_mean(self) -> Tuple[np.ndarray, int]:
 		"""
 		Method to compute mean of reviews' score.
@@ -181,7 +194,7 @@ class DataManager:
 
 		return [get_score_distribution(before_fp), get_score_distribution(after_fp)], [len(before_fp), len(after_fp) if date is not None else 0]
 
-	def compute_fehpass_mention(self) -> Tuple[pd.Series,  pd.Series, pd.Series]:
+	def compute_fehpass_mention(self, keywords: List[str]) -> Tuple[pd.Series,  pd.Series, pd.Series]:
 		""",
 		Method to compute stats about FEH pass mentions in english reviews. Native detection, check if the content one
 		of the keywords defined in the configuration file.
@@ -191,7 +204,7 @@ class DataManager:
 		"""
 		mask_language = self.df["language"] == "en"
 		mask_period = self.df.index >= self.feh_pass_date
-		mask_mention = self.df["content"].str.contains('|'.join(self.config["feh_pass_en_keywords"]))
+		mask_mention = self.df["content"].str.contains('|'.join(keywords))
 		mask_score = self.df["score"] == 1
 		mask = mask_language & mask_period
 		mask_with_mention = mask & mask_mention
@@ -201,7 +214,7 @@ class DataManager:
 
 	# plot methods
 
-	def plot_res(self, stats):
+	def plot_res(self, stats, first_review_date):
 		"""
 		Method to plot the graph displaying curves of rolling average and cumulative mean.
 		"""
@@ -211,7 +224,6 @@ class DataManager:
 		# plt.axvline(x=self.feh_pass_date, ls="--", color="#e55039", linewidth=1, label="Feh Pass announcement")
 		
 		fig, ax_score = plt.subplots()
-		#ax_score = axes.Axes()
 		ax_score.set_ylabel('Score')
 		ax_score.set_ylim(1,5)
 
@@ -232,7 +244,7 @@ class DataManager:
 		formatter = mdates.DateFormatter("%b %Y")
 		ax.xaxis.set_major_formatter(formatter)
 
-		plt.xlim(dt.strptime(self.config["feh_release_date"], "%Y-%m-%d %I:%M%p"))
+		plt.xlim(dt.strptime(first_review_date, "%Y-%m-%d %I:%M%p"))
 		plt.title("Cumulative mean, rolling average and cumulative number \n of reviews on FEH score from playstore")
 
 		# display

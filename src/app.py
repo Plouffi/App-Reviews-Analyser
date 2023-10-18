@@ -1,11 +1,13 @@
 from data_manager import DataManager
 from scraper import Scraper
-from datetime import date as dt
+from datetime import datetime as dt
 from cloud import Cloud
 from flask import Flask, jsonify, request, Response, render_template
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from hashlib import sha256
 import Image.make_image as make_image
 import io
+import os
 import json
 
 app = Flask(__name__)
@@ -15,9 +17,36 @@ def load_config():
 		config = json.load(f)
 	return config
 
+def find_file(hash: str) -> str:
+	if hash is None:
+		return ''
+	else:
+		filename = ''
+		for fn in os.listdir('./tmp'):
+			if sha256(fn).hexdigest() == hash:
+				filename = fn
+		return filename
+			
+
+
+@app.route('/uploadData', methods=['POST'])
 def save_last_import():
-	with open('./ressources/copy.txt', 'w') as file:
-		file.write(dt.today().strftime('%d/%m/%Y'))
+	"""
+		Method to upload a csv file to the server for later computation
+		Returns
+			-------
+				str
+				The hashed filename
+	"""
+	# Retrieve file and save it
+	f = request.files['fileData']
+	f.filename = f.filename + '_' + str(dt.now())
+	f.save('./tmp/' + f.filename)
+
+	# We send the hashed filename to the client to be able to find the file later
+	return sha256(f.filename).hexdigest()
+
+
 
 @app.route('/getReviews')
 def get_reviews():
@@ -37,12 +66,14 @@ def compute_score_distribution():
 	"""
 		Method to compute scoren distribution from reviews data
 	"""
+	hash = request.get_json().get('hash', None)
 	date = request.get_json().get('date', None)
+	path_to_file = find_file(hash)
 	config = load_config()
 	dm = DataManager(config)
 	try:
 		# load data review in export file (path in config)
-		dm.load()
+		dm.load(path_to_file)
 
 		# computing stats
 		score_distribution, review_distribution = dm.compute_score_distribution(date=date)
@@ -56,22 +87,23 @@ def compute_score_distribution():
 		return Response(image_plot_SD.getvalue(), mimetype='image/png')
 
 	except FileNotFoundError:
-		return f"File '{config['export_path']}' not found. Launch scrapping process to create it", 500
+		return f"File '{hash}' not found. You need to load it first with '/uploadData'", 500
 
 @app.route('/compute/means', methods=['POST'])
 def compute_means():
 	"""
 		Method to compute statistics from reviews data
 	"""
-	# Retrieve url parameters
+	hash = request.get_json().get('hash', None)
 	time_delta = int(request.get_json().get('timeDelta', 30))
 	nb_ignore = int(request.get_json().get('ignore', 0))
 
+	path_to_file = find_file(hash)
 	config = load_config()
 	dm = DataManager(config)
 	try:
 		# load data review in export file (path in config)
-		dm.load()
+		dm.load(path_to_file)
 
 		# computing stats
 		means = {
@@ -81,7 +113,7 @@ def compute_means():
 		}
 
 		# Convert plot to PNG image
-		figure_plot_res = dm.plot_res(means)
+		figure_plot_res = dm.plot_res(means, dm.get_first_review_date())
 		image_plot_res = io.BytesIO()
 		FigureCanvas(figure_plot_res).print_png(image_plot_res)
 		dm.plot_refresh()
@@ -95,11 +127,14 @@ def compute_overall_stats():
 	"""
 		Method to compute statistics from reviews data
 	"""
+	hash = request.get_json().get('hash', None)
+
+	path_to_file = find_file(hash)
 	config = load_config()
 	dm = DataManager(config)
 	try:
 		# load data review in export file (path in config)
-		dm.load()
+		dm.load(path_to_file)
 
 		# computing stats
 		means, nb_reviews = dm.compute_mean()
@@ -123,6 +158,7 @@ def compute_words():
 	"""
 		Method to generate a word cloud. Images are save in "ressources" directory.
 	"""
+	hash = request.get_json().get('hash', None)
 	alpha = float(request.get_json().get('alpha', 10))
 	n = int(request.get_json().get('n', 2))
 	start_date_1 = request.get_json()['start1']
@@ -131,11 +167,13 @@ def compute_words():
 	end_date_2 = request.get_json()['end2']
 	lang = str(request.get_json()['lang'])
 	score = int(request.get_json().get('score', 0))
+
+	path_to_file = find_file(hash)
 	config = load_config()
 	dm = DataManager(config)
 	try:
 		# load data in export file (path in config)
-		dm.load()
+		dm.load(path_to_file)
 
 		reviews_before_fp = dm.get_reviews_as_dict(start_date=start_date_1, end_date=end_date_1, language=lang, score=score)
 		reviews_after_fp = dm.get_reviews_as_dict(start_date=start_date_2, end_date=end_date_2, language=lang, score=score)

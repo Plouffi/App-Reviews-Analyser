@@ -2,19 +2,27 @@
 import ScoreDistribution from './ScoreDistribution.vue'
 import Means from './Means.vue'
 import Wordcloud from './Wordcloud.vue'
+import UploadData from './UploadData.vue';
 </script>
 
 <template>
   <v-container fluid id="analyser">
     <v-row dense>
-      <v-col cols="6">
-        <ScoreDistribution />
-      </v-col>
-      <v-col cols="6">
-        <Means />
-      </v-col>
       <v-col cols="12">
-        <Wordcloud />
+        <UploadData/>
+      </v-col>
+    </v-row>
+    <v-row dense>
+      <v-col cols="6">
+        <ScoreDistribution/>
+      </v-col>
+      <v-col cols="6">
+        <Means/>
+      </v-col>
+    </v-row>
+    <v-row dense>
+      <v-col cols="12">
+        <Wordcloud/>
       </v-col>
     </v-row>
   </v-container>
