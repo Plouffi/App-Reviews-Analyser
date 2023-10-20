@@ -5,9 +5,11 @@ from src.Scraper.scraper import Scraper
 import src.Image.make_image as make_image
 
 from flask import Flask, jsonify, request, Response, render_template
+from hashlib import sha256
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import io
 import json
+import os
 
 app = Flask(__name__)
 
@@ -15,6 +17,38 @@ def load_config():
 	with open('./ressources/config.json') as f:
 		config = json.load(f)
 	return config
+
+def find_file(hash: str) -> str:
+	if hash is None:
+		return ''
+	else:
+		filename = ''
+		for fn in os.listdir('./tmp'):
+			if sha256(fn).hexdigest() == hash:
+				filename = fn
+		return filename
+
+
+
+@app.route('/uploadData', methods=['POST'])
+def save_last_import():
+	with open('./ressources/copy.txt', 'w') as file:
+		file.write(dt.today().strftime('%d/%m/%Y'))
+	"""
+		Method to upload a csv file to the server for later computation
+		Returns
+			-------
+				str
+				The hashed filename
+	"""
+	# Retrieve file and save it
+	f = request.files['fileData']
+	f.filename = f.filename + '_' + str(dt.now())
+	f.save('./tmp/' + f.filename)
+
+	# We send the hashed filename to the client to be able to find the file later
+	return sha256(f.filename).hexdigest()
+
 
 # @app.route('/getReviews')
 # def get_reviews():
