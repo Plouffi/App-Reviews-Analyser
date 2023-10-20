@@ -12,5 +12,5 @@ jobs:
       uses: xRealNeon/VuePagesAction@1.0.1
       with:
         username: 'Plouffi'
-        reponame: 'App-Reviews-Analyser/front'
+        reponame: 'App-Reviews-Analyser/tree/master/front'
         token: ${{ secrets.GITHUB_TOKEN }}

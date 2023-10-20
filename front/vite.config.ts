@@ -33,6 +33,6 @@ export default defineConfig({
     cors: false
   },
   base: process.env.NODE_ENV === 'production'
-    ? '/App-Reviews-Analyser/front/'
+    ? '/App-Reviews-Analyser/tree/master/front/'
     : '/'
 })
