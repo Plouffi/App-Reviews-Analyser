@@ -15,22 +15,18 @@ def load_config():
 		config = json.load(f)
 	return config
 
-def save_last_import():
-	with open('./ressources/copy.txt', 'w') as file:
-		file.write(dt.today().strftime('%d/%m/%Y'))
-
-@app.route('/getReviews')
-def get_reviews():
-	"""
-		Method to fecth reviews from the Playstore
-	"""
-	config = load_config()
-	dm = DataManager(config)
-	s = Scraper(config)
-	reviews = s.get_reviews(config['feh_release_date'])
-	dm.insert_reviews(reviews)
-	dm.export()
-	return 'OK', 200
+# @app.route('/getReviews')
+# def get_reviews():
+# 	"""
+# 		Method to fecth reviews from the Playstore
+# 	"""
+# 	config = load_config()
+# 	dm = DataManager(config)
+# 	s = Scraper(config)
+# 	reviews = s.get_reviews(config['feh_release_date'])
+# 	dm.insert_reviews(reviews)
+# 	dm.export()
+# 	return 'OK', 200
 
 @app.route('/compute/scoreDistribution', methods=['POST'])
 def compute_score_distribution():
@@ -90,11 +86,14 @@ def compute_means():
 	except FileNotFoundError:
 		return f"File '{config['export_path']}' not found. Launch scrapping process to create it", 500
 	
-@app.route('/compute/stats', methods=['GET'])
+@app.route('/compute/stats', methods=['POST'])
 def compute_overall_stats():
 	"""
 		Method to compute statistics from reviews data
 	"""
+	lang = str(request.get_json()['lang'])
+	keywords = request.get_json()['keywords']
+
 	config = load_config()
 	dm = DataManager(config)
 	try:
@@ -103,7 +102,7 @@ def compute_overall_stats():
 
 		# computing stats
 		means, nb_reviews = dm.compute_mean()
-		review_with_mention, review_in_lang, review_with_mention_1star = dm.compute_fehpass_mention()
+		review_with_mention, review_in_lang, review_with_mention_1star = dm.compute_mention(lang=lang, keywords=keywords)
 		stats = {
 			'means': means,
 			'nb_reviews': nb_reviews,

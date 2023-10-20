@@ -19,8 +19,6 @@ class DataManager:
 		config : Dict
 			Program's configuration.
 		df : Dataframe
-		feh_pass_date : dt
-			Date of the announcement of FEH pass
 	"""
 	def __init__(self, config):
 		"""
@@ -33,7 +31,6 @@ class DataManager:
 		columns = ["userName", "content", "score", "thumbsUpCount", "reviewCreatedVersion", "at", "language"]
 		self.df = pd.DataFrame(columns=columns)
 		self.config = config
-		self.feh_pass_date = dt.strptime(self.config["feh_pass_date"], "%Y-%m-%d %I:%M%p")
 
 	def insert_reviews(self, reviews):
 		"""
@@ -181,19 +178,19 @@ class DataManager:
 
 		return [get_score_distribution(before_fp), get_score_distribution(after_fp)], [len(before_fp), len(after_fp) if date is not None else 0]
 
-	def compute_fehpass_mention(self) -> Tuple[pd.Series,  pd.Series, pd.Series]:
+	def compute_mention(self, lang: str, keywords: List[str]) -> Tuple[pd.Series,  pd.Series, pd.Series]:
 		""",
-		Method to compute stats about FEH pass mentions in english reviews. Native detection, check if the content one
+		Method to compute stats about mentions in selected language reviews. Native detection, check if the content one
 		of the keywords defined in the configuration file.
 			Returns
 			-------
 			Tuple[pd.Series,  pd.Series, pd.Series]
 		"""
-		mask_language = self.df["language"] == "en"
-		mask_period = self.df.index >= self.feh_pass_date
-		mask_mention = self.df["content"].str.contains('|'.join(self.config["feh_pass_en_keywords"]))
+		mask_language = self.df["language"] == lang
+		#mask_period = self.df.index >= self.feh_pass_date
+		mask_mention = self.df["content"].str.contains('|'.join(keywords))
 		mask_score = self.df["score"] == 1
-		mask = mask_language & mask_period
+		mask = mask_language #& mask_period
 		mask_with_mention = mask & mask_mention
 		mask_1star_with_mention = mask_with_mention & mask_score
 
