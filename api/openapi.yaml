@@ -56,6 +56,39 @@ paths:
               schema:
                 type: string
                 format: binary
+  /compute/stats:
+    post:
+      description: Returns a various stats and mentions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                lang:
+                  description: Language of analysed reviews from the following list ["de","en","es","fr","it","ja","pt","zh"]
+                  type: string
+                keywords:
+                  description: List of keyword to find in reviews
+                  type: array
+                  items: 
+                    type: string
+      responses:
+        '200':
+          description: Returns a JSON object including the 2 set of vocabulary
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: array
+                  items:
+                    type: array
+                    items:
+                      oneOf:
+                      - type: string
+                      - type: integer
   /wordcloud/computeWords:
     post:
       description: Returns a 2 set of vocabulary and their frequencies 

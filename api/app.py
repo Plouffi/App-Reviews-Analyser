@@ -1,10 +1,11 @@
-from data_manager import DataManager
-from scraper import Scraper
-from datetime import date as dt
-from cloud import Cloud
+from src.Cloud.cloud import Cloud
+from src.DataManager.data_manager import DataManager
+from src.Plot.plot import Plot
+from src.Scraper.scraper import Scraper
+import src.Image.make_image as make_image
+
 from flask import Flask, jsonify, request, Response, render_template
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-import Image.make_image as make_image
 import io
 import json
 
@@ -44,10 +45,11 @@ def compute_score_distribution():
 		score_distribution, review_distribution = dm.compute_score_distribution(date=date)
 
 		# Convert plot to PNG image
-		figure_plot_SD = dm.plot_score_distribution(score_distribution, review_distribution, date=date)
+		plot = Plot(config)
+		figure_plot_SD = plot.score_distribution(score_distribution, review_distribution, date=date)
 		image_plot_SD = io.BytesIO()
 		FigureCanvas(figure_plot_SD).print_png(image_plot_SD)
-		dm.plot_refresh()
+		plot.refresh()
 		
 		return Response(image_plot_SD.getvalue(), mimetype='image/png')
 
@@ -77,10 +79,11 @@ def compute_means():
 		}
 
 		# Convert plot to PNG image
-		figure_plot_res = dm.plot_res(means)
+		plot = Plot(config)
+		figure_plot_res = plot.means(means)
 		image_plot_res = io.BytesIO()
 		FigureCanvas(figure_plot_res).print_png(image_plot_res)
-		dm.plot_refresh()
+		plot.refresh()
 	
 		return Response(image_plot_res.getvalue(), mimetype='image/png')
 	except FileNotFoundError:
