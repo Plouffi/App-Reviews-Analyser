@@ -40,6 +40,7 @@ jobs:
         with:
           node-version: 18
           cache: npm # or pnpm / yarn
+          cache-dependency-path: ./front/package-lock.json
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Install dependencies
