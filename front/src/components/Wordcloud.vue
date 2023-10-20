@@ -86,7 +86,7 @@ const computeWordcloud = async () => {
 	<v-card title="Wordcloud">
 		<v-container fluid>
 			<v-row class="input-analiser">
-				<v-col cols="3">
+				<v-col cols="12" sm="6" md="3">
 					<v-text-field v-model="alpha"
 						label="Alpha"
 						type="number"
@@ -95,7 +95,7 @@ const computeWordcloud = async () => {
 						hint="Parameters to reduce noises in data">
 					</v-text-field>
 				</v-col>
-				<v-col cols="3">
+				<v-col cols="12" sm="6" md="3">
 					<v-text-field v-model="nToken"
 						label="nToken"
 						type="number"
@@ -104,7 +104,7 @@ const computeWordcloud = async () => {
 						hint="Define the number of word per token vocabulary">
 					</v-text-field>
 				</v-col>
-				<v-col cols="3">
+				<v-col cols="12" sm="6" md="3">
 					<v-select v-model="lang"
 						:items="languages"
 						label="Language"
@@ -117,7 +117,7 @@ const computeWordcloud = async () => {
 						hint="Reviews and vocabulary language">
 					</v-select>
 				</v-col>
-				<v-col cols="3">
+				<v-col cols="12" sm="6" md="3">
 					<v-slider v-model="score"
 						:ticks="[0,1,2,3,4,5]"
 						:min="0"
@@ -133,7 +133,7 @@ const computeWordcloud = async () => {
 			</v-row>
 
 			<v-row class="input-analiser">
-				<v-col cols="3">
+				<v-col cols="12" sm="6" md="3">
 					<v-text-field v-model="start1" 
 						label="Start date 1" 
 						type="datetime-local" 
@@ -141,7 +141,7 @@ const computeWordcloud = async () => {
 						hint="First period start date to compare">
 					</v-text-field>
 				</v-col>
-				<v-col cols="3">
+				<v-col cols="12" sm="6" md="3">
 					<v-text-field v-model="end1" 
 						label="End date 1" 
 						type="datetime-local" 
@@ -149,7 +149,7 @@ const computeWordcloud = async () => {
 						hint="First period end date to compare">
 					</v-text-field>
 				</v-col>
-				<v-col cols="3">
+				<v-col cols="12" sm="6" md="3">
 					<v-text-field v-model="start2" 
 						label="Start date 2" 
 						type="datetime-local" 
@@ -157,7 +157,7 @@ const computeWordcloud = async () => {
 						hint="Second period start date to compare">
 					</v-text-field>
 				</v-col>
-				<v-col cols="3">
+				<v-col cols="12" sm="6" md="3">
 					<v-text-field v-model="end2" 
 						label="End date 2" 
 						type="datetime-local" 
@@ -172,7 +172,7 @@ const computeWordcloud = async () => {
 		</v-card-actions>
 		<v-container fluid>
 			<v-row dense>
-				<v-col cols="6">
+				<v-col cols="12" md="6">
 					<v-card title="First Period">
 						<picture v-if="wordcloudImage1">
 							<source :srcset="wordcloudImage1" type="image/png">
@@ -180,7 +180,7 @@ const computeWordcloud = async () => {
 						</picture>
 					</v-card>
 				</v-col>
-				<v-col cols="6">
+				<v-col cols="12" md="6">
 					<v-card title="Second Period">
 						<picture v-if="wordcloudImage2">
 							<source :srcset="wordcloudImage2" type="image/png">
