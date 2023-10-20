@@ -1,4 +1,4 @@
-from scraper_utils import reviews as gps_r
+from src.Scraper.scraper_utils import reviews as gps_r
 from google_play_scraper import Sort
 from datetime import datetime as dt
 

@@ -3,23 +3,16 @@ import numpy as np
 import pandas as pd
 from datetime import datetime as dt
 from datetime import timedelta
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
-import matplotlib
-
-matplotlib.use('agg')
 
 class DataManager:
 	"""
-	A class to handle and compute statistics about feh pass.
+	A class to handle and compute statistics.
 	...
 		Attributes
 		----------
 		config : Dict
 			Program's configuration.
 		df : Dataframe
-		feh_pass_date : dt
-			Date of the announcement of FEH pass
 	"""
 	def __init__(self, config):
 		"""
@@ -32,7 +25,6 @@ class DataManager:
 		columns = ["userName", "content", "score", "thumbsUpCount", "reviewCreatedVersion", "at", "language"]
 		self.df = pd.DataFrame(columns=columns)
 		self.config = config
-		self.feh_pass_date = dt.strptime(self.config["feh_pass_date"], "%Y-%m-%d %I:%M%p")
 
 	def insert_reviews(self, reviews):
 		"""
@@ -81,15 +73,11 @@ class DataManager:
 
 		return self.df.loc[mask].to_dict('records')
 
-	def load(self, path_to_file: str):
+	def load(self):
 		"""
 		Method to load reviews from csv file. Set up the dataframe's index on "at" column (publication date)
-		Parameters
-			----------
-			path_to_file : str
-				Path to the csv file on server.
 		"""
-		self.df = pd.read_csv(path_to_file)
+		self.df = pd.read_csv(self.config["export_path"])
 		# set up the index on publishing date and sort the dataframe
 		self.df["at"] = pd.to_datetime(self.df["at"])
 		self.df = self.df.set_index("at")
@@ -113,16 +101,6 @@ class DataManager:
 		dfpy = self.df["score"].to_numpy()
 		return len(dfpy)
 
-	def get_first_review_date(self) -> str:
-		"""
-		Method to return the date of the first review
-			Returns
-			-------
-				str
-				The date of the first review
-		"""
-		return str(self.df["at"].first())
-	
 	def compute_mean(self) -> Tuple[np.ndarray, int]:
 		"""
 		Method to compute mean of reviews' score.
@@ -194,110 +172,20 @@ class DataManager:
 
 		return [get_score_distribution(before_fp), get_score_distribution(after_fp)], [len(before_fp), len(after_fp) if date is not None else 0]
 
-	def compute_fehpass_mention(self, keywords: List[str]) -> Tuple[pd.Series,  pd.Series, pd.Series]:
+	def compute_mention(self, lang: str, keywords: List[str]) -> Tuple[pd.Series,  pd.Series, pd.Series]:
 		""",
-		Method to compute stats about FEH pass mentions in english reviews. Native detection, check if the content one
+		Method to compute stats about mentions in selected language reviews. Native detection, check if the content one
 		of the keywords defined in the configuration file.
 			Returns
 			-------
 			Tuple[pd.Series,  pd.Series, pd.Series]
 		"""
-		mask_language = self.df["language"] == "en"
-		mask_period = self.df.index >= self.feh_pass_date
+		mask_language = self.df["language"] == lang
+		#mask_period = self.df.index >= self.feh_pass_date
 		mask_mention = self.df["content"].str.contains('|'.join(keywords))
 		mask_score = self.df["score"] == 1
-		mask = mask_language & mask_period
+		mask = mask_language #& mask_period
 		mask_with_mention = mask & mask_mention
 		mask_1star_with_mention = mask_with_mention & mask_score
 
 		return self.df.loc[mask], self.df.loc[mask_with_mention], self.df.loc[mask_1star_with_mention]
-
-	# plot methods
-
-	def plot_res(self, stats, first_review_date):
-		"""
-		Method to plot the graph displaying curves of rolling average and cumulative mean.
-		"""
-		# plot grid
-
-		# plot feh pass announcement
-		# plt.axvline(x=self.feh_pass_date, ls="--", color="#e55039", linewidth=1, label="Feh Pass announcement")
-		
-		fig, ax_score = plt.subplots()
-		ax_score.set_ylabel('Score')
-		ax_score.set_ylim(1,5)
-
-		# plot data
-		for ((k, v), color, i) in zip(stats.items(), ["#009432", "#9980FA", "#E55039"], range(3)):
-			if i < 2:
-				ax_score.plot(v, label=k, color=color)
-			else:
-				# Last set of data has a different scale so we make an other y axis
-				ax_reviews = ax_score.twinx()
-				ax_reviews.set_ylabel("Number of review", labelpad=15)
-				reviews_max = v.max()
-				ax_reviews.set_ylim(0, reviews_max * 11/10) 
-				ax_reviews.plot(v, label=k, color=color)
-
-		# format date labels
-		ax = plt.gca()
-		formatter = mdates.DateFormatter("%b %Y")
-		ax.xaxis.set_major_formatter(formatter)
-
-		plt.xlim(dt.strptime(first_review_date, "%Y-%m-%d %I:%M%p"))
-		plt.title("Cumulative mean, rolling average and cumulative number \n of reviews on FEH score from playstore")
-
-		# display
-		return plt.gcf()
-	
-	def plot_score_distribution(self, reviews_distribution: List[List[float]], nb_reviews: List[int], date: dt):
-		"""
-		Plot a bar chart showing reviews' score ditribution.
-			Parameters
-			----------
-			reviews_distribution : List(List(float))
-				A 2-dimensionnal array representing score distribution before and after date.
-				Shape should be (2, 5) 2--> before/after // 5--> score range
-			nb_reviews : List(int)
-				An array stocking the number of reviews published before and after date
-		"""
-		# remove the "after" data if date is None
-		if date is None:
-			reviews_distribution.pop()
-		# data to plot
-		data = np.array(reviews_distribution)
-		data = data.T
-
-		# plot grid
-		plt.rc("grid", ls="-", color="#ced6e0")
-		plt.grid(axis="y", zorder=0)
-
-		# plot data
-		index = np.arange(2 if date is not None else 1)
-		bar_width = 0.1
-		colors = ["#78e08f", "#9fc552", "#bfa525", "#d87e1d", "#e55039"]
-		labels = ["5 stars", "4 stars", "3 stars", "2 stars", "1 star"]
-		for i, color, label in zip(range(0, 5), colors, labels):
-			plt.bar(index + i * bar_width, data[i], bar_width, color=color, label=label, zorder=3)
-
-		# add labels and legends
-		plt.ylabel("% of reviews")
-		plt.ylim(0, 100)
-		title = " before and after " + date if date is not None else ""
-		plt.title("% of reviews by score" + title)
-		if date is not None:
-			tickBefore = "%s reviews" % '{:,}'.format(nb_reviews[0]).replace(',', ' ') + "\n before " + date
-			tickAfter = "%s reviews" % '{:,}'.format(nb_reviews[1]).replace(',', ' ') + "\n after " + date
-			plt.xticks(index + 2 * bar_width, (tickBefore, tickAfter))
-		else:
-			plt.xticks(index + 2 * bar_width, ["%s reviews" % '{:,}'.format(nb_reviews[0]).replace(',', ' ')])
-
-		plt.legend()
-		return plt.gcf()
-		
-	def plot_refresh(self):
-		"""
-			Refresh the current plot
-		"""
-		plt.clf()
-		plt.cla()

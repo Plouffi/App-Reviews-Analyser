@@ -3,14 +3,12 @@ import numpy as np
 import re
 reg_token = re.compile(r"(?u)\b\w+\b")
 
-
 def n_grams(tokens, n):
 	if n == 1:
 		return tokens
 	if len(tokens) <= n:
 		return [' '.join(tokens)]
 	return [' '.join(tokens[i:i + n]) for i in range(len(tokens) - n)]
-
 
 def tokenize(content: str) -> List[str]:
 	"""
@@ -20,7 +18,6 @@ def tokenize(content: str) -> List[str]:
 			List[str]
 	"""
 	return reg_token.findall(content.lower())
-
 
 class Cloud:
 	"""

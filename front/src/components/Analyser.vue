@@ -13,10 +13,10 @@ import UploadData from './UploadData.vue';
       </v-col>
     </v-row>
     <v-row dense>
-      <v-col cols="6">
+      <v-col cols="12" md="6">
         <ScoreDistribution/>
       </v-col>
-      <v-col cols="6">
+      <v-col cols="12" md="6">
         <Means/>
       </v-col>
     </v-row>

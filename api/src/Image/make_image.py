@@ -16,7 +16,7 @@ def simple_image(words: List[Tuple[str, float]]) -> Image:
 
 	# generate the image
 	imgobject: Image = WordCloud(
-		"Image/Fonts/OpenSansEmoji.otf", scale=scaling, max_words=None, mask=mask,
+		"src/Image/Fonts/OpenSansEmoji.otf", scale=scaling, max_words=None, mask=mask,
 		background_color=None, mode="RGBA"
 	).fit_words(dict(words)).to_image()
 
