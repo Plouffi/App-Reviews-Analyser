@@ -44,11 +44,11 @@ jobs:
         run: npm ci # or pnpm install / yarn install / bun install
       - name: Build with VitePress
         run: |
-          cd ./front && npm run build
+          npm run build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
-          path: ./front/dist
+          path: /dist
   # Deployment job
   deploy:
     environment:
