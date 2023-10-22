@@ -9,8 +9,8 @@ A small tool to analyse reviews on playstore.
 # Project Setup
 ## Flask API
 - Got to `/api` directory
-- Install python requirements listed in `requirements.txt` with `pip`
-- Run the following command `python -m flask run -h localhost -p 8080` to launch Flask server
+- Install python requirements listed in `requirements.txt` with `py -m pip install -r ./requirements.txt`
+- Run the following command `py -m flask run -h localhost -p 8080` to launch Flask server
 
 API description can be find [here](https://github.com/Plouffi/App-Reviews-Analyser/blob/master/src/openapi.yaml)
 

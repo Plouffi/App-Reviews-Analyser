@@ -5,12 +5,20 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Current File",
+            "cwd": "${workspaceFolder}\\api",
+            "justMyCode": false,
+            "name": "Python: Flask",
             "type": "python",
             "request": "launch",
-            "program": "${file} get_reviews",
-            "console": "integratedTerminal",
-            "justMyCode": true
+            "module": "flask",
+            "env": {
+                "FLASK_APP": "app.py"
+            },
+            "args": [
+                "run",
+                "-p 8080"
+            ],
+            "jinja": true
         }
     ]
 }
