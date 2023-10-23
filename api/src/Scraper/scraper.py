@@ -1,6 +1,6 @@
 from typing import List, Any
 from datetime import datetime as dt
-from src.Model.App import App
+from src.Model.gps_app import App
 from src.Scraper.scraper_utils import reviews_all as gps_reviews
 from src.Scraper.scraper_utils import search as gps_search
 from google_play_scraper import app

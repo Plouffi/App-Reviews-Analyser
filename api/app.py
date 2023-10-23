@@ -2,6 +2,7 @@ from src.Cloud.cloud import Cloud
 from src.DataManager.data_manager import DataManager
 from src.Plot.plot import Plot
 from src.Scraper.scraper import Scraper
+from src.Model.gps_app import App
 import src.Image.make_image as make_image
 
 from flask import Flask, jsonify, request, Response, render_template
@@ -73,7 +74,8 @@ def app_detail():
 	config = load_config()
 	try:
 		s = Scraper(config)
-		return config['mockDetail']
+		#TODO demander l'app detail pour toutes les langues/country pour avoir la somme du nombre de reviews
+		return App(config['mockDetail']).__dict__
 		#return s.app_detail(id)
 
 	except FileNotFoundError:

@@ -27,7 +27,6 @@ export default defineConfig({
       '/static': {
         target: 'http://localhost:8080',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/static/, ''),
       }
     },
     cors: false

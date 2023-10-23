@@ -1,0 +1,25 @@
+export class GpsApp {
+	id: string = ''
+	title: string = ''
+	icon: string = ''
+	headerImage: string = ''
+	video: string = ''
+	videoImage: string = ''
+	screenshots: [string] = ['']
+	score: number = 0
+	genre: string = ''
+	categories: [string] = ['']
+	price: number = 0
+	currency: string = ''
+	free: boolean = true
+	summary: string = ''
+	description: string = ''
+	descriptionHTML: string = ''
+	version: string = ''
+	developer: string = ''
+	developerWebsite: string = ''
+	installs: string = ''
+	realInstalls: number = 0
+	reviews: number = 0
+	url: string = ''
+}

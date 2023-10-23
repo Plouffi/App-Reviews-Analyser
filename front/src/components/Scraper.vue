@@ -27,7 +27,6 @@ const onSearch = async () => {
 		result.value = 'list'
 		loadSearch.value = true
 		const res = await searchApp()
-		console.log(res)
 		appListResult.value = []
 		res.forEach((appJson: { [k: string]: any }) => {
 			appListResult.value.push({
