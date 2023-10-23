@@ -12,10 +12,10 @@ class App:
         headerImage: str
         video: str
         videoImage: str
-        screenshots: List[str]
+        screenshots: list[str]
         score: float
         genre: str
-        categories: List[str] 
+        categories: list[str] 
         price: float
         currency: str
         free: bool
@@ -36,10 +36,10 @@ class App:
     headerImage: str
     video: str
     videoImage: str
-    screenshots: List[str]
+    screenshots: list[str]
     score: float
     genre: str
-    categories: List[str] 
+    categories: list[str] 
     price: float
     currency: str
     free: bool

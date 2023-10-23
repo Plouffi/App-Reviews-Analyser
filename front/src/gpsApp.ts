@@ -22,4 +22,30 @@ export class GpsApp {
 	realInstalls: number = 0
 	reviews: number = 0
 	url: string = ''
+
+	init(json: any) {
+		this.id = json['id']
+		this.title = json['title']
+		this.icon = json['icon']
+		this.headerImage = json['headerImage']
+		this.video = json['video']
+		this.videoImage = json['videoImage']
+		this.screenshots = json['screenshots']
+		this.score = json['score']
+		this.genre = json['genre']
+		this.categories = json['categories']
+		this.price = json['price']
+		this.currency = json['currency']
+		this.free = json['free']
+		this.summary = json['summary']
+		this.description = json['description']
+		this.descriptionHTML = json['descriptionHTML']
+		this.version = json['version']
+		this.developer = json['developer']
+		this.developerWebsite = json['developerWebsite']
+		this.installs = json['installs']
+		this.realInstalls = json['realInstalls']
+		this.reviews = json['reviews']
+		this.url = json['url']
+	}
 }

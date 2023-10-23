@@ -24,15 +24,21 @@ const fetchAppDetail = async (id: string): Promise<GpsApp> => {
 watchEffect(async () => {
 	if (props.appId) {
 		loadDetail.value = true
+		app.value = new GpsApp()
 		const resApp = await fetchAppDetail(props.appId)
-		app.value = resApp
-
+		app.value.init(resApp)
+		console.log(resApp)
 		const colorThief = new ColorThief()
-		colorThief.getColorFromUrl(app.value.headerImage, (c: any) => {
-			color.value.r = c[0]
-			color.value.g = c[1]
-			color.value.b = c[2]
-		}, 10)
+		const sourceImage = document.createElement("img");
+		sourceImage.crossOrigin = "Anonymous"
+		sourceImage.addEventListener('load' , () => {
+				const palette = colorThief.getPalette(sourceImage, 5, 10);
+				const c = palette[0];
+				color.value.r = c[0]
+				color.value.g = c[1]
+				color.value.b = c[2]
+		});
+		sourceImage.src = app.value.headerImage
 
 		loadDetail.value = false
 	}
@@ -65,9 +71,7 @@ const scrapApp = async () => {
 				</v-col>
 			</v-row>
 			<v-row>
-				<template v-for="category in app.categories.sort((a, b) => a > b ? 1 : -1)">
-					<v-chip variant="outlined" class="m-1">{{ category }}</v-chip>
-				</template>
+				<v-chip v-for="category in app.categories.sort((a, b) => a > b ? 1 : -1)" variant="outlined" class="m-1">{{ category }}</v-chip>
 			</v-row>
 			<v-overlay v-model="loadDetail" contained class="align-center justify-center">
 				<v-progress-circular :size="60" :witdh="60" color="light-blue-darken-2" indeterminate />
@@ -89,6 +93,9 @@ const scrapApp = async () => {
 
 }
 
+.v-card-title {
+	font-weight: bold;
+}
 .gps-app-icon {
 	width: 128px;
 	margin: 2em;
