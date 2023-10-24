@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, watchEffect } from 'vue'
 import { GpsApp } from '@/gpsApp';
+import Utils from '@/utils';
 import ColorThief from 'colorthief'
 
 const props = defineProps({ appId: String })
@@ -12,17 +13,29 @@ const loadScrapping = ref()
 // Ref and computed values to handle the detail background card
 const color = ref({ r: 0, g: 0, b: 0 })
 const urlBackground = computed(() => `url(${app.value.headerImage}`)
-const gradientColorBackground = computed(() => `rgba(${color.value.r}, ${color.value.g}, ${color.value.b}, 0.4)`)
-const gradientColor2Background = computed(() => `rgba(${color.value.r}, ${color.value.g}, ${color.value.b}, 1)`)
+//const gradientColorBackground = computed(() => `rgba(${color.value.r}, ${color.value.g}, ${color.value.b}, 0.4)`)
+const gradientColorBackground = computed(() => `rgba(0, 0, 0, 0.4)`)
+//const gradientColor2Background = computed(() => `rgba(${color.value.r}, ${color.value.g}, ${color.value.b}, 1)`)
+const gradientColor2Background = computed(() => `rgba(0, 0, 0, 1)`)
 
 const fetchAppDetail = async (id: string): Promise<GpsApp> => {
-	const params: { [k: string]: any } = {}
-	params.id = id
-	const query = new URLSearchParams(params)
-	const res = await fetch(`http://localhost:5173/api/appDetail?${query}`, {
-		method: 'GET',
-	})
-	return res.json()
+	try {
+		const params: { [k: string]: any } = {}
+		params.id = id
+		const query = new URLSearchParams(params)
+		const res = await fetch(`http://localhost:5173/api/appDetail?${query}`, {
+			method: 'GET',
+		})
+		if (!res.ok) throw res.statusText
+		return res.json()
+	} catch (e) {
+		console.error(`Error while requesting /appDetail :${e}`)
+		return new Promise<GpsApp>(function (resolve) {
+			const app = new GpsApp()
+			app.init(Utils.getMock('detailFE'))
+			resolve(app)
+		})
+	}
 }
 
 const scrapApp = async () => {
@@ -38,18 +51,19 @@ watchEffect(async () => {
 		console.log(resApp)
 		app.value.init(resApp)
 
-		const colorThief = new ColorThief()
-		const sourceImage = document.createElement("img");
-		sourceImage.crossOrigin = "Anonymous"
-		sourceImage.addEventListener('load', () => {
-			const palette = colorThief.getPalette(sourceImage, 5, 10);
-			const c = palette[0];
-			color.value.r = c[0]
-			color.value.g = c[1]
-			color.value.b = c[2]
-			loadDetail.value = false
-		});
-		sourceImage.src = app.value.headerImage
+		// const colorThief = new ColorThief()
+		// const sourceImage = document.createElement("img");
+		// sourceImage.crossOrigin = "Anonymous"
+		// sourceImage.addEventListener('load', () => {
+		// 	const palette = colorThief.getPalette(sourceImage, 5, 10);
+		// 	const c = palette[0];
+		// 	color.value.r = c[0]
+		// 	color.value.g = c[1]
+		// 	color.value.b = c[2]
+		// 	loadDetail.value = false
+		// });
+		// sourceImage.src = app.value.headerImage
+		loadDetail.value = false
 	}
 })
 
@@ -57,17 +71,17 @@ watchEffect(async () => {
 
 <template>
 	<v-card :loading="loadDetail" id="gps-app-detail" class="mb-2 p-2 overflow-auto" max-height="450">
-		<v-carousel v-model="carousel" class="detail-app-carousel" direction="vertical" hide-delimiters :continuous="false"
+		<v-carousel v-model="carousel" class="detail-app-carousel" direction="vertical" :continuous="false" hide-delimiters
 			height="434" :touch="true">
 			<template v-slot:prev="{ props }">
-				<v-btn class="carousel-btn-top" icon="mdi-chevron-up" variant="plain"
-					@click="props.onClick; carousel = Math.max(carousel - 1, 0)" v-if="carousel > 0" />
+				<v-btn class="carousel-btn-top" icon="mdi-chevron-up" variant="plain" @click="carousel--; props.onClick;"
+					v-if="carousel > 0" />
 			</template>
 			<template v-slot:next="{ props }">
-				<v-btn class="carousel-btn-bottom" icon="mdi-chevron-down" variant="plain"
-					@click="props.onClick; carousel = Math.max(carousel - 1, 1)" v-if="carousel < 1" />
+				<v-btn class="carousel-btn-bottom" icon="mdi-chevron-down" variant="plain" @click="carousel++; props.onClick;"
+					v-if="carousel < 2" />
 			</template>
-			<v-carousel-item>
+			<v-carousel-item value="0">
 				<v-card-item>
 					<v-card-title>{{ app.title }}</v-card-title>
 					<v-card-subtitle>
@@ -75,26 +89,35 @@ watchEffect(async () => {
 					</v-card-subtitle>
 				</v-card-item>
 				<v-card-item>
-					<v-row class="text-center m-4" align="center">
+					<v-row class="gps-app-stats text-center m-4" align="center">
 						<v-col>
 							<v-img :src="app.icon" class="gps-app-icon"></v-img>
 						</v-col>
 						<v-col>
-							<v-card-subtitle>SCORE</v-card-subtitle>
-							<v-card-text>
-								{{ new Intl.NumberFormat("en-US", { maximumSignificantDigits: 2 }).format(app.score) }}
-								<v-icon icon="mdi-star"></v-icon>
-							</v-card-text>
+							<v-card variant="text">
+								<v-card-subtitle>SCORE</v-card-subtitle>
+								<v-card-text>
+									<v-rating :model-value="app.score" :length="5" density="compact" half-increments readonly color="white" active-color="white" />
+								</v-card-text>
+							</v-card>
 						</v-col>
 						<v-divider vertical></v-divider>
 						<v-col>
-							<v-card-subtitle>REVIEWS</v-card-subtitle>
-							<v-card-text>{{ app.reviews }}</v-card-text>
+							<v-card variant="text">
+								<v-card-subtitle>REVIEWS</v-card-subtitle>
+								<v-card-text>
+									{{ new Intl.NumberFormat("en-US").format(app.reviews) }}
+								</v-card-text>
+							</v-card>
 						</v-col>
 						<v-divider vertical></v-divider>
 						<v-col>
-							<v-card-subtitle>INSTALLS</v-card-subtitle>
-							<v-card-text>{{ app.realInstalls }}</v-card-text>
+							<v-card variant="text">
+								<v-card-subtitle>INSTALLS</v-card-subtitle>
+								<v-card-text>
+									{{ new Intl.NumberFormat("en-US").format(app.realInstalls) }}
+								</v-card-text>
+							</v-card>
 						</v-col>
 					</v-row>
 				</v-card-item>
@@ -106,15 +129,21 @@ watchEffect(async () => {
 					</v-row>
 				</v-card-item>
 			</v-carousel-item>
-			<v-carousel-item class="gps-description">
+			<v-carousel-item value="1" class="gps-description">
 				<v-row>
 					<v-col cols="6">
 						<v-card-item>
-							<v-card-title>{{ app.summary }}</v-card-title>
+							<v-card class="gps-app-summary p-2" color="white" variant="text" height="400">
+								<v-card-title class="d-block text-wrap text-center" style="word-break: break-word">
+									{{ app.summary }}
+								</v-card-title>
+								<v-container>
+									<v-carousel cycle interval="3000" :show-arrows="false" hide-delimiters height="250" :touch="true">
+										<v-carousel-item v-for="screenshot in app.screenshots" :src="screenshot"></v-carousel-item>
+									</v-carousel>
+								</v-container>
+							</v-card>
 						</v-card-item>
-						<v-carousel cycle interval="3000" :show-arrows="false" hide-delimiters height="250" :touch="true">
-							<v-carousel-item v-for="screenshot in app.screenshots" :src="screenshot"></v-carousel-item>
-						</v-carousel>
 					</v-col>
 					<v-col cols="6">
 						<v-card-item>
@@ -125,6 +154,12 @@ watchEffect(async () => {
 						</v-card-item>
 					</v-col>
 				</v-row>
+			</v-carousel-item>
+			<v-carousel-item value="2">
+				<v-container class="fill-height text-center" align="center" style="justify-content: center;">
+					<iframe width="560" height="315" :src="app.video" frameborder="0"
+						allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+				</v-container>
 			</v-carousel-item>
 		</v-carousel>
 		<v-overlay v-model="loadDetail" contained class="align-center justify-center">
@@ -171,6 +206,10 @@ watchEffect(async () => {
 	border-radius: 20%;
 }
 
+.gps-app-stats .v-card-text {
+	min-height: 64px;
+	font-size: 1em;
+}
 .v-divider {
 	opacity: 1;
 }

@@ -1,3 +1,5 @@
+import mock from "./mock"
+
 export default class Utils {
 	static debounce<Params extends any[]>(
 		func: (...args: Params) => any,
@@ -10,5 +12,11 @@ export default class Utils {
 				func(...args)
 			}, timeout)
 		}
+	}
+	static getMock(mockKey: string): { [k: string]: any } {
+		return mock[mockKey]
+	}
+	static getListMock(mockKey: string): [{ [k: string]: any }] {
+		return mock[mockKey]
 	}
 }

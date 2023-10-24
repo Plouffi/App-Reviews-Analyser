@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import AppDetail from './AppDetail.vue'
 import { ref } from 'vue'
+import AppDetail from './AppDetail.vue'
+import Utils from '@/utils';
 
 const result = ref()
 const appListResult = ref()
@@ -8,17 +9,24 @@ const searchTerm = ref()
 const loadSearch = ref(false)
 const selectedApp = ref()
 
-const searchApp = async () => {
-	const params: { [k: string]: any } = {}
-	if (searchTerm.value.length) {
-		params.search = searchTerm.value
-		const query = new URLSearchParams(params)
-		const res = await fetch(`http://localhost:5173/api/searchApp?${query}`, {
-			method: 'GET',
+const searchApp = async (): Promise<[{ [k: string]: any }]> => {
+	try {
+		const params: { [k: string]: any } = {}
+		if (searchTerm.value.length) {
+			params.search = searchTerm.value
+			const query = new URLSearchParams(params)
+			const res = await fetch(`http://localhost:5173/api/searchApp?${query}`, {
+				method: 'GET',
+			})
+			if (!res.ok) throw res.statusText
+			return res.json()
+		}
+		throw 'Error params'
+	} catch(e) {
+		console.error(`Error while requesting /searchApp :${e}`)
+		return new Promise<[{ [k: string]: any }]>(function(resolve) {
+			resolve(Utils.getListMock('search'))
 		})
-		return res.json()
-	} else {
-		return ''
 	}
 }
 
