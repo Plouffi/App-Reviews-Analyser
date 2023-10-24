@@ -59,8 +59,8 @@ def search_apps():
 	config = load_config()
 	try:
 		s = Scraper(config)
-		#return config['mockSearch']
-		return s.search_app(search)
+		return config['mockSearch']
+		#return s.search_app(search)
 
 	except FileNotFoundError:
 		return f"File '{config['export_path']}' not found. Launch scrapping process to create it", 500
@@ -75,8 +75,8 @@ def app_detail():
 	try:
 		s = Scraper(config)
 		#TODO demander l'app detail pour toutes les langues/country pour avoir la somme du nombre de reviews
-		#return App(config['mockDetail']).__dict__
-		app = App(s.app_detail(id))
+		app = App(config['mockDetail'])
+		#app = App(s.app_detail(id))
 		return app.__dict__
 
 	except FileNotFoundError:

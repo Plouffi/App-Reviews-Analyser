@@ -52,12 +52,22 @@ const returnToList = () => {
 </script>
 
 <template>
-	<v-container fluid id="analyser">
+	<v-container fluid id="scraper">
 		<v-row dense>
-			<v-col cols="6" offset="3">
-				<v-text-field label="Search app" v-model="searchTerm" v-on:keyup.enter="onSearch()" variant="solo"
-					prepend-inner-icon="mdi-magnify" rounded>
-				</v-text-field>
+			<v-col cols="12">
+				<v-row>
+					<v-col cols="1" offset="2">
+						<transition name="fade">
+							<v-btn @click="returnToList()" icon="mdi-chevron-left" variant="elevated" elevation="4"
+								class="btn-return" min-height="56" :min-width="56" v-if="result == 'detail'"/>
+						</transition>
+					</v-col>
+					<v-col cols="6">
+						<v-text-field label="Search app" v-model="searchTerm" v-on:keyup.enter="onSearch()" variant="solo"
+							prepend-inner-icon="mdi-magnify" rounded hide-details>
+						</v-text-field>
+					</v-col>
+				</v-row>
 			</v-col>
 			<v-col cols="10" offset="1">
 				<v-window v-model="result">
@@ -71,8 +81,6 @@ const returnToList = () => {
 						</v-card>
 					</v-window-item>
 					<v-window-item value="detail">
-						<v-btn @click="returnToList()" icon="mdi-chevron-left-circle" color="light-blue-darken-2" variant="text"
-							class="btn-return mb-5"></v-btn>
 						<AppDetail :appId="selectedApp" />
 					</v-window-item>
 				</v-window>
@@ -84,6 +92,15 @@ const returnToList = () => {
 <style scoped>
 .btn-return {
 	font-size: 1.5em;
+}
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity .5s
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0
 }
 
 .v-card {
