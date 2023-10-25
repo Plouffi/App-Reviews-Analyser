@@ -2,12 +2,12 @@
 </script>
 
 <template>
-  <v-container fluid id="about" class="offset-lg-3 col-lg-6">
-    <v-row dense>
+  <v-container id="about" class="d-flex justify-center flex-column">
+    <v-row>
       <v-col cols="12">
-        <v-icon icon="mdi-language-python" class="mb-5"></v-icon>
-        <v-icon icon="mdi-vuejs" class="mb-5"></v-icon>
-        <v-icon icon="mdi-vuetify" class="mb-5"></v-icon>
+        <v-icon icon="mdi-language-python"></v-icon>
+        <v-icon icon="mdi-vuejs"></v-icon>
+        <v-icon icon="mdi-vuetify"></v-icon>
       </v-col>
       <v-col cols="12">
         <p>
@@ -16,10 +16,10 @@
         </p>
       </v-col>
     </v-row>
-    <v-divider></v-divider>
+    <v-divider class="my-5"></v-divider>
     <v-row>
       <v-col cols="12">
-        <v-icon icon="mdi-github" class="mb-5"></v-icon>
+        <v-icon icon="mdi-github"></v-icon>
       </v-col>
       <v-col cols="12">
         <p>
@@ -27,10 +27,10 @@
         </p>
       </v-col>
     </v-row>
-    <v-divider></v-divider>
+    <v-divider class="my-5"></v-divider>
     <v-row>
       <v-col cols="12">
-        <v-icon icon="mdi-email" class="mb-5"></v-icon>
+        <v-icon icon="mdi-email"></v-icon>
       </v-col>
       <v-col cols="12">
         <p>

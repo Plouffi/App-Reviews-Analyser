@@ -38,7 +38,7 @@ const fetchAppDetail = async (id: string): Promise<GpsApp> => {
 		console.error(`Error while requesting /appDetail :${e}`)
 		return new Promise<GpsApp>(function (resolve) {
 			const app = new GpsApp()
-			app.init(Utils.getMock('detailGI'))
+			app.init(Utils.getMockDetail(id))
 			resolve(app)
 		})
 	}

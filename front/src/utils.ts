@@ -13,10 +13,13 @@ export default class Utils {
 			}, timeout)
 		}
 	}
-	static getMock(mockKey: string): { [k: string]: any } {
+	static getMockDetail(mockKey: string): { [k: string]: any } {
+		return mock.detail[mockKey]
+	}
+	static getMockSearch(mockKey: string): [{ [k: string]: any }] {
 		return mock[mockKey]
 	}
-	static getListMock(mockKey: string): [{ [k: string]: any }] {
-		return mock[mockKey]
+	static getMockImage(mockKey: string): Blob {
+		return mock.image[mockKey]
 	}
 }

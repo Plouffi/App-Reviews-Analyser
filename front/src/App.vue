@@ -5,10 +5,16 @@ import AnalyserView from './view/Analyser.view.vue';
 import AboutView from './view/About.view.vue';
 
 const tab = ref("scraper")
+const _IS_MOCK = import.meta.env.VITE_IS_MOCK
+console.log(import.meta.env)
 </script>
 
 <template>
   <header class="mb-5">
+    <v-card class="ara-alert d-flex justify-center align-center pa-2" variant="flat" color="red-lighten-2" v-if="_IS_MOCK">
+      <v-icon icon="mdi-alert" size="large"></v-icon>
+      <v-card-text>Backend API is down ! Mock data will be display.</v-card-text>
+    </v-card>
     <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
     <h1 class="text-center">App Review Analyser</h1>
   </header>
@@ -34,6 +40,14 @@ const tab = ref("scraper")
 <style scoped>
 header {
   line-height: 1.5;
+}
+
+.ara-alert {
+  position: absolute;
+  top: 0;
+}
+.ara-alert > .v-card-text{
+  font-weight: bold;
 }
 
 .logo {

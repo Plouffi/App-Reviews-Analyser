@@ -2,108 +2,20 @@ let mock: { [id: string]: any; } = {}
 
 mock['search'] = [
 	{
-		"icon": "https://play-lh.googleusercontent.com/5IR5tmAD35Sqfi-tDrFmb-mk9wronJDZm1w3h8xtFeK1rDX46Cyt0nauwUmUexSU9uM",
-		"id": "com.nintendo.znca",
-		"title": "Nintendo Switch Online"
-	},
-	{
-		"icon": "https://play-lh.googleusercontent.com/Nhdcc77MHYfXR9LoVhhkpnKbhwpZpCLKfl8dUwVhyqgflBQ5ROBtLsn_2fIongMYeoo6",
-		"id": "com.nintendo.zaka",
-		"title": "Mario Kart Tour"
-	},
-	{
-		"icon": "https://play-lh.googleusercontent.com/5LIMaa7WTNy34bzdFhBETa2MRj7mFJZWb8gCn_uyxQkUvFx_uOFCeQjcK16c6WpBA3E",
-		"id": "com.nintendo.zara",
-		"title": "Super Mario Run"
-	},
-	{
-		"icon": "https://play-lh.googleusercontent.com/iLWZvlyKSyPbZEIOrbL3vIz2KamA2nue1NDZzlnMK00_x1bOnD-f-BqdkxVJP4xqlFTQ",
-		"id": "com.nintendo.zaca",
-		"title": "Animal Crossing: Pocket Camp"
-	},
-	{
 		"icon": "https://play-lh.googleusercontent.com/x0KXDvnLHNcgUbA2Pwe2Id8YBNC97WM-057Qg-b-6kSbrd2ymBwC37R9cg081QY5ymQ",
 		"id": "com.nintendo.zaba",
 		"title": "Fire Emblem Heroes"
 	},
 	{
-		"icon": "https://play-lh.googleusercontent.com/dpRR2-sdAAdqwco3Lx7C__BZupUNR0I_sz-F1UtIQCk1EEjWcyfi9XJX9UzWg0ieFCY",
-		"id": "cz.gemsi.switchbuddy",
-		"title": "SwitchBuddy: Switch Companion"
-	},
-	{
-		"icon": "https://play-lh.googleusercontent.com/zi6QgTtIiAnGqQMizfoj2LnE85kzHyZlgTruSzJ7Zw_79NAmB3fhxuDegwxby7P0yw",
-		"id": "com.scee.psxandroid",
-		"title": "PlayStation App"
-	},
-	{
-		"icon": "https://play-lh.googleusercontent.com/hihXCV-0wxOXB5N7uBREaJeCVK0BDjNEBtKwNAncftZMflpEvasiKXn7vCKxu9qGpvk",
-		"id": "com.microsoft.xboxone.smartglass",
-		"title": "Xbox"
-	},
-	{
-		"icon": "https://play-lh.googleusercontent.com/pLnno-Kti8gAEUfTTg_4StfrqyZ5Uj1uL-TfqhPsAjTQtNplljjJNgXImoRFtt8XLRw",
-		"id": "jp.pokemon.pokemonunite",
-		"title": "Pokémon UNITE"
-	},
-	{
-		"icon": "https://play-lh.googleusercontent.com/xoGGYH2LgLibLDBoxMg-ZE16b-RNfITw_OgXBWRAPin2FZY4FGB9QKBYApR-0rSCkQ",
-		"id": "com.disney.disneyplus",
-		"title": "Disney+"
-	},
-	{
-		"icon": "https://play-lh.googleusercontent.com/wpRQkfqbkPztp1US6HDr8E41We8GyY-B4CG1PMmWI3WKDk9OeYh4ehXwKIfZB7dm-sc",
-		"id": "com.google.android.play.games",
-		"title": "Google Play Games"
-	},
-	{
-		"icon": "https://play-lh.googleusercontent.com/mEQTKXkEJ7QwSCmec-cIe9b-GlAMCsG9efBAQV6yUDN6DZVtEuM25A4zfMi47KDUej8",
-		"id": "jp.pokemon.pokemonhome",
-		"title": "Pokémon HOME"
-	},
-	{
-		"icon": "https://play-lh.googleusercontent.com/rryvrQRLNdQAsypjB4_wHlwu_GY5C_TRIT6mMPOJ70b4gTiaA2sgCIHCMfDj9gDqyg",
-		"id": "jp.pokemon.pokemonsleep",
-		"title": "Pokémon Sleep"
-	},
-	{
-		"icon": "https://play-lh.googleusercontent.com/_WgZ0tnNL_qdq118_9sK631uyYBF0F-7H5wC7hPJyYHAsHRuQ-cZ-kQuAzTyPdTULw",
-		"id": "com.lego.supermario",
-		"title": "LEGO® Super Mario™"
-	},
-	{
-		"icon": "https://play-lh.googleusercontent.com/HZ16nsxrSsoJoZx0JDJjpmRN2KC0eZRSTyS2O-Lgjw7BgjTU6W8uDSYNj1IMlbqmtQ",
-		"id": "com.nianticlabs.pokemongo",
-		"title": "Pokémon GO"
-	},
-	{
-		"icon": "https://play-lh.googleusercontent.com/QLQzL-MXtxKEDlbhrQCDw-REiDsA9glUH4m16syfar_KVLRXlzOhN7tmAceiPerv4Jg",
-		"id": "tv.twitch.android.app",
-		"title": "Twitch: Live Game Streaming"
-	},
-	{
-		"icon": "https://play-lh.googleusercontent.com/zS5PLmUQ-52nkQZdrDDmue4eMrso8x9GiV3kCTbyx5Ol4olXASU7PoWBAuNGBSeQNxY",
-		"id": "com.sega.sonic1px",
-		"title": "Sonic the Hedgehog™ Classic"
-	},
-	{
-		"icon": "https://play-lh.googleusercontent.com/HJ-p-tyLANTanzg7XkQorjZ499g9uE9TYB-sFzLTu1_ACNAIkAUcI8C1DZzOSWBUyw",
-		"id": "com.ea.gp.fifamobile",
-		"title": "EA SPORTS FC™ MOBILE 24 SOCCER"
-	},
-	{
-		"icon": "https://play-lh.googleusercontent.com/IEfDtMttybHdnlOTB8MPCC0E3WNLpB6YR3xs4lsYvkamZd58F0HQMtMSIWS9kZ5Alg",
-		"id": "com.gamepass",
-		"title": "Xbox Game Pass"
-	},
-	{
-		"icon": "https://play-lh.googleusercontent.com/MT8c8zOEymG9KNjrQD6K0bXGIT1KKdF7UiaA9-XeLbO9Yi_clvI6JNkG62mUfWuirvsi",
-		"id": "com.nintendo.znma",
-		"title": "Nintendo Switch Parental Cont…"
+		"icon": "https://play-lh.googleusercontent.com/xDEsgKlp4Epsf72CZsdLVB6Y3666T-LVZEcpAC42tE2j7yM8BLmXWwM68vkVdXYHPBs",
+		"id": "com.miHoYo.GenshinImpact",
+		"title": "Genshin Impact 3rd Anniversary"
 	}
 ]
 
-mock['detailFE'] = {
+mock.detail = {}
+
+mock.detail['com.nintendo.zaba'] = {
 	"adSupported": false,
 	"appId": "com.nintendo.zaba",
 	"categories": ["Action", "Platformer", "Casual", "Single player", "Stylized", "Cartoon", "Role Playing", "Tactical", "Multiplayer", "Competitive multiplayer", "Single player", "Stylized", "Anime"],
@@ -222,7 +134,7 @@ mock['detailFE'] = {
 	"videoImage": "https://play-lh.googleusercontent.com/CE3m3k1ZJbzsnSIEx02Xy63zNY5bV0PrL_lFzRkoBbe8b3DLQDYaewQa7rD_qKTiVA"
 }
 
-mock['detailGI'] = {
+mock.detail['com.miHoYo.GenshinImpact'] = {
 	"categories":
 		["Role Playing", "Action Role-Playing", "Single player", "Stylized", "Anime"],
 	"currency": "USD",
@@ -269,5 +181,12 @@ mock['detailGI'] = {
 	"video": "https://www.youtube.com/embed/CxAuPjjad9M?ps=play&vq=large&rel=0&autohide=1&showinfo=0",
 	"videoImage": "https://play-lh.googleusercontent.com/hnS5HttiJp4HznckTVSfxxAxtXWERwYvWUiufgYS-r4wSHcmMrFt7JpGdxFtwe5UXmU"
 }
+
+mock.image = {}
+
+mock.image['score_distribution'] = "/src/assets/score_distribution.png"
+mock.image['means'] = "/src/assets/means.png"
+mock.image['wordcloud_1'] = "/src/assets/wordcloud_1.png"
+mock.image['wordcloud_2'] = "/src/assets/wordcloud_2.png"
 
 export default mock

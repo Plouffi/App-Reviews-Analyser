@@ -25,7 +25,7 @@ const searchApp = async (): Promise<[{ [k: string]: any }]> => {
 	} catch (e) {
 		console.error(`Error while requesting /searchApp :${e}`)
 		return new Promise<[{ [k: string]: any }]>(function (resolve) {
-			resolve(Utils.getListMock('search'))
+			resolve(Utils.getMockSearch('search'))
 		})
 	}
 }

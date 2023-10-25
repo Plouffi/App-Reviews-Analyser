@@ -31,7 +31,5 @@ export default defineConfig({
     },
     cors: false
   },
-  base: process.env.NODE_ENV === 'production'
-    ? '/App-Reviews-Analyser/'
-    : '/'
+  base: '/App-Reviews-Analyser/'
 })
