@@ -36,7 +36,8 @@ jobs:
         run: npm ci
       - name: Build with VitePress
         run: |
-          npm run build --mode $VITE_MODE
+          export NODE_ENV=$VITE_MODE
+          npm run build 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
