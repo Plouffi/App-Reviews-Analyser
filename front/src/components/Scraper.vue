@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import AppDetail from './AppDetail.vue'
 import Utils from '@/utils';
 
-const result = ref()
+const searchTab = ref()
 const appListResult = ref()
 const searchTerm = ref()
 const loadSearch = ref(false)
@@ -22,9 +22,9 @@ const searchApp = async (): Promise<[{ [k: string]: any }]> => {
 			return res.json()
 		}
 		throw 'Error params'
-	} catch(e) {
+	} catch (e) {
 		console.error(`Error while requesting /searchApp :${e}`)
-		return new Promise<[{ [k: string]: any }]>(function(resolve) {
+		return new Promise<[{ [k: string]: any }]>(function (resolve) {
 			resolve(Utils.getListMock('search'))
 		})
 	}
@@ -32,7 +32,7 @@ const searchApp = async (): Promise<[{ [k: string]: any }]> => {
 
 const onSearch = async () => {
 	if (searchTerm.value) {
-		result.value = 'list'
+		searchTab.value = 'list'
 		loadSearch.value = true
 		const res = await searchApp()
 		appListResult.value = []
@@ -50,11 +50,11 @@ const onSearch = async () => {
 
 const selectApp = (e: any) => {
 	selectedApp.value = e.id
-	result.value = 'detail'
+	searchTab.value = 'detail'
 }
 
 const returnToList = () => {
-	result.value = 'list'
+	searchTab.value = 'list'
 }
 
 </script>
@@ -63,22 +63,20 @@ const returnToList = () => {
 	<v-container fluid id="scraper">
 		<v-row dense>
 			<v-col cols="12">
-				<v-row>
-					<v-col cols="1" offset="2">
-						<transition name="fade">
-							<v-btn @click="returnToList()" icon="mdi-chevron-left" variant="elevated" elevation="4"
-								class="btn-return" min-height="56" :min-width="56" v-if="result == 'detail'"/>
-						</transition>
-					</v-col>
-					<v-col cols="6">
+				<v-row class="d-flex flex-row justify-center align-center px-lg-16">
+					<transition name="fade">
+						<v-btn @click="returnToList()" icon="mdi-chevron-left" variant="text" class="btn-return"
+							v-if="searchTab == 'detail'" />
+					</transition>
+					<v-col cols="9" md="6" class="mx-4 p-0">
 						<v-text-field label="Search app" v-model="searchTerm" v-on:keyup.enter="onSearch()" variant="solo"
 							prepend-inner-icon="mdi-magnify" rounded hide-details>
 						</v-text-field>
 					</v-col>
 				</v-row>
 			</v-col>
-			<v-col cols="10" offset="1">
-				<v-window v-model="result">
+			<v-col cols="12" lg="10" offset="0" offset-lg="1">
+				<v-window v-model="searchTab">
 					<v-window-item value="list">
 						<v-card title="Search results" v-if="(appListResult && appListResult.length) || loadSearch">
 							<v-list :items="appListResult" item-props @click:select="selectApp($event)" overflow="true"
@@ -100,15 +98,18 @@ const returnToList = () => {
 <style scoped>
 .btn-return {
 	font-size: 1.5em;
+	height: 56px;
+	width: 56px;
 }
+
 .fade-enter-active,
 .fade-leave-active {
-    transition: opacity .5s
+	transition: opacity .5s
 }
 
 .fade-enter-from,
 .fade-leave-to {
-    opacity: 0
+	opacity: 0
 }
 
 .v-card {
@@ -126,5 +127,12 @@ const returnToList = () => {
 
 .v-window-item {
 	padding: 1em;
+}
+
+@media (width <=960px) {
+	.btn-return {
+		height: 36px;
+		width: 36px;
+	}
 }
 </style>
