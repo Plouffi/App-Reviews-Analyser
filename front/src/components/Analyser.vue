@@ -2,10 +2,16 @@
 import ScoreDistribution from './ScoreDistribution.vue'
 import Means from './Means.vue'
 import Wordcloud from './Wordcloud.vue'
+import SelectApp from './SelectApp.vue';
 </script>
 
 <template>
   <v-container fluid id="analyser">
+    <v-row dense>
+      <v-col cols="12">
+        <SelectApp />
+      </v-col>
+    </v-row>
     <v-row dense>
       <v-col cols="12" md="6">
         <ScoreDistribution />
@@ -13,6 +19,8 @@ import Wordcloud from './Wordcloud.vue'
       <v-col cols="12" md="6">
         <Means />
       </v-col>
+    </v-row>
+    <v-row dense>
       <v-col cols="12">
         <Wordcloud />
       </v-col>
