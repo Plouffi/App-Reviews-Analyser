@@ -15,6 +15,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: ARA-develop
     defaults:
       run:
         working-directory: ./front
@@ -35,7 +36,7 @@ jobs:
         run: npm ci
       - name: Build with VitePress
         run: |
-          npm run build
+          npm run build --mode $VITE_MODE
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
