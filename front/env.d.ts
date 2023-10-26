@@ -2,7 +2,7 @@
 
 interface ImportMetaEnv {
   readonly VITE_APP_TITLE: string
-  readonly VITE_IS_MOCK: boolean
+  readonly VITE_IS_MOCK: boolean // Flag to get Mocked data
 }
 
 interface ImportMeta {

@@ -88,8 +88,8 @@ const computeWordcloud = async () => {
 		const image2 = await fetchImageWordcloud(wordsRes[1])
 		wordcloudImage2.value = URL.createObjectURL(image2)
 	} catch (e: any) {
-		wordcloudImage1.value = new URL(e[0], import.meta.url).toString()
-		wordcloudImage2.value = new URL(e[1], import.meta.url).toString()
+		wordcloudImage1.value = e[0]
+		wordcloudImage2.value = e[1]
 	}
 }
 </script>

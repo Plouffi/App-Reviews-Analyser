@@ -1,14 +1,14 @@
-import './assets/main.css'
-
-import { createApp } from 'vue'
 import App from './App.vue'
-import VueDatePicker from '@vuepic/vue-datepicker';
-import '@vuepic/vue-datepicker/dist/main.css'
-import '@mdi/font/css/materialdesignicons.css'
-import 'vuetify/styles'
+import { createApp } from 'vue'
 import { createVuetify } from 'vuetify'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
+import 'vuetify/styles'
+import './assets/main.css'
+import '@mdi/font/css/materialdesignicons.css'
 
+/* 
+ * Main file, initialise vuetify dependance and vue app
+ */
 const vuetify = createVuetify({
 	icons: {
 		defaultSet: 'mdi',
@@ -18,8 +18,6 @@ const vuetify = createVuetify({
 		},
 	},
 })
-
 const app = createApp(App)
-app.component('VueDatePicker', VueDatePicker);
 app.use(vuetify)
 app.mount('#app')

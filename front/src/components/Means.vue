@@ -47,7 +47,7 @@ const computeMeans = async () => {
 	try {
 		means.value = URL.createObjectURL(image)
 	} catch (e) {
-		means.value = new URL(image, import.meta.url).toString()
+		means.value = image
 	}
 }
 </script>

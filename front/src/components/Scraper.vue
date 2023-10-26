@@ -3,12 +3,19 @@ import { ref } from 'vue'
 import AppDetail from './AppDetail.vue'
 import Utils from '@/utils';
 
-const searchTab = ref()
-const appListResult = ref()
-const searchTerm = ref()
-const loadSearch = ref(false)
-const selectedApp = ref()
+const searchTab = ref() // Model value for the search tab window
+const appListResult = ref() // Model value for the result list from search
+const searchTerm = ref() // Model value for the searched terms
+const loadSearch = ref(false) // Loading flag for search
+const selectedApp = ref() // Model value for the selected app ID
 
+/**
+ * Fetch the search result from the backend API
+ *
+ * @returns The promise from the fetch API containing search result.
+ * If it fails, return a promise with mocked data.
+ *
+ */
 const searchApp = async (): Promise<[{ [k: string]: any }]> => {
 	try {
 		const params: { [k: string]: any } = {}
@@ -30,6 +37,10 @@ const searchApp = async (): Promise<[{ [k: string]: any }]> => {
 	}
 }
 
+/**
+ * Function triggered on search (enter key pressed on search bar) to fecth result
+ * depending on search term
+ */
 const onSearch = async () => {
 	if (searchTerm.value) {
 		searchTab.value = 'list'
@@ -48,11 +59,21 @@ const onSearch = async () => {
 	}
 }
 
+/**
+ * Function triggered when an app is selected from the result list.
+ * Change the window tab to go the detail window.
+ * 
+ * @param e - Event fired on click containing the app ID
+ */
 const selectApp = (e: any) => {
 	selectedApp.value = e.id
 	searchTab.value = 'detail'
 }
 
+/**
+ * Function triggered when clicking the return button from the detail window or on a new search.
+ * Return to list
+ */
 const returnToList = () => {
 	searchTab.value = 'list'
 }

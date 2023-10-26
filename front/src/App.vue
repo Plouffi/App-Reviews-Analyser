@@ -4,14 +4,13 @@ import ScraperView from './view/Scraper.view.vue';
 import AnalyserView from './view/Analyser.view.vue';
 import AboutView from './view/About.view.vue';
 
-const tab = ref("scraper")
-const _IS_MOCK = import.meta.env.VITE_IS_MOCK
-console.log(import.meta.env)
+const tab = ref("scraper") // Init the model window to the Scraper tab
+const ENV = import.meta.env // Environnementsvariables
 </script>
 
 <template>
   <header class="mb-5">
-    <v-card class="ara-alert d-flex justify-center align-center pa-2" variant="flat" color="red-lighten-2" v-if="_IS_MOCK">
+    <v-card class="ara-alert d-flex justify-center align-center pa-2" variant="flat" color="red-lighten-2" v-if="ENV.VITE_IS_MOCK">
       <v-icon icon="mdi-alert" size="large"></v-icon>
       <v-card-text>Backend API is down ! Mock data will be display.</v-card-text>
     </v-card>

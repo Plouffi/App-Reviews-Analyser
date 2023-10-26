@@ -1,3 +1,6 @@
+/***
+ * Class representing a GooglePlayStore app retrieve from the backend api
+***/
 export class GpsApp {
 	id: string = ''
 	title: string = ''
@@ -23,6 +26,7 @@ export class GpsApp {
 	reviews: number = 0
 	url: string = ''
 
+	// Initialiser from dict
 	init(json: any) {
 		this.id = json['id']
 		this.title = json['title']

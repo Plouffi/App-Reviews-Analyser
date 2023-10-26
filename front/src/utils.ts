@@ -1,24 +1,18 @@
 import mock from "./mock"
 
+/* 
+ * Module exporting Utils class
+ */
 export default class Utils {
-	static debounce<Params extends any[]>(
-		func: (...args: Params) => any,
-		timeout: number,
-	): (...args: Params) => void {
-		let timer: NodeJS.Timeout
-		return (...args: Params) => {
-			clearTimeout(timer)
-			timer = setTimeout(() => {
-				func(...args)
-			}, timeout)
-		}
-	}
+	// Get the mocked data corresponding to the key (app ID)
 	static getMockDetail(mockKey: string): { [k: string]: any } {
 		return mock.detail[mockKey]
 	}
+	// Get the mocked data for the search app function
 	static getMockSearch(mockKey: string): [{ [k: string]: any }] {
 		return mock[mockKey]
 	}
+	// Get the path of a mocked image
 	static getMockImage(mockKey: string): Blob {
 		return mock.image[mockKey]
 	}
