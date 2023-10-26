@@ -31,7 +31,7 @@ const computeScoreDistribution = async () => {
 	try {
 		scoreDistribution.value = URL.createObjectURL(image)
 	} catch (e) {
-		scoreDistribution.value = image
+		scoreDistribution.value = new URL(image, import.meta.url).toString()
 	}
 }
 </script>
