@@ -8,7 +8,7 @@
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "test:unit": "vitest",
-    "build-only": "NODE_ENV=${NODE_ENV:-production} && vite build --mode %NODE_ENV%",
+    "build-only": "vite build --mode ${{ vars.VITE_MODE }}",
     "type-check": "vue-tsc --noEmit -p tsconfig.vitest.json --composite false",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/"
