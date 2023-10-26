@@ -15,10 +15,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    environment: 
-      name: ARA-develop
-    env:
-      NODE_ENV: ${{ vars.VITE_MODE }}
+    environment: ARA-develop
     defaults:
       run:
         working-directory: ./front
