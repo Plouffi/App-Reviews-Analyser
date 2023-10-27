@@ -189,9 +189,9 @@ mock.detail['com.miHoYo.GenshinImpact'] = {
 
 mock.image = {}
 
-mock.image['score_distribution'] = './src/assets/score_distribution.png'
-mock.image['means'] = './src/assets/means.png'
-mock.image['wordcloud_1'] = './src/assets/wordcloud_1.png'
-mock.image['wordcloud_2'] = './src/assets/wordcloud_2.png'
+mock.image['score_distribution'] = './score_distribution.png'
+mock.image['means'] = './means.png'
+mock.image['wordcloud_1'] = './wordcloud_1.png'
+mock.image['wordcloud_2'] = './wordcloud_2.png'
 
 export default mock
