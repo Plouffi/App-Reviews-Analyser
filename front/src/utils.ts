@@ -31,7 +31,7 @@ export default class Utils {
 	 * 
 	 * @returns The path to the mocked image
 	 */
-	static getMockImage(mockKey: string): Blob {
+	static getMockImage(mockKey: string): string {
 		return mock.image[mockKey]
 	}
 }

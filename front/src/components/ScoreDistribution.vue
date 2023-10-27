@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import araError from './Error.vue'
 import Utils from '@/utils';
 
+const ENV = import.meta.env // Environment variable
+
 const date = ref() // Model value for the date parameter
-const scoreDistribution = ref("") // Model value for the source url result
+const scoreDistribution = ref('') // Model value for the source url result
+const scoreDistributionLoading = ref(false) // Loading flag on score distribution computing
+const scoreDistributionError = ref('') // Error flag on score distribution computing
 
 /**
  * Fetch the score distribution graph from the backend API
@@ -21,13 +26,12 @@ async function fecthScoreDistribution(): Promise<any> {
 			},
 			body: JSON.stringify(date.value ? { 'date': date.value.toLocaleString() } : {})
 		})
-		if (!res.ok) throw res.statusText
+		if (!res.ok) throw `${res.statusText} - ${res.status}`
 		return res.blob()
 	} catch (e) {
-		console.error(`Error while requesting /compute/scoreDistribution :${e}`)
-		return new Promise<any>(function (resolve) {
-			resolve(Utils.getMockImage('score_distribution'))
-		})
+		let msg = `Error while requesting /compute/scoreDistribution : ${e}`
+		console.error(msg)
+		throw msg
 	}
 }
 
@@ -35,12 +39,18 @@ async function fecthScoreDistribution(): Promise<any> {
  * Trigger the backend process to compute score distribution
  */
 const computeScoreDistribution = async () => {
-	const image = await fecthScoreDistribution()
+	scoreDistributionLoading.value = true
 	try {
+		const image = await fecthScoreDistribution()
 		scoreDistribution.value = URL.createObjectURL(image)
 	} catch (e) {
-		scoreDistribution.value = image
+		if (ENV.VITE_IS_MOCK) {
+			scoreDistribution.value = Utils.getMockImage('score_distribution')
+		} else {
+			scoreDistributionError.value = `${e}`
+		}
 	}
+	scoreDistributionLoading.value = false
 }
 </script>
 
@@ -59,10 +69,16 @@ const computeScoreDistribution = async () => {
 			<v-btn @click="computeScoreDistribution()" color="teal-darken-2" variant="flat" elevation="4">Compute</v-btn>
 		</v-card-actions>
 		<v-container>
-			<picture v-if="scoreDistribution.length">
-				<source :srcset="scoreDistribution" type="image/png">
-				<v-img :src="scoreDistribution" alt="Result of score Distribution"></v-img>
-			</picture>
+			<v-expand-transition>
+				<picture v-if="scoreDistribution.length">
+					<source :srcset="scoreDistribution" type="image/png">
+					<v-img :src="scoreDistribution" alt="Result of score Distribution"></v-img>
+				</picture>
+				<ara-error :msg="scoreDistributionError" v-if="scoreDistributionError.length"></ara-error>
+			</v-expand-transition>
+			<v-overlay v-model="scoreDistributionLoading" contained class="align-center justify-center">
+				<v-progress-circular :size="60" :witdh="60" color="teal-darken-2" indeterminate />
+			</v-overlay>
 		</v-container>
 	</v-card>
 </template>

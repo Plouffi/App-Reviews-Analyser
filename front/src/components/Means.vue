@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import Utils from '@/utils';
+import araError from './Error.vue'
+import Utils from '@/utils'
+
+const ENV = import.meta.env // Environment variable
 
 // Input rules
 const timeDeltaRule = ref((timeDelta: number) => {
@@ -11,7 +14,9 @@ const timeDeltaTicks = ref(Array.from(Array(maxDelta).keys()).map(x => x++))
 
 const timeDelta = ref(30) // Model value for the time delta parameter
 const ignore = ref(0) // Model value for the ignore parameter
-const means = ref("") // Model value for the the source url result
+const means = ref('') // Model value for the source url result
+const meansLoading = ref(false) // Loading flag on means computing
+const meansError = ref('') // Error flag on means computing
 
 /**
  * Fetch the means graph from the backend API
@@ -37,13 +42,12 @@ async function fecthMeans(): Promise<any> {
 			},
 			body: JSON.stringify(params)
 		})
-		if (!res.ok) throw res.statusText
+		if (!res.ok) throw `${res.statusText} - ${res.status}`
 		return res.blob()
 	} catch (e) {
-		console.error(`Error while requesting /compute/means :${e}`)
-		return new Promise<any>(function (resolve) {
-			resolve(Utils.getMockImage('means'))
-		})
+		let msg = `Error while requesting /compute/means : ${e}`
+		console.error(msg)
+		throw msg
 	}
 }
 
@@ -51,12 +55,19 @@ async function fecthMeans(): Promise<any> {
  * Trigger the backend process to compute means
  */
 const computeMeans = async () => {
-	const image = await fecthMeans()
+	meansLoading.value = true
 	try {
+		const image = await fecthMeans()
 		means.value = URL.createObjectURL(image)
+		meansError.value = ''
 	} catch (e) {
-		means.value = image
+		if (ENV.VITE_IS_MOCK) {
+			means.value = Utils.getMockImage('means')
+		} else {
+			meansError.value = `${e}`
+		}
 	}
+	meansLoading.value = false
 }
 </script>
 
@@ -80,10 +91,17 @@ const computeMeans = async () => {
 			<v-btn @click="computeMeans()" color="teal-darken-2" variant="flat" elevation="4">Compute</v-btn>
 		</v-card-actions>
 		<v-container>
-			<picture v-if="means">
-				<source :srcset="means" type="image/png">
-				<v-img :src="means" alt="Result of score Distribution"></v-img>
-			</picture>
+			<v-expand-transition>
+				<picture v-if="means">
+					<source :srcset="means" type="image/png">
+					<v-img :src="means" alt="Result of score Distribution" v-if="!ENV.VITE_IS_MOCK"></v-img>
+					<v-img :src="Utils.getMockImage('means')" alt="Result of score Distribution" v-else></v-img>
+				</picture>
+				<ara-error :msg="meansError" v-if="meansError.length"></ara-error>
+			</v-expand-transition>
+			<v-overlay v-model="meansLoading" contained class="align-center justify-center">
+				<v-progress-circular :size="60" :witdh="60" color="teal-darken-2" indeterminate />
+			</v-overlay>
 		</v-container>
 	</v-card>
 </template>

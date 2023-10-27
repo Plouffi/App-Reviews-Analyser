@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import araError from './Error.vue'
 import Utils from '@/utils';
+
+const ENV = import.meta.env // Environment variable
 
 // Input rules
 const alphaRule = ref((alpha: number) => {
@@ -24,8 +27,11 @@ const start1 = ref()
 const end1 = ref()
 const start2 = ref()
 const end2 = ref()
-const wordcloudImage1 = ref("")
-const wordcloudImage2 = ref("")
+const wordcloudImage1 = ref('')
+const wordcloudImage2 = ref('')
+const wordcloud1Loading = ref(false) // Loading flag for the first wordcloud
+const wordcloud2Loading = ref(false) // Loading flag for the second wordcloud
+const wordcloudError = ref('') // Error flag
 
 
 const languages = ref([
@@ -65,11 +71,12 @@ async function fecthWords(): Promise<any> {
 			},
 			body: JSON.stringify(params)
 		})
-		if (!res.ok) throw res.statusText
+		if (!res.ok) throw `${res.statusText} - ${res.status}`
 		return res.json()
 	} catch (e) {
-		console.error(`Error while requesting /wordcloud/computeWords :${e}`)
-		throw [Utils.getMockImage('wordcloud_1'), Utils.getMockImage('wordcloud_2')]
+		let msg = `Error while requesting /wordcloud/computeWords : ${e}`
+		console.error(msg)
+		throw msg
 	}
 }
 
@@ -97,16 +104,25 @@ async function fetchImageWordcloud(words: [[string, Float32Array]]) {
  * Trigger the backend process wordcloud
  */
 const computeWordcloud = async () => {
+	wordcloud1Loading.value = true;
+	wordcloud2Loading.value = true;
 	try {
 		const wordsRes = await fecthWords()
 		const image1 = await fetchImageWordcloud(wordsRes[0])
 		wordcloudImage1.value = URL.createObjectURL(image1)
 		const image2 = await fetchImageWordcloud(wordsRes[1])
 		wordcloudImage2.value = URL.createObjectURL(image2)
-	} catch (e: any) {
-		wordcloudImage1.value = e[0]
-		wordcloudImage2.value = e[1]
+		wordcloudError.value = ''
+	} catch (e) {
+		if (ENV.VITE_IS_MOCK) {
+			wordcloudImage1.value = Utils.getMockImage('wordcloud_1')
+			wordcloudImage2.value = Utils.getMockImage('wordcloud_2')
+		} else {
+			wordcloudError.value = `${e}`
+		}
 	}
+	wordcloud1Loading.value = false;
+	wordcloud2Loading.value = false;
 }
 </script>
 
@@ -167,18 +183,30 @@ const computeWordcloud = async () => {
 			<v-row dense>
 				<v-col cols="12" md="6">
 					<v-card title="First Period">
-						<picture v-if="wordcloudImage1">
-							<source :srcset="wordcloudImage1" type="image/png">
-							<v-img :src="wordcloudImage1" class="img-fluid" alt="First period wordcloud"></v-img>
-						</picture>
+						<v-expand-transition>
+							<picture v-if="wordcloudImage1">
+								<source :srcset="wordcloudImage1" type="image/png">
+								<v-img :src="wordcloudImage1" class="img-fluid" alt="First period wordcloud"></v-img>
+							</picture>
+							<ara-error :msg="wordcloudError" v-if="wordcloudError.length"></ara-error>
+						</v-expand-transition>
+						<v-overlay v-model="wordcloud1Loading" contained class="align-center justify-center">
+							<v-progress-circular :size="30" :witdh="30" color="teal-darken-2" indeterminate />
+						</v-overlay>
 					</v-card>
 				</v-col>
 				<v-col cols="12" md="6">
 					<v-card title="Second Period">
-						<picture v-if="wordcloudImage2">
-							<source :srcset="wordcloudImage2" type="image/png">
-							<v-img :src="wordcloudImage2" class="img-fluid" alt="Second period wordcloud"></v-img>
-						</picture>
+						<v-expand-transition>
+							<picture v-if="wordcloudImage2">
+								<source :srcset="wordcloudImage2" type="image/png">
+								<v-img :src="wordcloudImage2" class="img-fluid" alt="Second period wordcloud"></v-img>
+							</picture>
+							<ara-error :msg="wordcloudError" v-if="wordcloudError.length"></ara-error>
+						</v-expand-transition>
+						<v-overlay v-model="wordcloud2Loading" contained class="align-center justify-center">
+							<v-progress-circular :size="60" :witdh="60" color="teal-darken-2" indeterminate />
+						</v-overlay>
 					</v-card>
 				</v-col>
 			</v-row>

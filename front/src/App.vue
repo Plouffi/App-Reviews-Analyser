@@ -59,11 +59,6 @@ const ENV = import.meta.env // Environnementsvariables
 	margin: 0 auto 2rem;
 }
 
-.logonav {
-	display: block;
-	margin-left: 1rem;
-}
-
 .ara-tabs {
 	color: white !important;
 	box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.24);
