@@ -1,6 +1,7 @@
 # App-Reviews-Analyser
 
 A small tool to analyse reviews on playstore.
+[Demo](https://plouffi.github.io/App-Reviews-Analyser/)
 
 # Prerequisites
 - Python 3.10+
