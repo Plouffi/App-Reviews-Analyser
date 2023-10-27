@@ -4,26 +4,31 @@ import { GpsApp } from '@/gpsApp';
 import Utils from '@/utils';
 //import ColorThief from 'colorthief'
 
-const props = defineProps({ appId: String })
-const app = ref(new GpsApp())
-const carousel = ref(0)
-const screenshotDialog = ref(false)
-const screenshotDialogAttr = ref({
-	url: '',
-	width: 0,
-	height: 0
+const props = defineProps({
+	appId: String // App ID 
 })
+const app = ref(new GpsApp()) // The GPS app
+const carousel = ref(0) // Model value to handle the main carousel
+const screenshotDialog = ref(false) // Model value to display the dialog screenshot
+const screenshotDialogAttr = ref({
+	url: '', // Screenshot URL
+	width: 0, // Screenshot width
+	height: 0 // Screenshot height
+})
+const loadDetail = ref(true) // Loading flag to display detail
+const loadScreenshot = ref(false) // Loading flag to screenshot
+const loadScrapping = ref() // Loading flag for scraping process
+const color = ref({ r: 0, g: 0, b: 0 }) // Model value for the background color
+const urlBackground = computed(() => `url(${app.value.headerImage}`) // CSS rules for the background url
+const gradientColorBackground = computed(() => `rgba(${color.value.r}, ${color.value.g}, ${color.value.b}, 0.4)`) // CSS rules for the background linear gradient
+const gradientColor2Background = computed(() => `rgba(${color.value.r}, ${color.value.g}, ${color.value.b}, 1)`) // CSS rules for the background linear gradient
 
-// Loading flags
-const loadDetail = ref(true)
-const loadScreenshot = ref(false)
-const loadScrapping = ref()
-// Ref and computed values to handle the detail background card
-const color = ref({ r: 0, g: 0, b: 0 })
-const urlBackground = computed(() => `url(${app.value.headerImage}`)
-const gradientColorBackground = computed(() => `rgba(${color.value.r}, ${color.value.g}, ${color.value.b}, 0.4)`)
-const gradientColor2Background = computed(() => `rgba(${color.value.r}, ${color.value.g}, ${color.value.b}, 1)`)
-
+/**
+ * Fetch the detail app from the backend API
+ *
+ * @returns The promise from the fetch API containing the app detail.
+ * If it fails, return a promise with mocked data.
+ */
 const fetchAppDetail = async (id: string): Promise<GpsApp> => {
 	try {
 		const params: { [k: string]: any } = {}
@@ -44,11 +49,19 @@ const fetchAppDetail = async (id: string): Promise<GpsApp> => {
 	}
 }
 
+/**
+ * Trigger the backend process to scrap reviews
+ */
 const scrapApp = async () => {
 	// TODO: call server to begin the scrapping
 	console.log(loadDetail.value)
 }
 
+/**
+ * Display a screenshot app inside the dialog box
+ *
+ * @param url The screenshot url
+ */
 const showSreenshotDialog = async (url: string) => {
 	loadScreenshot.value = true
 	screenshotDialog.value = true
@@ -63,6 +76,9 @@ const showSreenshotDialog = async (url: string) => {
 	img.src = url
 }
 
+/**
+ * Effect to detect change in appID props value to change the detail display
+ */
 watchEffect(async () => {
 	if (props.appId) {
 		loadDetail.value = true
@@ -85,7 +101,6 @@ watchEffect(async () => {
 		loadDetail.value = false
 	}
 })
-
 </script>
 
 <template>
@@ -118,8 +133,8 @@ watchEffect(async () => {
 								<v-card variant="text">
 									<v-card-subtitle>SCORE</v-card-subtitle>
 									<v-card-text>
-										<v-rating :model-value="app.score" :length="5" density="compact" half-increments readonly
-											color="white" active-color="white" />
+										<v-rating :model-value="app.score" :length="5" density="compact" half-increments
+											readonly color="white" active-color="white" />
 									</v-card-text>
 								</v-card>
 							</v-col>
@@ -145,7 +160,8 @@ watchEffect(async () => {
 					</v-card-item>
 					<v-card-item>
 						<v-row class="ma-2 d-flex justify-center">
-							<v-chip v-for="category in app.categories.sort((a, b) => a > b ? 1 : -1)" variant="outlined" class="ma-1">
+							<v-chip v-for="category in app.categories.sort((a, b) => a > b ? 1 : -1)" variant="outlined"
+								class="ma-1">
 								{{ category }}
 							</v-chip>
 						</v-row>
@@ -161,7 +177,8 @@ watchEffect(async () => {
 									<v-card-title class="d-block text-wrap text-center" style="word-break: break-word">
 										{{ app.summary }}
 									</v-card-title>
-									<v-card class="gps-app-description overflow-auto pa-2" color="white" variant="text" height="400">
+									<v-card class="gps-app-description overflow-auto pa-2" color="white" variant="text"
+										height="400">
 										<v-card-text v-html="app.descriptionHTML">
 										</v-card-text>
 									</v-card>
@@ -179,7 +196,8 @@ watchEffect(async () => {
 										<v-img :src="screenshotDialogAttr.url" :width="screenshotDialogAttr.width"
 											:height="screenshotDialogAttr.height"></v-img>
 										<v-overlay v-model="loadScreenshot" contained class="align-center justify-center">
-											<v-progress-circular :size="60" :witdh="60" color="light-blue-darken-2" indeterminate />
+											<v-progress-circular :size="60" :witdh="60" color="light-blue-darken-2"
+												indeterminate />
 										</v-overlay>
 									</v-dialog>
 								</v-carousel>
@@ -191,7 +209,8 @@ watchEffect(async () => {
 			<v-carousel-item value="2">
 				<v-container class="fill-height text-center" align="center" style="justify-content: center;">
 					<iframe width="560" height="315" :src="app.video" frameborder="0"
-						allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+						allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+						allowfullscreen></iframe>
 				</v-container>
 			</v-carousel-item>
 		</v-carousel>
@@ -223,13 +242,13 @@ watchEffect(async () => {
 	opacity: 1;
 }
 
-.v-card-subtitle>a {
+.v-card-subtitle > a {
 	text-decoration: none;
 	font-weight: bold;
 	color: #0288D1;
 }
 
-.v-card-subtitle>a:hover {
+.v-card-subtitle > a:hover {
 	text-decoration: underline;
 	background: none;
 }

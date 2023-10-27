@@ -26,7 +26,9 @@ export class GpsApp {
 	reviews: number = 0
 	url: string = ''
 
-	// Initialiser from dict
+	/**
+	* Init object
+	*/
 	init(json: any) {
 		this.id = json['id']
 		this.title = json['title']

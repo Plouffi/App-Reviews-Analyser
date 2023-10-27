@@ -9,12 +9,17 @@ const timeDeltaRule = ref((timeDelta: number) => {
 const maxDelta = 365 // one year
 const timeDeltaTicks = ref(Array.from(Array(maxDelta).keys()).map(x => x++))
 
-// Request parameter for /means
-const timeDelta = ref(30)
-const ignore = ref(0)
-const means = ref("")
+const timeDelta = ref(30) // Model value for the time delta parameter
+const ignore = ref(0) // Model value for the ignore parameter
+const means = ref("") // Model value for the the source url result
 
-async function fecthMeans() {
+/**
+ * Fetch the means graph from the backend API
+ *
+ * @returns The promise from the fetch API containing the means graph.
+ * If it fails, return a promise with mocked data.
+ */
+async function fecthMeans(): Promise<any> {
 	try {
 		const params: { [k: string]: any } = {}
 		if (!isNaN(timeDelta.value)) {
@@ -42,6 +47,9 @@ async function fecthMeans() {
 	}
 }
 
+/**
+ * Trigger the backend process to compute means
+ */
 const computeMeans = async () => {
 	const image = await fecthMeans()
 	try {

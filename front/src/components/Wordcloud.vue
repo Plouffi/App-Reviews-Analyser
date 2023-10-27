@@ -39,7 +39,12 @@ const languages = ref([
 	{ text: 'Spanish', value: 'es' }
 ])
 
-async function fecthWords() {
+/**
+ * Fetch the words and their frequencies from the backend API
+ *
+ * @returns The promise from the fetch API containing the words and their frequencies.
+ */
+async function fecthWords(): Promise<any> {
 	try {
 		const params: { [k: string]: any } = {}
 		params.alpha = alpha.value
@@ -68,6 +73,14 @@ async function fecthWords() {
 	}
 }
 
+/**
+ * Fetch the wordcloud image from the backend API
+ *
+ * @param words the words and their frequencies
+ * 
+ * @returns The promise from the fetch API containing the wordcloud image.
+ * If it fails, return a promise with mocked data.
+ */
 async function fetchImageWordcloud(words: [[string, Float32Array]]) {
 	const res = await fetch('http://localhost:5173/api/wordcloud/generateImage', {
 		method: 'POST',
@@ -80,6 +93,9 @@ async function fetchImageWordcloud(words: [[string, Float32Array]]) {
 	return res.blob()
 }
 
+/**
+ * Trigger the backend process wordcloud
+ */
 const computeWordcloud = async () => {
 	try {
 		const wordsRes = await fecthWords()

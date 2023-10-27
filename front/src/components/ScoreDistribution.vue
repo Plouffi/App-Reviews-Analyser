@@ -2,11 +2,16 @@
 import { ref } from 'vue'
 import Utils from '@/utils';
 
-//Request parameter for /scoreDistribution
-const date = ref()
-const scoreDistribution = ref("")
+const date = ref() // Model value for the date parameter
+const scoreDistribution = ref("") // Model value for the source url result
 
-async function fecthScoreDistribution() {
+/**
+ * Fetch the score distribution graph from the backend API
+ *
+ * @returns The promise from the fetch API containing the score distribution graph.
+ * If it fails, return a promise with mocked data.
+ */
+async function fecthScoreDistribution(): Promise<any> {
 	try {
 		const res = await fetch('http://localhost:5173/api/compute/scoreDistribution', {
 			method: 'POST',
@@ -26,6 +31,9 @@ async function fecthScoreDistribution() {
 	}
 }
 
+/**
+ * Trigger the backend process to compute score distribution
+ */
 const computeScoreDistribution = async () => {
 	const image = await fecthScoreDistribution()
 	try {

@@ -14,7 +14,6 @@ const selectedApp = ref() // Model value for the selected app ID
  *
  * @returns The promise from the fetch API containing search result.
  * If it fails, return a promise with mocked data.
- *
  */
 const searchApp = async (): Promise<[{ [k: string]: any }]> => {
 	try {
@@ -72,7 +71,7 @@ const selectApp = (e: any) => {
 
 /**
  * Function triggered when clicking the return button from the detail window or on a new search.
- * Return to list
+ * Return to search window
  */
 const returnToList = () => {
 	searchTab.value = 'list'
