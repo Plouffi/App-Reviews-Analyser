@@ -102,7 +102,7 @@ const returnToList = () => {
 							<v-list :items="appListResult" item-props @click:select="selectApp($event)" overflow="true"
 								max-height="400" />
 							<v-overlay v-model="loadSearch" contained class="align-center justify-center">
-								<v-progress-circular :size="60" :witdh="60" color="light-blue-darken-2" indeterminate />
+								<v-progress-circular :size="60" :witdh="60" color="teal-darken-2" indeterminate />
 							</v-overlay>
 						</v-card>
 					</v-window-item>

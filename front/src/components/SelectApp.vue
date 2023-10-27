@@ -25,7 +25,7 @@ const selectApp = async () => {
 			</v-row>
 		</v-container>
 		<v-card-actions class="mb-3">
-			<v-btn @click="selectApp()" color="light-blue-darken-2" variant="flat" elevation="4">Confirm</v-btn>
+			<v-btn @click="selectApp()" color="teal-darken-2" variant="flat" elevation="4">Confirm</v-btn>
 		</v-card-actions>
 	</v-card>
 </template>

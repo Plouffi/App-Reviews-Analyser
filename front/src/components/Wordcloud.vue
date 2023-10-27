@@ -131,7 +131,7 @@ const computeWordcloud = async () => {
 				</v-col>
 				<v-col cols="12" sm="6" md="3">
 					<v-slider v-model="score" :ticks="[0, 1, 2, 3, 4, 5]" :min="0" :max="5" step="1" label="Score"
-						thumb-label="always" :show-ticks="false" color="light-blue-darken-2"
+						thumb-label="always" :show-ticks="false" color="teal-darken-2"
 						hint="Filter reviews on score (take all reviews if 0)">
 					</v-slider>
 				</v-col>
@@ -161,7 +161,7 @@ const computeWordcloud = async () => {
 			</v-row>
 		</v-container>
 		<v-card-actions>
-			<v-btn @click="computeWordcloud()" color="light-blue-darken-2" variant="flat" elevation="4">Compute</v-btn>
+			<v-btn @click="computeWordcloud()" color="teal-darken-2" variant="flat" elevation="4">Compute</v-btn>
 		</v-card-actions>
 		<v-container fluid>
 			<v-row dense>

@@ -40,7 +40,7 @@ const upload = async () => {
 			</v-row>
 		</v-container>
 		<v-card-actions class="mb-3">
-			<v-btn @click="upload()" color="light-blue-darken-2" variant="flat" elevation="4">Upload</v-btn>
+			<v-btn @click="upload()" color="teal-darken-2" variant="flat" elevation="4">Upload</v-btn>
 		</v-card-actions>
 	</v-card>
 </template>

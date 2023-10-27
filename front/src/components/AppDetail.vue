@@ -196,7 +196,7 @@ watchEffect(async () => {
 										<v-img :src="screenshotDialogAttr.url" :width="screenshotDialogAttr.width"
 											:height="screenshotDialogAttr.height"></v-img>
 										<v-overlay v-model="loadScreenshot" contained class="align-center justify-center">
-											<v-progress-circular :size="60" :witdh="60" color="light-blue-darken-2"
+											<v-progress-circular :size="60" :witdh="60" color="teal-darken-2"
 												indeterminate />
 										</v-overlay>
 									</v-dialog>
@@ -215,11 +215,11 @@ watchEffect(async () => {
 			</v-carousel-item>
 		</v-carousel>
 		<v-overlay v-model="loadDetail" contained class="align-center justify-center">
-			<v-progress-circular :size="60" :witdh="60" color="light-blue-darken-2" indeterminate />
+			<v-progress-circular :size="60" :witdh="60" color="teal-darken-2" indeterminate />
 		</v-overlay>
 	</v-card>
 	<v-container class="text-center">
-		<v-btn @click="scrapApp()" color="light-blue-darken-2" variant="flat" elevation="4">Fetch Data</v-btn>
+		<v-btn @click="scrapApp()" color="teal-darken-2" variant="flat" elevation="4">Fetch Data</v-btn>
 	</v-container>
 </template>
 
@@ -245,7 +245,7 @@ watchEffect(async () => {
 .v-card-subtitle > a {
 	text-decoration: none;
 	font-weight: bold;
-	color: #0288D1;
+	color: rgba(0, 121, 107, 1);
 }
 
 .v-card-subtitle > a:hover {

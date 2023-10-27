@@ -66,7 +66,7 @@ const computeMeans = async () => {
 			<v-row>
 				<v-col cols="12">
 					<v-slider v-model="timeDelta" :ticks="timeDeltaTicks" :min="1" :max="maxDelta" step="1" label="Delta"
-						thumb-color="light-blue-darken-2" color="light-blue-darken-2" :show-ticks="false"
+						thumb-color="teal-darken-2" color="teal-darken-2" :show-ticks="false"
 						hint="Define the duration in days on which it computes cumulative results">
 						<template v-slot:append>
 							<v-text-field v-model="timeDelta" type="number" :rules="[timeDeltaRule]" density="compact"
@@ -77,7 +77,7 @@ const computeMeans = async () => {
 			</v-row>
 		</v-container>
 		<v-card-actions>
-			<v-btn @click="computeMeans()" color="light-blue-darken-2" variant="flat" elevation="4">Compute</v-btn>
+			<v-btn @click="computeMeans()" color="teal-darken-2" variant="flat" elevation="4">Compute</v-btn>
 		</v-card-actions>
 		<v-container>
 			<picture v-if="means">

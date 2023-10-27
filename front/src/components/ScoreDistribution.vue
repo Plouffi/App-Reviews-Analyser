@@ -56,7 +56,7 @@ const computeScoreDistribution = async () => {
 			</v-row>
 		</v-container>
 		<v-card-actions>
-			<v-btn @click="computeScoreDistribution()" color="light-blue-darken-2" variant="flat" elevation="4">Compute</v-btn>
+			<v-btn @click="computeScoreDistribution()" color="teal-darken-2" variant="flat" elevation="4">Compute</v-btn>
 		</v-card-actions>
 		<v-container>
 			<picture v-if="scoreDistribution.length">
