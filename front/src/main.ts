@@ -3,8 +3,9 @@ import { createApp } from 'vue'
 import { createVuetify } from 'vuetify'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
 import 'vuetify/styles'
-import './assets'
+import './assets/main.css'
 import '@mdi/font/css/materialdesignicons.css'
+import './assets/means.png'
 
 /* 
  * Main file, initialise vuetify dependance and vue app
