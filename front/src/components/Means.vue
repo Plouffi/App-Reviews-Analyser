@@ -94,7 +94,7 @@ const computeMeans = async () => {
 			<v-expand-transition>
 				<picture v-if="means">
 					<source :srcset="means" type="image/png">
-					<v-img :src="means" alt="Result of score Distribution" v-if="!ENV.VITE_IS_MOCK"></v-img>
+					<v-img :src="means" alt="Result of score Distribution"></v-img>
 				</picture>
 				<ara-error :msg="meansError" v-if="meansError.length"></ara-error>
 			</v-expand-transition>
