@@ -63,10 +63,10 @@ class App:
         self.video = gps_app['video'] if 'video' in gps_app else ''
         self.videoImage = gps_app['videoImage'] if 'videoImage' in gps_app else ''
         self.screenshots = gps_app['screenshots'] if 'screenshots' in gps_app else []
-        self.score = gps_app['score'] if 'score' in gps_app else ''
+        self.score = gps_app['score'] if 'score' in gps_app else 0
         self.genre = gps_app['genre'] if 'genre' in gps_app else ''
         self.categories = list(map(lambda c : c['name'], gps_app['categories']))  if 'categories' in gps_app else []
-        self.price = gps_app['price'] if 'price' in gps_app else ''
+        self.price = gps_app['price'] if 'price' in gps_app else 0
         self.free = gps_app['free'] if 'free' in gps_app else ''
         self.currency = gps_app['currency'] if 'currency' in gps_app else ''
         self.summary = gps_app['summary'] if 'summary' in gps_app else ''
@@ -77,7 +77,7 @@ class App:
         self.developerWebsite = gps_app['developerWebsite'] if 'developerWebsite' in gps_app else ''
         self.installs = gps_app['installs'] if 'installs' in gps_app else ''
         self.realInstalls = gps_app['realInstalls'] if 'realInstalls' in gps_app else ''
-        self.reviews = gps_app['reviews'] if 'reviews' in gps_app else ''
+        self.reviews = gps_app['reviews'] if 'reviews' in gps_app else 0
         self.url = gps_app['url'] if 'url' in gps_app else ''
 
     def shorten(self) -> Any:

@@ -21,6 +21,6 @@ API description can be find [here](https://github.com/Plouffi/App-Reviews-Analys
 - Run the following command `npm run dev` to launch vue.js server (running on port 5173)
 
 # Powered by:
-- facundoolano: https://github.com/facundoolano/google-play-scraper
+- JoMingyu: https://github.com/JoMingyu/google-play-scraper
 - WordCloud: https://github.com/amueller/word_cloud
 - Inspirateur: https://github.com/Inspirateur

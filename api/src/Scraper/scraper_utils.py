@@ -166,7 +166,7 @@ def reviews(
 		_ContinuationToken(token, lang, country, sort, count, filter_score_with),
 	)
 
-def reviews_all(app_id: str, date: datetime, sleep_milliseconds: int = 0, **kwargs) -> list:
+def reviews_all(app_id: str, date: datetime, lang: str, country: str, sleep_milliseconds: int = 0, **kwargs) -> list:
 	kwargs.pop("count", None)
 	kwargs.pop("continuation_token", None)
 
@@ -178,6 +178,8 @@ def reviews_all(app_id: str, date: datetime, sleep_milliseconds: int = 0, **kwar
 		_result, continuation_token = reviews(
 			app_id,
 			date,
+			lang=lang,
+			country=country,
 			count=MAX_COUNT_EACH_FETCH,
 			continuation_token=continuation_token,
 			**kwargs

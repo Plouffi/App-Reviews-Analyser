@@ -20,7 +20,12 @@ class Scraper:
 		return result
 	
 	def app_detail(self, id: str) -> Any:
-		return app(app_id=id, lang='en', country='us')
+		gps_app = app(app_id=id, lang='en', country='us') # default info
+		for language in self.config['languages']:
+			if language['country'] != 'us':
+				detail_app = app(app_id=id, lang=language['lang'], country=language['country'])
+				gps_app['reviews'] += detail_app['reviews'] # We sum reviews to have the total
+		return gps_app
 
 	def get_reviews(self, date):
 		def clear_data(reviews_to_clear, language_to_add):
@@ -35,9 +40,14 @@ class Scraper:
 		reviews = []
 
 		for language in self.config['languages']:
-			res = gps_reviews(self.config['app'], dt.strptime(date, '%Y-%m-%d %I:%M%p'), lang=language, sort=Sort.NEWEST)
+			res = gps_reviews(
+				self.config['app'],
+				dt.strptime(date, '%Y-%m-%d %I:%M%p'),
+				lang=language['lang'],
+				country=language['country'],
+				sort=Sort.NEWEST
+			)
 			res = clear_data(res, language)
 			reviews = [*reviews, *res]
-			print(language + ': %d reviews fetched' % len(res))
 		print('Total reviews fetched: %d', len(reviews))
 		return reviews
