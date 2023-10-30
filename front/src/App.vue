@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import ScraperView from './view/Scraper.view.vue';
-import AnalyserView from './view/Analyser.view.vue';
-import AboutView from './view/About.view.vue';
+import { useDisplay } from 'vuetify'
+import ScraperView from './view/Scraper.view.vue'
+import AnalyserView from './view/Analyser.view.vue'
+import AboutView from './view/About.view.vue'
 
 const tab = ref("scraper") // Init the model window to the Scraper tab
-const ENV = import.meta.env // Environnementsvariables
+const ENV = import.meta.env // Environnements variables
+const { smAndDown } = useDisplay()
 </script>
 
 <template>
@@ -18,12 +20,12 @@ const ENV = import.meta.env // Environnementsvariables
 		<img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
 		<h1 class="text-center">App Review Analyser</h1>
 	</header>
-	<v-tabs v-model="tab" fixed-tabs bg-color="rgba(178, 223, 219, 1)" color="teal-darken-2" class="ara-tabs">
+	<v-tabs v-model="tab" fixed-tabs bg-color="rgb(77, 182, 172, 1)" color="teal-darken-2" class="ara-tabs">
 		<v-tab value="scraper">Scraper</v-tab>
 		<v-tab value="analyser">Analyser</v-tab>
 		<v-tab value="about">About</v-tab>
 	</v-tabs>
-	<v-container class="main-content">
+	<v-container :class="smAndDown ? 'main-content px-0': 'main-content'">
 		<v-window v-model="tab">
 			<v-window-item value="scraper">
 				<ScraperView />
@@ -41,7 +43,7 @@ const ENV = import.meta.env // Environnementsvariables
 <style scoped>
 .ara-header {
 	line-height: 1.5;
-	background: linear-gradient(rgb(255, 255, 255), rgb(178, 223, 219, 1));
+	background: linear-gradient(rgb(255, 255, 255), rgb(77, 182, 172));
 	color: white;
 }
 

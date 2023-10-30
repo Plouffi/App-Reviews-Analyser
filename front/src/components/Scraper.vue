@@ -3,11 +3,12 @@ import { ref } from 'vue'
 import AppDetail from './AppDetail.vue'
 import Utils from '@/utils';
 
-const searchTab = ref() // Model value for the search tab window
+const searchTab = ref('scrapping') // Model value for the search tab window
 const appListResult = ref() // Model value for the result list from search
 const searchTerm = ref() // Model value for the searched terms
-const loadSearch = ref(false) // Loading flag for search
 const selectedApp = ref() // Model value for the selected app ID
+const loadSearch = ref(false) // Loading flag for search
+const loadScrapping = ref(false) // Loading flag for scrapping
 
 /**
  * Fetch the search result from the backend API
@@ -86,10 +87,10 @@ const returnToList = () => {
 				<v-row class="d-flex flex-row justify-center align-center px-lg-16">
 					<transition name="fade">
 						<v-btn @click="returnToList()" icon="mdi-chevron-left" variant="text" class="btn-return"
-							v-if="searchTab == 'detail'" />
+							v-if="searchTab == 'detail'" :disabled="loadScrapping"/>
 					</transition>
 					<v-col cols="9" md="6" class="mx-4 p-0">
-						<v-text-field label="Search app" v-model="searchTerm" v-on:keyup.enter="onSearch()" variant="solo"
+						<v-text-field label="Search app" v-model="searchTerm" v-on:keyup.enter="onSearch()" :disabled="loadScrapping" variant="solo"
 							prepend-inner-icon="mdi-magnify" rounded hide-details>
 						</v-text-field>
 					</v-col>
@@ -107,7 +108,7 @@ const returnToList = () => {
 						</v-card>
 					</v-window-item>
 					<v-window-item value="detail">
-						<AppDetail :appId="selectedApp" />
+						<AppDetail :appId="selectedApp" @load-scrapping="loadScrapping = true" @scrapping-done="loadScrapping = false"/>
 					</v-window-item>
 				</v-window>
 			</v-col>
