@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { ref } from 'vue';
+
+const version = ref(VITE_APP_VERSION)
 </script>
 
 <template>
@@ -35,6 +38,13 @@
       <v-col cols="12">
         <p>
           Contact me at <a href="mailto:plouffi.github@gmail.com">plouffi.github@gmail.com</a>
+        </p>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12">
+        <p class="text-caption">
+          Version: {{ version }}
         </p>
       </v-col>
     </v-row>

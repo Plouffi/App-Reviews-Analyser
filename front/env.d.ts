@@ -10,3 +10,4 @@ interface ImportMeta {
 }
 
 VITE_IS_MOCK=false
+declare const VITE_APP_VERSION: string;

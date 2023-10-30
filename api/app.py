@@ -85,7 +85,7 @@ def app_detail():
 @app.route('/getReviews')
 def get_reviews():
 	"""
-		Method to fecth reviews from the Playstore
+		Method to fetch reviews from the Playstore and store it
 	"""
 	config = load_config()
 	dm = DataManager(config)

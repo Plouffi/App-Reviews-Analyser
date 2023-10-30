@@ -12,6 +12,9 @@ export default defineConfig({
     vueJsx(),
     vuetify({ autoImport: true }),
   ],
+  define: {
+    VITE_APP_VERSION: JSON.stringify(process.env.npm_package_version),
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
