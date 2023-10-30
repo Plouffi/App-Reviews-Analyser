@@ -1,0 +1,19 @@
+{
+  "tabs": {
+    "scraper": "Scraper",
+    "analyser": "Analyseur",
+    "about": "A propos"
+  },
+  "scraper": {
+    "search": {
+      "bar": "Rechercher une appli",
+      "result": "Résultats de recherche"
+    },
+    "detail": {
+      "score": "Note",
+      "reviews": "Avis",
+      "installs": "Installations",
+      "fecth": "Extraction des données"
+    }
+  }
+}

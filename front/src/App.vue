@@ -7,6 +7,7 @@ import AboutView from './view/About.view.vue'
 
 const { smAndDown } = useDisplay()
 const theme = useTheme()
+
 const ENV = import.meta.env // Environnements variables
 
 const themeSelected = ref(theme.global.name.value) // Model value for the selected theme
@@ -62,9 +63,9 @@ const switchTheme = () => {
 			<h1 class="text-center">App Review Analyser</h1>
 		</header>
 		<v-tabs v-model="tab" fixed-tabs bg-color="rgb(77, 182, 172, 1)" color="teal-darken-2" class="ara-tabs">
-			<v-tab value="scraper">Scraper</v-tab>
-			<v-tab value="analyser">Analyser</v-tab>
-			<v-tab value="about">About</v-tab>
+			<v-tab value="scraper">{{ $t('tabs.scraper') }}</v-tab>
+			<v-tab value="analyser">{{ $t('tabs.analyser') }}</v-tab>
+			<v-tab value="about">{{ $t('tabs.about') }}</v-tab>
 		</v-tabs>
 		<v-container :class="smAndDown ? 'main-content px-0' : 'main-content'">
 			<v-window v-model="tab">

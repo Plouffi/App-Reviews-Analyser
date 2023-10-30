@@ -1,0 +1,19 @@
+{
+  "tabs": {
+    "scraper": "Scraper",
+    "analyser": "Analyser",
+    "about": "About"
+  },
+  "scraper": {
+    "search": {
+      "bar": "Search app",
+      "result": "Search results"
+    },
+    "detail": {
+      "score": "Score",
+      "reviews": "Reviews",
+      "installs": "Installs",
+      "fecth": "Fecth data"
+    }
+  }
+}
