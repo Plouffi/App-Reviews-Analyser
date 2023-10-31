@@ -12,6 +12,7 @@ const locale = useLocale()
 
 const ENV = import.meta.env // Environnements variables
 
+const appName = ref(VITE_APP_NAME)
 const themeSelected = ref(theme.global.name.value) // Model value for the selected theme
 const languages = ref(Utils.getLanguagesApp())
 const tab = ref('scraper') // Init the model window to the Scraper tab
@@ -60,7 +61,7 @@ const switchTheme = () => {
 				</v-btn>
 			</v-toolbar>
 			<img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-			<h1 class="text-center">App Review Analyser</h1>
+			<h1 class="text-center">{{ appName }}</h1>
 		</header>
 		<v-tabs v-model="tab" fixed-tabs bg-color="rgb(77, 182, 172, 1)" color="teal-darken-2" class="ara-tabs">
 			<v-tab value="scraper">{{ $t('tabs.scraper') }}</v-tab>

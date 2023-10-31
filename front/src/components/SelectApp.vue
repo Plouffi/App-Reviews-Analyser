@@ -18,7 +18,7 @@ const selectApp = async () => {
 		<v-container fluid class="input-analiser">
 			<v-row>
 				<v-col cols="12">
-					<v-select v-model="app" :items="apps" :label="$t('analyser.select.label')" item-title="nam" item-value="id" variant="underlined"
+					<v-select v-model="app" :items="apps" :label="$t('analyser.select.label')" item-title="name" item-value="id" variant="underlined"
 						persistent-hint return-object single-line :hint="$t('analyser.select.tooltip')">
 					</v-select>
 				</v-col>

@@ -2,7 +2,7 @@
 import { ref, computed, watchEffect } from 'vue'
 import { useDisplay } from 'vuetify';
 import { GpsApp } from '@/gpsApp';
-import Utils from '@/utils';
+import GPSRestResource from '@/services/GPSRestResource';
 //import ColorThief from 'colorthief'
 
 const props = defineProps({
@@ -10,6 +10,8 @@ const props = defineProps({
 })
 const emit = defineEmits(['loadScrapping', 'scrappingDone'])
 const { mdAndUp, smAndDown, xs } = useDisplay()
+
+const gpsResource = new GPSRestResource()
 const app = ref(new GpsApp()) // The GPS app
 const carousel = ref(0) // Model value to handle the main carousel
 const screenshotDialog = ref(false) // Model value to display the dialog screenshot
@@ -27,32 +29,6 @@ const color = ref({ r: 0, g: 0, b: 0 }) // Model value for the background color
 const urlBackground = computed(() => `url(${app.value.headerImage}`) // CSS rules for the background url
 const gradientColorBackground = computed(() => `rgba(${color.value.r}, ${color.value.g}, ${color.value.b}, 0.4)`) // CSS rules for the background linear gradient
 const gradientColor2Background = computed(() => `rgba(${color.value.r}, ${color.value.g}, ${color.value.b}, 1)`) // CSS rules for the background linear gradient
-
-/**
- * Fetch the detail app from the backend API
- *
- * @returns The promise from the fetch API containing the app detail.
- * If it fails, return a promise with mocked data.
- */
-const fetchAppDetail = async (id: string): Promise<GpsApp> => {
-	try {
-		const params: { [k: string]: any } = {}
-		params.id = id
-		const query = new URLSearchParams(params)
-		const res = await fetch(`http://localhost:5173/api/appDetail?${query}`, {
-			method: 'GET',
-		})
-		if (!res.ok) throw res.statusText
-		return res.json()
-	} catch (e) {
-		console.error(`Error while requesting /appDetail :${e}`)
-		return new Promise<GpsApp>(function (resolve) {
-			const app = new GpsApp()
-			app.init(Utils.getMockDetail(id))
-			resolve(app)
-		})
-	}
-}
 
 /**
  * Display a screenshot app inside the dialog box
@@ -92,7 +68,7 @@ watchEffect(async () => {
 	if (props.appId) {
 		loadDetail.value = true
 		app.value = new GpsApp()
-		const resApp = await fetchAppDetail(props.appId)
+		const resApp = await gpsResource.getAppDetail(props.appId)
 		app.value.init(resApp)
 
 		// const colorThief = new ColorThief()

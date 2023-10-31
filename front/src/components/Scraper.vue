@@ -1,41 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import AppDetail from './AppDetail.vue'
-import Utils from '@/utils';
+import GPSRestResource from '@/services/GPSRestResource';
 
+const gpsResource = new GPSRestResource()
 const searchTab = ref('scrapping') // Model value for the search tab window
 const appListResult = ref() // Model value for the result list from search
 const searchTerm = ref() // Model value for the searched terms
 const selectedApp = ref() // Model value for the selected app ID
 const loadSearch = ref(false) // Loading flag for search
 const loadScrapping = ref(false) // Loading flag for scrapping
-
-/**
- * Fetch the search result from the backend API
- *
- * @returns The promise from the fetch API containing search result.
- * If it fails, return a promise with mocked data.
- */
-const searchApp = async (): Promise<[{ [k: string]: any }]> => {
-	try {
-		const params: { [k: string]: any } = {}
-		if (searchTerm.value.length) {
-			params.search = searchTerm.value
-			const query = new URLSearchParams(params)
-			const res = await fetch(`http://localhost:5173/api/searchApp?${query}`, {
-				method: 'GET',
-			})
-			if (!res.ok) throw res.statusText
-			return res.json()
-		}
-		throw 'Error params'
-	} catch (e) {
-		console.error(`Error while requesting /searchApp :${e}`)
-		return new Promise<[{ [k: string]: any }]>(function (resolve) {
-			resolve(Utils.getMockSearch('search'))
-		})
-	}
-}
 
 /**
  * Function triggered on search (enter key pressed on search bar) to fecth result
@@ -45,7 +19,7 @@ const onSearch = async () => {
 	if (searchTerm.value) {
 		searchTab.value = 'list'
 		loadSearch.value = true
-		const res = await searchApp()
+		const res = await gpsResource.searchApp(searchTerm.value)
 		appListResult.value = []
 		res.forEach((appJson: { [k: string]: any }) => {
 			appListResult.value.push({

@@ -2,38 +2,17 @@
 import { ref } from 'vue'
 import araError from './Error.vue'
 import Utils from '@/utils';
+import GPSRestResource from '@/services/GPSRestResource';
 
 const ENV = import.meta.env // Environment variable
 
+const gpsResource = new GPSRestResource()
 const date = ref() // Model value for the date parameter
 const scoreDistribution = ref('') // Model value for the source url result
 const scoreDistributionLoading = ref(false) // Loading flag on score distribution computing
 const scoreDistributionError = ref('') // Error flag on score distribution computing
 
-/**
- * Fetch the score distribution graph from the backend API
- *
- * @returns The promise from the fetch API containing the score distribution graph.
- * If it fails, return a promise with mocked data.
- */
-async function fecthScoreDistribution(): Promise<any> {
-	try {
-		const res = await fetch('http://localhost:5173/api/compute/scoreDistribution', {
-			method: 'POST',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(date.value ? { 'date': date.value.toLocaleString() } : {})
-		})
-		if (!res.ok) throw `${res.statusText} - ${res.status}`
-		return res.blob()
-	} catch (e) {
-		let msg = `Error while requesting /compute/scoreDistribution : ${e}`
-		console.error(msg)
-		throw msg
-	}
-}
+
 
 /**
  * Trigger the backend process to compute score distribution
@@ -41,7 +20,7 @@ async function fecthScoreDistribution(): Promise<any> {
 const computeScoreDistribution = async () => {
 	scoreDistributionLoading.value = true
 	try {
-		const image = await fecthScoreDistribution()
+		const image = await gpsResource.getScoreDistribution(date.value)
 		scoreDistribution.value = URL.createObjectURL(image)
 	} catch (e) {
 		if (ENV.VITE_IS_MOCK) {

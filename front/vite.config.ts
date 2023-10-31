@@ -12,6 +12,7 @@ export default defineConfig({
     vuetify({ autoImport: true })
   ],
   define: {
+    VITE_APP_NAME: JSON.stringify("App Reviews Analyser"),
     VITE_APP_VERSION: JSON.stringify(process.env.npm_package_version),
   },
   resolve: {

@@ -1,17 +1,35 @@
-import languages from "./languages"
 import mock from "./mock"
 
 /**
  * Module exporting Utils class
  */
 export default class Utils {
+	private static readonly _languages = [
+		{
+			value: 'en',
+			title: 'English',
+			country: 'us',
+			props: {
+				prependAvatar: 'https://cdn.vuetifyjs.com/images/flags/us.png'
+			}
+		},
+		{
+			value: 'fr',
+			title: 'Français',
+			country: 'fr',
+			props: {
+				prependAvatar: 'https://cdn.vuetifyjs.com/images/flags/fr.png'
+			}
+		}
+	]
+
 	/**
 	 * Get the list of available languages 
 	 * 
 	 * @returns A list of the languages
 	 */
 	static getLanguagesApp(): any[] {
-		return languages
+		return this._languages
 	}
 
 	/**
