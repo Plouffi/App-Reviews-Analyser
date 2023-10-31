@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useLocale } from 'vuetify'
 import araError from './Error.vue'
 import Utils from '@/utils'
 
 const ENV = import.meta.env // Environment variable
+const { t } = useLocale()
 
 // Input rules
 const timeDeltaRule = ref((timeDelta: number) => {
-	return (timeDelta > 0 && timeDelta <= 365) || "Must be between 1 and 365"
+	return (timeDelta > 0 && timeDelta <= 365) || t('analyser.means.rule')
 })
 const maxDelta = 365 // one year
 const timeDeltaTicks = ref(Array.from(Array(maxDelta).keys()).map(x => x++))
@@ -72,13 +74,13 @@ const computeMeans = async () => {
 </script>
 
 <template>
-	<v-card title="Means">
+	<v-card :title="$t('analyser.means.title')">
 		<v-container fluid class="input-analiser">
 			<v-row>
 				<v-col cols="12">
-					<v-slider v-model="timeDelta" :ticks="timeDeltaTicks" :min="1" :max="maxDelta" step="1" label="Delta"
+					<v-slider v-model="timeDelta" :ticks="timeDeltaTicks" :min="1" :max="maxDelta" step="1" :label="$t('analyser.means.label')"
 						thumb-color="teal-darken-2" color="teal-darken-2" :show-ticks="false"
-						hint="Define the duration in days on which it computes cumulative results">
+						:hint="$t('analyser.means.tooltip')">
 						<template v-slot:append>
 							<v-text-field v-model="timeDelta" type="number" :rules="[timeDeltaRule]" density="compact"
 								variant="underlined" class="timeDeltaInput" hide-details></v-text-field>
@@ -88,13 +90,13 @@ const computeMeans = async () => {
 			</v-row>
 		</v-container>
 		<v-card-actions>
-			<v-btn @click="computeMeans()" color="teal-darken-2" variant="flat" elevation="4">Compute</v-btn>
+			<v-btn @click="computeMeans()" color="teal-darken-2" variant="flat" elevation="4">{{ $t('analyser.means.button') }}</v-btn>
 		</v-card-actions>
 		<v-container>
 			<v-expand-transition>
 				<picture v-if="means">
 					<source :srcset="means" type="image/png">
-					<v-img :src="means" alt="Result of score Distribution"></v-img>
+					<v-img :src="means" :alt="$t('analyser.means.result.alt')"></v-img>
 				</picture>
 				<ara-error :msg="meansError" v-if="meansError.length"></ara-error>
 			</v-expand-transition>

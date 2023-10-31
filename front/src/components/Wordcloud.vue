@@ -1,21 +1,23 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useLocale } from 'vuetify';
 import araError from './Error.vue'
 import Utils from '@/utils';
 
 const ENV = import.meta.env // Environment variable
+const { t } = useLocale()
 
 // Input rules
 const alphaRule = ref((alpha: number) => {
-	return alpha >= 0 || "Must be positive or zero"
+	return alpha >= 0 || t('analyser.wordcloud.alpha.rule')
 })
 
 const tokenRule = ref((token: number) => {
-	return token > 0 || "Must be strictly positive"
+	return token > 0 || t('analyser.wordcloud.ntoken.rule')
 })
 
 const languageRule = ref((lang: string) => {
-	return !!lang || 'Language is required'
+	return !!lang || t('analyser.wordcloud.language.rule')
 })
 
 // Request parameter for /wordcloud
@@ -127,66 +129,67 @@ const computeWordcloud = async () => {
 </script>
 
 <template>
-	<v-card title="Wordcloud">
+	<v-card :title="$t('analyser.wordcloud.title')">
 		<v-container fluid>
 			<v-row class="input-analiser">
 				<v-col cols="12" sm="6" md="3">
-					<v-text-field v-model="alpha" label="Alpha" type="number" :rules="[alphaRule]" variant="underlined"
-						hint="Parameters to reduce noises in data">
+					<v-text-field v-model="alpha" :label="$t('analyser.wordcloud.alpha.label')" type="number" :rules="[alphaRule]"
+						variant="underlined" :hint="$t('analyser.wordcloud.alpha.tooltip')">
 					</v-text-field>
 				</v-col>
 				<v-col cols="12" sm="6" md="3">
-					<v-text-field v-model="nToken" label="nToken" type="number" :rules="[tokenRule]" variant="underlined"
-						hint="Define the number of word per token vocabulary">
+					<v-text-field v-model="nToken" :label="$t('analyser.wordcloud.ntoken.label')" type="number" :rules="[tokenRule]"
+						variant="underlined" :hint="$t('analyser.wordcloud.ntoken.tooltip')">
 					</v-text-field>
 				</v-col>
 				<v-col cols="12" sm="6" md="3">
-					<v-select v-model="lang" :items="languages" label="Language" item-title="text" item-value="value"
-						variant="underlined" persistent-hint return-object single-line hint="Reviews and vocabulary language">
+					<v-select v-model="lang" :items="languages" :label="$t('analyser.wordcloud.language.label')" item-title="text"
+						item-value="value" variant="underlined" persistent-hint return-object single-line
+						:hint="$t('analyser.wordcloud.language.tooltip')">
 					</v-select>
 				</v-col>
 				<v-col cols="12" sm="6" md="3">
-					<v-slider v-model="score" :ticks="[0, 1, 2, 3, 4, 5]" :min="0" :max="5" step="1" label="Score"
-						thumb-label="always" :show-ticks="false" color="teal-darken-2"
-						hint="Filter reviews on score (take all reviews if 0)">
+					<v-slider v-model="score" :ticks="[0, 1, 2, 3, 4, 5]" :min="0" :max="5" step="1"
+						:label="$t('analyser.wordcloud.score.label')" thumb-label="always" :show-ticks="false" color="teal-darken-2"
+						:hint="$t('analyser.wordcloud.score.tooltip')">
 					</v-slider>
 				</v-col>
 			</v-row>
 
 			<v-row class="input-analiser">
 				<v-col cols="12" sm="6" md="3">
-					<v-text-field v-model="start1" label="Start date 1" type="datetime-local" variant="underlined"
-						hint="First period start date to compare">
+					<v-text-field v-model="start1" :label="$t('analyser.wordcloud.start1.label')" type="datetime-local" variant="underlined"
+						:hint="$t('analyser.wordcloud.end1.label')">
 					</v-text-field>
 				</v-col>
 				<v-col cols="12" sm="6" md="3">
-					<v-text-field v-model="end1" label="End date 1" type="datetime-local" variant="underlined"
-						hint="First period end date to compare">
+					<v-text-field v-model="end1" :label="$t('analyser.wordcloud.end1.label')" type="datetime-local" variant="underlined"
+						:hint="$t('analyser.wordcloud.end1.tooltip')">
 					</v-text-field>
 				</v-col>
 				<v-col cols="12" sm="6" md="3">
-					<v-text-field v-model="start2" label="Start date 2" type="datetime-local" variant="underlined"
-						hint="Second period start date to compare">
+					<v-text-field v-model="start2" :label="$t('analyser.wordcloud.start2.label')" type="datetime-local" variant="underlined"
+						:hint="$t('analyser.wordcloud.start2.tooltip')">
 					</v-text-field>
 				</v-col>
 				<v-col cols="12" sm="6" md="3">
-					<v-text-field v-model="end2" label="End date 2" type="datetime-local" variant="underlined"
-						hint="Second period end date to compare">
+					<v-text-field v-model="end2" :label="$t('analyser.wordcloud.end2.label')" type="datetime-local" variant="underlined"
+						:hint="$t('analyser.wordcloud.end2.tooltip')">
 					</v-text-field>
 				</v-col>
 			</v-row>
 		</v-container>
 		<v-card-actions>
-			<v-btn @click="computeWordcloud()" color="teal-darken-2" variant="flat" elevation="4">Compute</v-btn>
+			<v-btn @click="computeWordcloud()" color="teal-darken-2" variant="flat" elevation="4">{{ $t('analyser.wordcloud.button') }}</v-btn>
 		</v-card-actions>
 		<v-container fluid>
 			<v-row dense>
 				<v-col cols="12" md="6">
-					<v-card title="First Period">
+					<v-card :title="$t('analyser.wordcloud.result.title1')">
 						<v-expand-transition>
 							<picture v-if="wordcloudImage1">
 								<source :srcset="wordcloudImage1" type="image/png">
-								<v-img :src="wordcloudImage1" class="img-fluid" alt="First period wordcloud"></v-img>
+								<v-img :src="wordcloudImage1" class="img-fluid" :alt="$t('analyser.wordcloud.result.alt1')"></v-img>
 							</picture>
 							<ara-error :msg="wordcloudError" v-if="wordcloudError.length"></ara-error>
 						</v-expand-transition>
@@ -196,11 +199,11 @@ const computeWordcloud = async () => {
 					</v-card>
 				</v-col>
 				<v-col cols="12" md="6">
-					<v-card title="Second Period">
+					<v-card :title="$t('analyser.wordcloud.result.title2')">
 						<v-expand-transition>
 							<picture v-if="wordcloudImage2">
 								<source :srcset="wordcloudImage2" type="image/png">
-								<v-img :src="wordcloudImage2" class="img-fluid" alt="Second period wordcloud"></v-img>
+								<v-img :src="wordcloudImage2" class="img-fluid" :alt="$t('analyser.wordcloud.result.alt2')"></v-img>
 							</picture>
 							<ara-error :msg="wordcloudError" v-if="wordcloudError.length"></ara-error>
 						</v-expand-transition>

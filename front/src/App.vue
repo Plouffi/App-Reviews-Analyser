@@ -1,18 +1,19 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useDisplay, useTheme } from 'vuetify'
+import { useDisplay, useTheme, useLocale } from 'vuetify'
+import Utils from '@/utils';
 import ScraperView from './view/Scraper.view.vue'
 import AnalyserView from './view/Analyser.view.vue'
 import AboutView from './view/About.view.vue'
 
 const { smAndDown } = useDisplay()
 const theme = useTheme()
+const locale = useLocale()
 
 const ENV = import.meta.env // Environnements variables
 
 const themeSelected = ref(theme.global.name.value) // Model value for the selected theme
-const languages = ref([{code: 'en', name: 'English'}])
-const lang = ref('en')
+const languages = ref(Utils.getLanguagesApp())
 const tab = ref('scraper') // Init the model window to the Scraper tab
 
 /**
@@ -20,9 +21,8 @@ const tab = ref('scraper') // Init the model window to the Scraper tab
  * 
  * @param e The event triggered
  */
- const selectLang = (e: any) => {
-	lang.value = e.code
-	console.log(lang.value)
+const selectLang = (e: any) => {
+	locale.current.value = e.id
 }
 
 /**
@@ -53,7 +53,7 @@ const switchTheme = () => {
 					<template v-slot:activator="{ props }">
 						<v-btn icon="mdi-translate" v-bind="props"></v-btn>
 					</template>
-					<v-list :items="languages" item-title="name" item-value="code" @click:select="selectLang($event)"/>
+					<v-list :items="languages" items-props @click:select="selectLang($event)" />
 				</v-menu>
 				<v-btn @click="switchTheme()" icon>
 					<v-icon :icon="theme.global.current.value.dark ? 'mdi-weather-night' : 'mdi-white-balance-sunny'"></v-icon>

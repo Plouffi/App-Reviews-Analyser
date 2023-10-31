@@ -55,24 +55,24 @@ const computeScoreDistribution = async () => {
 </script>
 
 <template>
-	<v-card title="Score Distribution">
+	<v-card :title="$t('analyser.scoreDistribution.title')">
 		<v-container fluid class="input-analyser">
 			<v-row>
 				<v-col cols="12">
-					<v-text-field v-model="date" label="Date" type="datetime-local" variant="underlined"
-						hint="Date to compare score distribution (if empty, no comparaison)">
+					<v-text-field v-model="date" :label="$t('analyser.scoreDistribution.label')" type="datetime-local" variant="underlined"
+						:hint="$t('analyser.scoreDistribution.tooltip')">
 					</v-text-field>
 				</v-col>
 			</v-row>
 		</v-container>
 		<v-card-actions>
-			<v-btn @click="computeScoreDistribution()" color="teal-darken-2" variant="flat" elevation="4">Compute</v-btn>
+			<v-btn @click="computeScoreDistribution()" color="teal-darken-2" variant="flat" elevation="4">{{ $t('analyser.scoreDistribution.button') }}</v-btn>
 		</v-card-actions>
 		<v-container>
 			<v-expand-transition>
 				<picture v-if="scoreDistribution.length">
 					<source :srcset="scoreDistribution" type="image/png">
-					<v-img :src="scoreDistribution" alt="Result of score Distribution"></v-img>
+					<v-img :src="scoreDistribution" :alt="$t('analyser.scoreDistribution.result.alt')"></v-img>
 				</picture>
 				<ara-error :msg="scoreDistributionError" v-if="scoreDistributionError.length"></ara-error>
 			</v-expand-transition>

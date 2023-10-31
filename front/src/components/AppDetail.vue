@@ -142,7 +142,7 @@ watchEffect(async () => {
 									</v-col>
 									<v-col cols="12" sm="4" md="3">
 										<v-card variant="text">
-											<v-card-subtitle>SCORE</v-card-subtitle>
+											<v-card-subtitle>{{ $t('scraper.detail.score').toLocaleUpperCase() }}</v-card-subtitle>
 											<v-card-text>
 												<v-rating :model-value="app.score" :length="5" density="compact" half-increments readonly
 													color="white" active-color="white" />
@@ -152,7 +152,7 @@ watchEffect(async () => {
 									<v-divider :vertical="!xs"></v-divider>
 									<v-col cols="12" sm="4" md="3">
 										<v-card variant="text">
-											<v-card-subtitle>REVIEWS</v-card-subtitle>
+											<v-card-subtitle>{{ $t('scraper.detail.reviews').toLocaleUpperCase() }}</v-card-subtitle>
 											<v-card-text>
 												{{ new Intl.NumberFormat("en-US").format(app.reviews) }}
 											</v-card-text>
@@ -161,7 +161,7 @@ watchEffect(async () => {
 									<v-divider :vertical="!xs"></v-divider>
 									<v-col cols="12" sm="4" md="3">
 										<v-card variant="text">
-											<v-card-subtitle>INSTALLS</v-card-subtitle>
+											<v-card-subtitle>{{ $t('scraper.detail.installs').toLocaleUpperCase() }}</v-card-subtitle>
 											<v-card-text>
 												{{ new Intl.NumberFormat("en-US").format(app.realInstalls) }}
 											</v-card-text>
@@ -226,8 +226,8 @@ watchEffect(async () => {
 			<v-window-item value="scrapping" class="gps-app-detail-tab">
 				<v-row class="text-center mx-auto">
 					<v-col cols="12" class="flex-column justify-center pa-2 mt-4">
-						<v-card-title>SCRAPPING DATA</v-card-title>
-						<v-card-title>This operation can take several minutes.</v-card-title>
+						<v-card-title>{{ $t('scraper.detail.scrapping.title').toLocaleUpperCase() }}</v-card-title>
+						<v-card-title>{{ $t('scraper.detail.scrapping.message') }}</v-card-title>
 					</v-col>
 					<v-col cols="12" class="d-flex justify-center pa-2">
 						<v-carousel cycle :interval="10000" :hide-delimiters="true" :hide-delimiter-background="false"
@@ -250,7 +250,7 @@ watchEffect(async () => {
 		</v-overlay>
 	</v-card>
 	<v-container class="text-center">
-		<v-btn @click="scrapApp()" color="teal-darken-2" variant="flat" elevation="4">Fetch Data</v-btn>
+		<v-btn @click="scrapApp()" color="teal-darken-2" variant="flat" elevation="4">{{ $t('scraper.detail.button') }}</v-btn>
 	</v-container>
 </template>
 

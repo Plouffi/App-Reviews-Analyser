@@ -14,18 +14,18 @@ const selectApp = async () => {
 </script>
 
 <template>
-	<v-card title="Select app">
+	<v-card :title="$t('analyser.select.title')">
 		<v-container fluid class="input-analiser">
 			<v-row>
 				<v-col cols="12">
-					<v-select v-model="app" :items="apps" label="Apps" item-title="nam" item-value="id" variant="underlined"
-						persistent-hint return-object single-line hint="Apps available on server">
+					<v-select v-model="app" :items="apps" :label="$t('analyser.select.label')" item-title="nam" item-value="id" variant="underlined"
+						persistent-hint return-object single-line :hint="$t('analyser.select.tooltip')">
 					</v-select>
 				</v-col>
 			</v-row>
 		</v-container>
 		<v-card-actions class="mb-3">
-			<v-btn @click="selectApp()" color="teal-darken-2" variant="flat" elevation="4">Confirm</v-btn>
+			<v-btn @click="selectApp()" color="teal-darken-2" variant="flat" elevation="4">{{ $t('analyser.select.button') }}</v-btn>
 		</v-card-actions>
 	</v-card>
 </template>

@@ -2,7 +2,7 @@
   "tabs": {
     "scraper": "Scraper",
     "analyser": "Analyseur",
-    "about": "A propos"
+    "about": "A propos" 
   },
   "scraper": {
     "search": {
@@ -13,7 +13,89 @@
       "score": "Note",
       "reviews": "Avis",
       "installs": "Installations",
-      "fecth": "Extraction des données"
+      "button": "Extraction des données",
+      "scrapping": {
+        "title": "Scrapping des données",
+        "message": "This operation can take several minutes."
+      }
     }
+  },
+  "analyser": {
+    "select": {
+      "title": "Sélectionner une appli",
+      "label": "Applis",
+      "tooltip": "Applis disponibles sur le serveur",
+      "button": "Confirmer"
+    },
+    "scoreDistribution": {
+      "title": "Distribution des notes",
+      "label": "Date",
+      "tooltip": "Date pour comparer la distribution dse notes (pas de comparaison si vide)",
+      "button": "Confirmer",
+      "result": {
+        "alt": "Résultat de la distribution des notes"
+      }
+    },
+    "means": {
+      "title": "Moyennes",
+      "label": "Delta",
+      "tooltip": "Défini la fenêtre de temps en jour sur laquelle on calcule les résultats cumulatifs",
+      "rule": "Doit être compris entre 1 et 365",
+      "button": "Confirmer",
+      "result": {
+        "alt": "Résultat de la moyenne"
+      }
+    },
+    "wordcloud": {
+      "title": "Wordcloud",
+      "alpha": {
+        "label": "Alpha",
+        "tooltip": "Réduis le bruit des données",
+        "rule": "Doit être positive ou à 0"
+      },
+      "ntoken": {
+        "label": "nToken",
+        "tooltip": "Défini le nombre de mot par jeton de vocabulaire",
+        "rule": "Doit être strictement positive"
+      },
+      "language": {
+        "label": "Langue",
+        "tooltip": "Langue des avis et du vocabulaire",
+        "rule": "Langue requise"
+      },
+      "score": {
+        "label": "Note",
+        "tooltip": "Filtre les avis sur les notes (prend tout si 0)"
+      },
+      "start1": {
+        "label": "Date de début 1",
+        "tooltip": "Date de début de la première période à comparer"
+      },
+      "end1": {
+        "label": "Date de fin 1",
+        "tooltip": "Date de fin de la première période à comparer"
+      },
+      "start2": {
+        "label": "Date de début 2",
+        "tooltip": "Date de début de la seconde période à comparer"
+      },
+      "end2": {
+        "label": "Date de fin 2",
+        "tooltip": "Date de fin de la seconde période à comparer"
+      },
+      "result": {
+        "title1": "Première période",
+        "alt1": "Wordlcoud de la première période",
+        "title2": "Seconde période",
+        "alt2": "Wordcloud de la seconde période"
+      },
+      "button": "Confirmer"
+    }
+  },
+  "about": {
+    "summary": "App Reviews Analyser est un outil développé en Python et Vue.js pour analyser des données issues des avis d'application du Playstore",
+    "source": "Retrouver les sources du projet sur ",
+    "contact": "Contacter moi à ",
+    "version": "Version: "
   }
 }

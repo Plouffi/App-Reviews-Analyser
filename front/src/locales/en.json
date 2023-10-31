@@ -13,7 +13,89 @@
       "score": "Score",
       "reviews": "Reviews",
       "installs": "Installs",
-      "fecth": "Fecth data"
+      "button": "Extract data",
+      "scrapping": {
+        "title": "Scrapping data",
+        "message": "This operation can take several minutes."
+      }
     }
+  },
+  "analyser": {
+    "select": {
+      "title": "Select app",
+      "label": "Apps",
+      "tooltip": "Apps available on server",
+      "button": "Confirm"
+    },
+    "scoreDistribution": {
+      "title": "Score distribution",
+      "label": "Date",
+      "tooltip": "Date to compare score distribution (no comparaison if empty)",
+      "button": "Confirm",
+      "result": {
+        "alt": "Result of score distribution"
+      }
+    },
+    "means": {
+      "title": "Means",
+      "label": "Delta",
+      "tooltip": "Define the duration in days on which it computes cumulatives results",
+      "rule": "Must be between 1 and 365",
+      "button": "Confirm",
+      "result": {
+        "alt": "Result of means"
+      }
+    },
+    "wordcloud": {
+      "title": "Wordcloud",
+      "alpha": {
+        "label": "Alpha",
+        "tooltip": "Reduces noises in data",
+        "rule": "Must be positive or zero"
+      },
+      "ntoken": {
+        "label": "nToken",
+        "tooltip": "Define the number of word per token vocabulary",
+        "rule": "Must be strictly positive"
+      },
+      "language": {
+        "label": "Language",
+        "tooltip": "Reviews and vocabulary language",
+        "rule": "Language is required"
+      },
+      "score": {
+        "label": "Score",
+        "tooltip": "Filter reviews on score (take all if 0)"
+      },
+      "start1": {
+        "label": "Start date 1",
+        "tooltip": "First periode start date to compare"
+      },
+      "end1": {
+        "label": "End date 1",
+        "tooltip": "First periode end date to compare"
+      },
+      "start2": {
+        "label": "Start date 2",
+        "tooltip": "Second periode start date to compare"
+      },
+      "end2": {
+        "label": "End date 2",
+        "tooltip": "Second periode end date to compare"
+      },
+      "result": {
+        "title1": "First period",
+        "alt1": "First period wordcloud",
+        "title2": "Second period",
+        "alt2": "Second period wordcloud"
+      },
+      "button": "Confirm"
+    }
+  },
+  "about": {
+    "summary": "App Reviews Analyser is a small tool developped in Python and Vue.js to analyse data from reviews data of playstore's application",
+    "source": "You can find the project source on ",
+    "contact": "Contact me at ",
+    "version": "Version: "
   }
 }
