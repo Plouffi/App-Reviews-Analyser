@@ -90,7 +90,7 @@ const returnToList = () => {
 							v-if="searchTab == 'detail'" :disabled="loadScrapping"/>
 					</transition>
 					<v-col cols="9" md="6" class="mx-4 p-0">
-						<v-text-field label="Search app" v-model="searchTerm" v-on:keyup.enter="onSearch()" :disabled="loadScrapping" variant="solo"
+						<v-text-field :label="$t('scraper.search.label')" v-model="searchTerm" v-on:keyup.enter="onSearch()" :disabled="loadScrapping" variant="solo"
 							prepend-inner-icon="mdi-magnify" rounded hide-details>
 						</v-text-field>
 					</v-col>
@@ -99,7 +99,7 @@ const returnToList = () => {
 			<v-col cols="12" lg="10" offset="0" offset-lg="1">
 				<v-window v-model="searchTab">
 					<v-window-item value="list">
-						<v-card title="Search results" v-if="(appListResult && appListResult.length) || loadSearch">
+						<v-card :title="$t('scraper.search.result')" v-if="(appListResult && appListResult.length) || loadSearch">
 							<v-list :items="appListResult" item-props @click:select="selectApp($event)" overflow="true"
 								max-height="400" />
 							<v-overlay v-model="loadSearch" contained class="align-center justify-center">

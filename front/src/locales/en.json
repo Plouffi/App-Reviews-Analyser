@@ -6,7 +6,7 @@
   },
   "scraper": {
     "search": {
-      "bar": "Search app",
+      "label": "Search app",
       "result": "Search results"
     },
     "detail": {
