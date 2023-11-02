@@ -31,11 +31,11 @@ const computeMeans = async () => {
 		const image = await gpsResource.getMeans(timeDelta.value, ignore.value)
 		means.value = URL.createObjectURL(image)
 		meansError.value = ''
-	} catch (e) {
+	} catch (err) {
 		if (ENV.MODE == Utils._MODE_MOCK) {
 			means.value = Utils.getMockImage('means')
 		} else {
-			meansError.value = `${e}`
+			meansError.value = `${err}`
 		}
 	}
 	meansLoading.value = false

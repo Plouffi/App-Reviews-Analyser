@@ -20,8 +20,8 @@ const ENV = import.meta.env
           </v-card-title>
           <v-card-text>
             - Score distribution: 02/02/2020 04:00 <br />
-            - Score distribution: 30 <br />
-            - Score distribution: 10 / 2 / English / 0 / 02/02/2017 01:00 / 02/02/2020 04:00 / 02/02/2020 04:00 /
+            - Means: 30 <br />
+            - Wordcloud: 10 / 2 / English / 0 / 02/02/2017 01:00 / 02/02/2020 04:00 / 02/02/2020 04:00 /
             09/09/2023 10:00
           </v-card-text>
         </v-card>

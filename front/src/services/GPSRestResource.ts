@@ -1,5 +1,4 @@
 import { GpsApp } from '@/gpsApp';
-import Utils from '@/utils';
 
 export default class GPSRestResource {
 
@@ -164,12 +163,17 @@ export default class GPSRestResource {
 	 */
 	async getImageWordcloud(words: [[string, Float32Array]]) {
 		const endpoint = '/wordcloud/generateImage'
-		const res = await fetch(this.buildURL(endpoint), {
-			method: 'POST',
-			headers: this._HEADERS,
-			body: JSON.stringify({ 'words': words })
-		})
-		return res.blob()
+		try {
+			const res = await fetch(this.buildURL(endpoint), {
+				method: 'POST',
+				headers: this._HEADERS,
+				body: JSON.stringify({ 'words': words })
+			})
+			if (!res.ok) throw `${res.statusText} - ${res.status}`
+			return res.blob()
+		} catch (err) {
+			throw this.handleError(endpoint, err)
+		}
 	}
 
 	/**

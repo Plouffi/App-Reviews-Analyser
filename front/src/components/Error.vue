@@ -1,6 +1,6 @@
 <script setup lang="ts">
 defineOptions({
-  name: 'ara-error'
+	name: 'ara-error'
 })
 const props = defineProps({
 	msg: String //Error message

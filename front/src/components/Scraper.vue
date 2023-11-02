@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import AppDetail from './AppDetail.vue'
+import araError from './Error.vue'
 import GPSRestResource from '@/services/GPSRestResource';
 import Utils from '@/utils';
 
@@ -13,6 +14,7 @@ const searchTerm = ref() // Model value for the searched terms
 const selectedApp = ref() // Model value for the selected app ID
 const loadSearch = ref(false) // Loading flag for search
 const loadScrapping = ref(false) // Loading flag for scrapping
+const searchError = ref('') // Model value for error message while search proccess
 
 /**
  * Function triggered on search (enter key pressed on search bar) to fecth result
@@ -20,8 +22,9 @@ const loadScrapping = ref(false) // Loading flag for scrapping
  */
 const onSearch = async () => {
 	if (searchTerm.value) {
-		searchTab.value = 'list'
+		searchTab.value = 'list' // Return to the list tab if we were on detail tab
 		loadSearch.value = true
+		searchError.value =''
 		appListResult.value = []
 		try {
 			const res = await gpsResource.searchApp(searchTerm.value)
@@ -33,7 +36,7 @@ const onSearch = async () => {
 					variant: 'elevated',
 				})
 			});
-		} catch (e) {
+		} catch (err) {
 			if (ENV.MODE == Utils._MODE_MOCK) {
 				const res = Utils.getMockSearch('search')
 				res.forEach((appJson: { [k: string]: any }) => {
@@ -45,7 +48,7 @@ const onSearch = async () => {
 					})
 				});
 			} else {
-				//TODO: handle errors
+				searchError.value = `${err}`
 			}
 		}
 		loadSearch.value = false
@@ -99,6 +102,7 @@ const returnToList = () => {
 								<v-progress-circular :size="60" :witdh="60" color="teal-darken-2" indeterminate />
 							</v-overlay>
 						</v-card>
+						<ara-error :msg="searchError" v-if="searchError.length"></ara-error>
 					</v-window-item>
 					<v-window-item value="detail">
 						<AppDetail :appId="selectedApp" @load-scrapping="loadScrapping = true"

@@ -20,11 +20,11 @@ const computeScoreDistribution = async () => {
 	try {
 		const image = await gpsResource.getScoreDistribution(date.value)
 		scoreDistribution.value = URL.createObjectURL(image)
-	} catch (e) {
+	} catch (err) {
 		if (ENV.MODE == Utils._MODE_MOCK) {
 			scoreDistribution.value = Utils.getMockImage('score_distribution')
 		} else {
-			scoreDistributionError.value = `${e}`
+			scoreDistributionError.value = `${err}`
 		}
 	}
 	scoreDistributionLoading.value = false

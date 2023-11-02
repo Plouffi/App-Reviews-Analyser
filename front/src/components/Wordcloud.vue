@@ -59,12 +59,12 @@ const computeWordcloud = async () => {
 		wordcloudImage1.value = URL.createObjectURL(image1)
 		wordcloudImage2.value = URL.createObjectURL(image2)
 		wordcloudError.value = ''
-	} catch (e) {
+	} catch (err) {
 		if (ENV.MODE == Utils._MODE_MOCK) {
 			wordcloudImage1.value = Utils.getMockImage('wordcloud_1')
 			wordcloudImage2.value = Utils.getMockImage('wordcloud_2')
 		} else {
-			wordcloudError.value = `${e}`
+			wordcloudError.value = `${err}`
 		}
 	}
 	wordcloud1Loading.value = false;

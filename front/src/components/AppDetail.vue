@@ -2,6 +2,7 @@
 import { ref, computed, watchEffect } from 'vue'
 import { useDisplay } from 'vuetify';
 import { GpsApp } from '@/gpsApp';
+import araError from './Error.vue'
 import GPSRestResource from '@/services/GPSRestResource';
 import Utils from '@/utils';
 //import ColorThief from 'colorthief'
@@ -28,11 +29,45 @@ const scrapColor = ref('teal-darken-2') // Scrapping color loading
 const loadDetail = ref(true) // Loading flag to display detail
 const loadScreenshot = ref(false) // Loading flag to screenshot
 const loadScrapping = ref() // Loading flag for scraping process
+const detailError = ref('') // Model value for error during detail process
 const color = ref({ r: 0, g: 0, b: 0 }) // Model value for the background color
 const urlBackground = computed(() => `url(${app.value.headerImage}`) // CSS rules for the background url
 const gradientColorBackground = computed(() => `rgba(${color.value.r}, ${color.value.g}, ${color.value.b}, 0.4)`) // CSS rules for the background linear gradient
 const gradientColor2Background = computed(() => `rgba(${color.value.r}, ${color.value.g}, ${color.value.b}, 1)`) // CSS rules for the background linear gradient
 
+async function getDetail(): Promise<void> {
+	if (props.appId) {
+		detailError.value = ''
+		detailTab.value = 'detail'
+		loadDetail.value = true
+		app.value = new GpsApp()
+		try {
+			const resApp = await gpsResource.getAppDetail(props.appId)
+			app.value.init(resApp)
+		} catch (err) {
+			if (ENV.MODE == Utils._MODE_MOCK) {
+				app.value.init(Utils.getMockDetail(props.appId))
+			} else {
+				detailError.value = `${err}`
+				detailTab.value = 'error'
+			}
+		}
+
+		// const colorThief = new ColorThief()
+		// const sourceImage = document.createElement("img");
+		// sourceImage.crossOrigin = "Anonymous"
+		// sourceImage.addEventListener('load', () => {
+		// 	const palette = colorThief.getPalette(sourceImage, 5, 10);
+		// 	const c = palette[0];
+		// 	color.value.r = c[0]
+		// 	color.value.g = c[1]
+		// 	color.value.b = c[2]
+		// 	loadDetail.value = false
+		// });
+		// sourceImage.src = app.value.headerImage
+		loadDetail.value = false
+	}
+}
 /**
  * Display a screenshot app inside the dialog box
  *
@@ -64,39 +99,17 @@ const scrapApp = () => {
 	console.log(props.appId)
 }
 
+const retryDetail = () => {
+	getDetail()
+}
+
 /**
  * Effect to detect change in appID props value to change the detail display
  */
 watchEffect(async () => {
-	if (props.appId) {
-		loadDetail.value = true
-		app.value = new GpsApp()
-		try {
-			const resApp = await gpsResource.getAppDetail(props.appId)
-			app.value.init(resApp)
-		} catch (e) {
-			if (ENV.MODE == Utils._MODE_MOCK) {
-				app.value.init(Utils.getMockDetail(props.appId))
-			} else {
-				//TODO: handle errors
-			}
-		}
-
-		// const colorThief = new ColorThief()
-		// const sourceImage = document.createElement("img");
-		// sourceImage.crossOrigin = "Anonymous"
-		// sourceImage.addEventListener('load', () => {
-		// 	const palette = colorThief.getPalette(sourceImage, 5, 10);
-		// 	const c = palette[0];
-		// 	color.value.r = c[0]
-		// 	color.value.g = c[1]
-		// 	color.value.b = c[2]
-		// 	loadDetail.value = false
-		// });
-		// sourceImage.src = app.value.headerImage
-		loadDetail.value = false
-	}
+	getDetail()
 })
+
 </script>
 
 <template>
@@ -231,14 +244,27 @@ watchEffect(async () => {
 					</v-col>
 				</v-row>
 			</v-window-item>
+			<v-window-item value="error">
+				<v-row class="text-center">
+					<v-col cols="12" class="d-flex justify-center align-center pa-2 ma-4">
+						<ara-error :msg="detailError" v-if="detailError.length"></ara-error>
+					</v-col>
+					<v-col cols="12" class="d-flex justify-center align-center pa-2 ma-4">
+						<v-btn @click="retryDetail()" color="teal-darken-2" variant="flat" elevation="4">
+							{{ $t('scraper.detail.button.retry') }}
+						</v-btn>
+					</v-col>
+				</v-row>
+			</v-window-item>
 		</v-window>
 		<v-overlay v-model="loadDetail" contained class="align-center justify-center">
 			<v-progress-circular :size="60" :witdh="60" color="teal-darken-2" indeterminate />
 		</v-overlay>
 	</v-card>
 	<v-container class="text-center">
-		<v-btn @click="scrapApp()" color="teal-darken-2" variant="flat" elevation="4">{{ $t('scraper.detail.button')
-		}}</v-btn>
+		<v-btn @click="scrapApp()" color="teal-darken-2" variant="flat" elevation="4">
+			{{ $t('scraper.detail.button.extract') }}
+		</v-btn>
 	</v-container>
 </template>
 

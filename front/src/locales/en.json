@@ -13,7 +13,10 @@
       "score": "Score",
       "reviews": "Reviews",
       "installs": "Installs",
-      "button": "Extract data",
+      "button": {
+        "extract": "Extract data",
+        "retry": "Retry"
+      },
       "scrapping": {
         "title": "Scrapping data",
         "message": "This operation can take several minutes."
