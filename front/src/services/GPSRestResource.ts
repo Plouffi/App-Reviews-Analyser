@@ -59,6 +59,29 @@ export default class GPSRestResource {
 		}
 	}
 
+/**
+ * Trigger the scraping process on the backend API
+ *
+ * @param appId the app ID 
+ * 
+ * @returns The promise from the fetch API containing the success result
+ */
+	async scrapingApp(appId: string): Promise<GpsApp> {
+		const endpoint = '/scrapingApp'
+		try {
+			const params: { [k: string]: any } = {}
+			params.id = appId
+			const query = new URLSearchParams(params)
+			const res = await fetch(`${this.buildURL(endpoint)}?${query}`, {
+				method: 'GET',
+			})
+			if (!res.ok) throw `${res.statusText} - ${res.status}`
+			return res.json()
+		} catch (err) {
+			throw this.handleError(endpoint, err)
+		}
+	}
+
 	/**
 	 * Fetch the score distribution graph from the backend API
 	 *

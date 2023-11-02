@@ -21,9 +21,13 @@ class Scraper:
 	
 	def app_detail(self, id: str) -> Any:
 		gps_app = app(app_id=id, lang='en', country='us') # default info
+		print("en - US: " + str(gps_app['reviews']))
+		# there is a weird glitch in data for DK, FI and PR country where they have all the same HUGE number of reviews 
+		# I remove PR from the list to approach the total number of reviews (still not perfect)
 		for language in self.config['languages']:
-			if language['country'] != 'us':
+			if language['country'] != 'US':
 				detail_app = app(app_id=id, lang=language['lang'], country=language['country'])
+				print(language['lang'] + " - " + language['country'] + " : " + str(detail_app['reviews']))
 				gps_app['reviews'] += detail_app['reviews'] # We sum reviews to have the total
 		return gps_app
 
@@ -42,11 +46,12 @@ class Scraper:
 		for language in self.config['languages']:
 			res = gps_reviews(
 				self.config['app'],
-				dt.strptime(date, '%Y-%m-%d %I:%M%p'),
+				date,
 				lang=language['lang'],
 				country=language['country'],
 				sort=Sort.NEWEST
 			)
+			print(language['lang'] + " - " + language['country'] + " : Done")
 			res = clear_data(res, language)
 			reviews = [*reviews, *res]
 		print('Total reviews fetched: %d', len(reviews))

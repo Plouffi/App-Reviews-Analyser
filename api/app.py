@@ -63,7 +63,7 @@ def search_apps():
 		return s.search_app(search)
 
 	except FileNotFoundError:
-		return f"File '{config['export_path']}' not found. Launch scrapping process to create it", 500
+		return f"File '{config['export_path']}' not found. Launch scraping process to create it", 500
 	
 @app.route('/appDetail')
 def app_detail():
@@ -80,19 +80,28 @@ def app_detail():
 		return app.__dict__
 
 	except FileNotFoundError:
-		return f"File '{config['export_path']}' not found. Launch scrapping process to create it", 500
+		return f"File '{config['export_path']}' not found. Launch scraping process to create it", 500
 
-@app.route('/getReviews')
+@app.route('/scrapingApp')
 def get_reviews():
 	"""
 		Method to fetch reviews from the Playstore and store it
 	"""
+	id = request.args.get('id')
 	config = load_config()
-	dm = DataManager(config)
-	s = Scraper(config)
-	reviews = s.get_reviews(config['feh_release_date'])
+	try:
+		dm = DataManager(config)
+		s = Scraper(config)
+		app = App(s.app_detail(id))
+		# TODO: save app into DB
+		reviews = s.get_reviews(app.released)
+		dm.insert_reviews(reviews=reviews)
+		dm.export()
 
-	return 'OK', 200
+		return 'OK', 200
+	except FileNotFoundError:
+		return f"File '{config['export_path']}' not found. Launch scraping process to create it", 500
+
 
 @app.route('/compute/scoreDistribution', methods=['POST'])
 def compute_score_distribution():
@@ -119,7 +128,7 @@ def compute_score_distribution():
 		return Response(image_plot_SD.getvalue(), mimetype='image/png')
 
 	except FileNotFoundError:
-		return f"File '{config['export_path']}' not found. Launch scrapping process to create it", 500
+		return f"File '{config['export_path']}' not found. Launch scraping process to create it", 500
 
 @app.route('/compute/means', methods=['POST'])
 def compute_means():
@@ -152,7 +161,7 @@ def compute_means():
 	
 		return Response(image_plot_res.getvalue(), mimetype='image/png')
 	except FileNotFoundError:
-		return f"File '{config['export_path']}' not found. Launch scrapping process to create it", 500
+		return f"File '{config['export_path']}' not found. Launch scraping process to create it", 500
 	
 @app.route('/compute/stats', methods=['POST'])
 def compute_overall_stats():
@@ -183,7 +192,7 @@ def compute_overall_stats():
 		return stats, 200
 
 	except FileNotFoundError:
-		return f"File '{config['export_path']}' not found. Launch scrapping process to create it", 500
+		return f"File '{config['export_path']}' not found. Launch scraping process to create it", 500
 
 @app.route('/wordcloud/computeWords', methods=['POST'])
 def compute_words():

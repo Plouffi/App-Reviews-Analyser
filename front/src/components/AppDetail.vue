@@ -12,7 +12,7 @@ const ENV = import.meta.env // Environnements variables
 const props = defineProps({
 	appId: String // App ID 
 })
-const emit = defineEmits(['loadScrapping', 'scrappingDone'])
+const emit = defineEmits(['loadScraping', 'scrapingDone'])
 const { mdAndUp, smAndDown, xs } = useDisplay()
 
 const gpsResource = new GPSRestResource()
@@ -25,10 +25,10 @@ const screenshotDialogAttr = ref({
 	height: 0 // Screenshot height
 })
 const detailTab = ref() // Model value for detail tabs
-const scrapColor = ref('teal-darken-2') // Scrapping color loading
+const scrapColor = ref('teal-darken-2') // Scraping color loading
 const loadDetail = ref(true) // Loading flag to display detail
 const loadScreenshot = ref(false) // Loading flag to screenshot
-const loadScrapping = ref() // Loading flag for scraping process
+const loadScraping = ref() // Loading flag for scraping process
 const detailError = ref('') // Model value for error during detail process
 const color = ref({ r: 0, g: 0, b: 0 }) // Model value for the background color
 const urlBackground = computed(() => `url(${app.value.headerImage}`) // CSS rules for the background url
@@ -88,15 +88,27 @@ const showSreenshotDialog = async (url: string) => {
 }
 
 /**
- * Function to trigger the scrapping process, disable search until completed
- * 
- * @param appID - The app ID
+ * Function to trigger the scraping process, disable search until completed
  */
-const scrapApp = () => {
-	emit('loadScrapping', true)
-	loadScrapping.value = true
-	detailTab.value = 'scrapping'
-	console.log(props.appId)
+async function scrapingApp(): Promise<void> {
+	if (props.appId) {
+		try {
+			emit('loadScraping', true)
+			detailTab.value = 'scraping'
+			detailError.value = ''
+			loadScraping.value = true
+			const res = await gpsResource.scrapingApp(props.appId)
+		} catch (err) {
+			if (ENV.MODE == Utils._MODE_MOCK) {
+
+			} else {
+				detailError.value = `${err}`
+				detailTab.value = 'error'
+			}
+		}
+		loadScraping.value = false
+		emit('loadScraping', false)
+	}
 }
 
 const retryDetail = () => {
@@ -113,7 +125,7 @@ watchEffect(async () => {
 </script>
 
 <template>
-	<v-card :loading="loadDetail || loadScrapping" id="gps-app-detail" class="mb-2 pa-2" max-height="450">
+	<v-card :loading="loadDetail || loadScraping" id="gps-app-detail" class="mb-2 pa-2" max-height="450">
 		<v-window v-model="detailTab">
 			<v-window-item value="detail" class="gps-app-detail-tab">
 				<v-carousel v-model="carousel" class="detail-app-carousel" direction="vertical" :continuous="false"
@@ -223,11 +235,11 @@ watchEffect(async () => {
 					</v-carousel-item>
 				</v-carousel>
 			</v-window-item>
-			<v-window-item value="scrapping" class="gps-app-detail-tab">
+			<v-window-item value="scraping" class="gps-app-detail-tab">
 				<v-row class="text-center mx-auto">
 					<v-col cols="12" class="flex-column justify-center pa-2 mt-4">
-						<v-card-title>{{ $t('scraper.detail.scrapping.title').toLocaleUpperCase() }}</v-card-title>
-						<v-card-title>{{ $t('scraper.detail.scrapping.message') }}</v-card-title>
+						<v-card-title>{{ $t('scraper.detail.scraping.title').toLocaleUpperCase() }}</v-card-title>
+						<v-card-title>{{ $t('scraper.detail.scraping.message') }}</v-card-title>
 					</v-col>
 					<v-col cols="12" class="d-flex justify-center pa-2">
 						<v-carousel cycle :interval="10000" :hide-delimiters="true" :hide-delimiter-background="false"
@@ -240,7 +252,7 @@ watchEffect(async () => {
 						</v-carousel>
 					</v-col>
 					<v-col cols="12" class="d-flex justify-center">
-						<v-progress-circular :size="60" :witdh="60" color="teal-darken-2" indeterminate v-if="loadScrapping" />
+						<v-progress-circular :size="60" :witdh="60" color="teal-darken-2" indeterminate v-if="loadScraping" />
 					</v-col>
 				</v-row>
 			</v-window-item>
@@ -262,7 +274,7 @@ watchEffect(async () => {
 		</v-overlay>
 	</v-card>
 	<v-container class="text-center">
-		<v-btn @click="scrapApp()" color="teal-darken-2" variant="flat" elevation="4">
+		<v-btn @click="scrapingApp()" color="teal-darken-2" variant="flat" elevation="4">
 			{{ $t('scraper.detail.button.extract') }}
 		</v-btn>
 	</v-container>

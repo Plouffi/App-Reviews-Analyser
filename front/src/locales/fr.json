@@ -17,8 +17,8 @@
         "extract": "Extraction des données",
         "retry": "Réessayer"
       },
-      "scrapping": {
-        "title": "Scrapping des données",
+      "scraping": {
+        "title": "Scraping des données",
         "message": "This operation can take several minutes."
       }
     }

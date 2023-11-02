@@ -1,4 +1,5 @@
 from typing import Any, List
+from datetime import datetime
 
 class App:
     """
@@ -23,6 +24,7 @@ class App:
         description: str
         descriptionHTML: str
         version: str
+        released: datetime
         developer: str
         developerWebsite: str
         installs: str
@@ -47,6 +49,7 @@ class App:
     description: str
     descriptionHTML: str
     version: str
+    released: datetime
     developer: str
     developerWebsite: str
     installs: str
@@ -73,6 +76,7 @@ class App:
         self.description = gps_app['description'] if 'description' in gps_app else ''
         self.descriptionHTML = gps_app['descriptionHTML'] if 'descriptionHTML' in gps_app else ''
         self.version = gps_app['version'] if 'version' in gps_app else ''
+        self.released = self.formatDate(gps_app['released'], 'en') if 'released' in gps_app else '' #TODO: handle language
         self.developer = gps_app['developer'] if 'developer' in gps_app else ''
         self.developerWebsite = gps_app['developerWebsite'] if 'developerWebsite' in gps_app else ''
         self.installs = gps_app['installs'] if 'installs' in gps_app else ''
@@ -89,3 +93,9 @@ class App:
 			'title': self.title,
 			'icon': self.icon,
 		}
+    
+    def formatDate(self, date: str, lang: str) -> datetime:
+        """
+            Method to format the released date
+        """
+        return datetime.strptime(f"{date} 00:00", '%b %d, %Y %H:%M')

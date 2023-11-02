@@ -10,6 +10,7 @@ const BASE_API_URL = import.meta.url || ''
 export default defineConfig(({ command, mode }) => {
 
   const env = loadEnv(mode, process.cwd(), '')
+
   return {
     plugins: [
       vue(),
