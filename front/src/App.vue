@@ -11,8 +11,8 @@ const theme = useTheme()
 const locale = useLocale()
 
 const ENV = import.meta.env // Environnements variables
-
-const appName = ref(VITE_APP_NAME)
+console.log(import.meta.env)
+const appName = ref(APP_NAME)
 const themeSelected = ref(theme.global.name.value) // Model value for the selected theme
 const languages = ref(Utils.getLanguagesApp())
 const tab = ref('scraper') // Init the model window to the Scraper tab
@@ -45,7 +45,7 @@ const switchTheme = () => {
 	<v-theme-provider style="height: 100%;" :theme="themeSelected" with-background>
 		<header class="ara-header pa-5">
 			<v-card class="ara-alert d-flex justify-center align-center pa-2" variant="flat" color="red-lighten-2"
-				v-if="ENV.VITE_IS_MOCK">
+				v-if="ENV.MODE == Utils._MODE_MOCK">
 				<v-icon icon="mdi-alert" size="large"></v-icon>
 				<v-card-text>Backend API is down ! Mock data will be display.</v-card-text>
 			</v-card>

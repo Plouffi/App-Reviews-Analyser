@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import araError from './Error.vue'
-import Utils from '@/utils';
 import GPSRestResource from '@/services/GPSRestResource';
+import Utils from '@/utils';
 
 const ENV = import.meta.env // Environment variable
 
@@ -11,8 +11,6 @@ const date = ref() // Model value for the date parameter
 const scoreDistribution = ref('') // Model value for the source url result
 const scoreDistributionLoading = ref(false) // Loading flag on score distribution computing
 const scoreDistributionError = ref('') // Error flag on score distribution computing
-
-
 
 /**
  * Trigger the backend process to compute score distribution
@@ -23,7 +21,7 @@ const computeScoreDistribution = async () => {
 		const image = await gpsResource.getScoreDistribution(date.value)
 		scoreDistribution.value = URL.createObjectURL(image)
 	} catch (e) {
-		if (ENV.VITE_IS_MOCK) {
+		if (ENV.MODE == Utils._MODE_MOCK) {
 			scoreDistribution.value = Utils.getMockImage('score_distribution')
 		} else {
 			scoreDistributionError.value = `${e}`

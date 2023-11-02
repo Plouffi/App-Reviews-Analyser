@@ -2,24 +2,13 @@
 import { ref } from 'vue'
 import { useLocale } from 'vuetify';
 import araError from './Error.vue'
-import Utils from '@/utils';
+import GPSRestResource from '@/services/GPSRestResource';
+import Utils from '@/utils'
 
 const ENV = import.meta.env // Environment variable
 const { t } = useLocale()
 
-// Input rules
-const alphaRule = ref((alpha: number) => {
-	return alpha >= 0 || t('analyser.wordcloud.alpha.rule')
-})
-
-const tokenRule = ref((token: number) => {
-	return token > 0 || t('analyser.wordcloud.ntoken.rule')
-})
-
-const languageRule = ref((lang: string) => {
-	return !!lang || t('analyser.wordcloud.language.rule')
-})
-
+const gpsResource = new GPSRestResource()
 // Request parameter for /wordcloud
 const alpha = ref()
 const nToken = ref()
@@ -35,7 +24,6 @@ const wordcloud1Loading = ref(false) // Loading flag for the first wordcloud
 const wordcloud2Loading = ref(false) // Loading flag for the second wordcloud
 const wordcloudError = ref('') // Error flag
 
-
 const languages = ref([
 	{ text: 'Chinese', value: 'zh' },
 	{ text: 'Deutsh', value: 'de' },
@@ -47,60 +35,16 @@ const languages = ref([
 	{ text: 'Spanish', value: 'es' }
 ])
 
-/**
- * Fetch the words and their frequencies from the backend API
- *
- * @returns The promise from the fetch API containing the words and their frequencies.
- */
-async function fecthWords(): Promise<any> {
-	try {
-		const params: { [k: string]: any } = {}
-		params.alpha = alpha.value
-		params.n = nToken.value
-		params.lang = lang.value.value
-		if (!isNaN(score.value)) {
-			params.score = score.value
-		}
-		params.start1 = start1.value.toLocaleString()
-		params.end1 = end1.value.toLocaleString()
-		params.start2 = start2.value.toLocaleString()
-		params.end2 = end2.value.toLocaleString()
-		const res = await fetch('http://localhost:5173/api/wordcloud/computeWords', {
-			method: 'POST',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(params)
-		})
-		if (!res.ok) throw `${res.statusText} - ${res.status}`
-		return res.json()
-	} catch (e) {
-		let msg = `Error while requesting /wordcloud/computeWords : ${e}`
-		console.error(msg)
-		throw msg
-	}
-}
-
-/**
- * Fetch the wordcloud image from the backend API
- *
- * @param words the words and their frequencies
- * 
- * @returns The promise from the fetch API containing the wordcloud image.
- * If it fails, return a promise with mocked data.
- */
-async function fetchImageWordcloud(words: [[string, Float32Array]]) {
-	const res = await fetch('http://localhost:5173/api/wordcloud/generateImage', {
-		method: 'POST',
-		headers: {
-			'Accept': 'application/json',
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify({ 'words': words })
-	})
-	return res.blob()
-}
+// Input rules
+const alphaRule = ref((alpha: number) => {
+	return alpha >= 0 || t('analyser.wordcloud.alpha.rule')
+})
+const tokenRule = ref((token: number) => {
+	return token > 0 || t('analyser.wordcloud.ntoken.rule')
+})
+const languageRule = ref((lang: string) => {
+	return !!lang || t('analyser.wordcloud.language.rule')
+})
 
 /**
  * Trigger the backend process wordcloud
@@ -109,14 +53,14 @@ const computeWordcloud = async () => {
 	wordcloud1Loading.value = true;
 	wordcloud2Loading.value = true;
 	try {
-		const wordsRes = await fecthWords()
-		const image1 = await fetchImageWordcloud(wordsRes[0])
+		const wordsRes = await gpsResource.getWords(alpha.value, nToken.value, lang.value.value, score.value, start1.value, end1.value, start2.value, end2.value)
+		const image1 = await gpsResource.getImageWordcloud(wordsRes[0])
+		const image2 = await gpsResource.getImageWordcloud(wordsRes[1])
 		wordcloudImage1.value = URL.createObjectURL(image1)
-		const image2 = await fetchImageWordcloud(wordsRes[1])
 		wordcloudImage2.value = URL.createObjectURL(image2)
 		wordcloudError.value = ''
 	} catch (e) {
-		if (ENV.VITE_IS_MOCK) {
+		if (ENV.MODE == Utils._MODE_MOCK) {
 			wordcloudImage1.value = Utils.getMockImage('wordcloud_1')
 			wordcloudImage2.value = Utils.getMockImage('wordcloud_2')
 		} else {
@@ -158,29 +102,30 @@ const computeWordcloud = async () => {
 
 			<v-row class="input-analiser">
 				<v-col cols="12" sm="6" md="3">
-					<v-text-field v-model="start1" :label="$t('analyser.wordcloud.start1.label')" type="datetime-local" variant="underlined"
-						:hint="$t('analyser.wordcloud.end1.label')">
+					<v-text-field v-model="start1" :label="$t('analyser.wordcloud.start1.label')" type="datetime-local"
+						variant="underlined" :hint="$t('analyser.wordcloud.end1.label')">
 					</v-text-field>
 				</v-col>
 				<v-col cols="12" sm="6" md="3">
-					<v-text-field v-model="end1" :label="$t('analyser.wordcloud.end1.label')" type="datetime-local" variant="underlined"
-						:hint="$t('analyser.wordcloud.end1.tooltip')">
+					<v-text-field v-model="end1" :label="$t('analyser.wordcloud.end1.label')" type="datetime-local"
+						variant="underlined" :hint="$t('analyser.wordcloud.end1.tooltip')">
 					</v-text-field>
 				</v-col>
 				<v-col cols="12" sm="6" md="3">
-					<v-text-field v-model="start2" :label="$t('analyser.wordcloud.start2.label')" type="datetime-local" variant="underlined"
-						:hint="$t('analyser.wordcloud.start2.tooltip')">
+					<v-text-field v-model="start2" :label="$t('analyser.wordcloud.start2.label')" type="datetime-local"
+						variant="underlined" :hint="$t('analyser.wordcloud.start2.tooltip')">
 					</v-text-field>
 				</v-col>
 				<v-col cols="12" sm="6" md="3">
-					<v-text-field v-model="end2" :label="$t('analyser.wordcloud.end2.label')" type="datetime-local" variant="underlined"
-						:hint="$t('analyser.wordcloud.end2.tooltip')">
+					<v-text-field v-model="end2" :label="$t('analyser.wordcloud.end2.label')" type="datetime-local"
+						variant="underlined" :hint="$t('analyser.wordcloud.end2.tooltip')">
 					</v-text-field>
 				</v-col>
 			</v-row>
 		</v-container>
 		<v-card-actions>
-			<v-btn @click="computeWordcloud()" color="teal-darken-2" variant="flat" elevation="4">{{ $t('analyser.wordcloud.button') }}</v-btn>
+			<v-btn @click="computeWordcloud()" color="teal-darken-2" variant="flat" elevation="4">{{
+				$t('analyser.wordcloud.button') }}</v-btn>
 		</v-card-actions>
 		<v-container fluid>
 			<v-row dense>

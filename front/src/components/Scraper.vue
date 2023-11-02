@@ -2,6 +2,9 @@
 import { ref } from 'vue'
 import AppDetail from './AppDetail.vue'
 import GPSRestResource from '@/services/GPSRestResource';
+import Utils from '@/utils';
+
+const ENV = import.meta.env // Environnements variables
 
 const gpsResource = new GPSRestResource()
 const searchTab = ref('scrapping') // Model value for the search tab window
@@ -19,16 +22,32 @@ const onSearch = async () => {
 	if (searchTerm.value) {
 		searchTab.value = 'list'
 		loadSearch.value = true
-		const res = await gpsResource.searchApp(searchTerm.value)
 		appListResult.value = []
-		res.forEach((appJson: { [k: string]: any }) => {
-			appListResult.value.push({
-				title: appJson.title,
-				value: appJson.id,
-				prependAvatar: appJson.icon,
-				variant: 'elevated',
-			})
-		});
+		try {
+			const res = await gpsResource.searchApp(searchTerm.value)
+			res.forEach((appJson: { [k: string]: any }) => {
+				appListResult.value.push({
+					title: appJson.title,
+					value: appJson.id,
+					prependAvatar: appJson.icon,
+					variant: 'elevated',
+				})
+			});
+		} catch (e) {
+			if (ENV.MODE == Utils._MODE_MOCK) {
+				const res = Utils.getMockSearch('search')
+				res.forEach((appJson: { [k: string]: any }) => {
+					appListResult.value.push({
+						title: appJson.title,
+						value: appJson.id,
+						prependAvatar: appJson.icon,
+						variant: 'elevated',
+					})
+				});
+			} else {
+				//TODO: handle errors
+			}
+		}
 		loadSearch.value = false
 	}
 }
@@ -61,11 +80,11 @@ const returnToList = () => {
 				<v-row class="d-flex flex-row justify-center align-center px-lg-16">
 					<transition name="fade">
 						<v-btn @click="returnToList()" icon="mdi-chevron-left" variant="text" class="btn-return"
-							v-if="searchTab == 'detail'" :disabled="loadScrapping"/>
+							v-if="searchTab == 'detail'" :disabled="loadScrapping" />
 					</transition>
 					<v-col cols="9" md="6" class="mx-4 p-0">
-						<v-text-field :label="$t('scraper.search.label')" v-model="searchTerm" v-on:keyup.enter="onSearch()" :disabled="loadScrapping" variant="solo"
-							prepend-inner-icon="mdi-magnify" rounded hide-details>
+						<v-text-field :label="$t('scraper.search.label')" v-model="searchTerm" v-on:keyup.enter="onSearch()"
+							:disabled="loadScrapping" variant="solo" prepend-inner-icon="mdi-magnify" rounded hide-details>
 						</v-text-field>
 					</v-col>
 				</v-row>
@@ -82,7 +101,8 @@ const returnToList = () => {
 						</v-card>
 					</v-window-item>
 					<v-window-item value="detail">
-						<AppDetail :appId="selectedApp" @load-scrapping="loadScrapping = true" @scrapping-done="loadScrapping = false"/>
+						<AppDetail :appId="selectedApp" @load-scrapping="loadScrapping = true"
+							@scrapping-done="loadScrapping = false" />
 					</v-window-item>
 				</v-window>
 			</v-col>

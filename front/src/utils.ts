@@ -4,6 +4,8 @@ import mock from "./mock"
  * Module exporting Utils class
  */
 export default class Utils {
+
+	public static readonly _MODE_MOCK = 'mock'
 	private static readonly _languages = [
 		{
 			value: 'en',

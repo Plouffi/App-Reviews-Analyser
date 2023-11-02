@@ -2,10 +2,18 @@
 import { ref } from 'vue'
 import { useLocale } from 'vuetify'
 import araError from './Error.vue'
+import GPSRestResource from '@/services/GPSRestResource';
 import Utils from '@/utils'
 
 const ENV = import.meta.env // Environment variable
 const { t } = useLocale()
+
+const gpsResource = new GPSRestResource()
+const timeDelta = ref(30) // Model value for the time delta parameter
+const ignore = ref(0) // Model value for the ignore parameter
+const means = ref('') // Model value for the source url result
+const meansLoading = ref(false) // Loading flag on means computing
+const meansError = ref('') // Error flag on means computing
 
 // Input rules
 const timeDeltaRule = ref((timeDelta: number) => {
@@ -14,56 +22,17 @@ const timeDeltaRule = ref((timeDelta: number) => {
 const maxDelta = 365 // one year
 const timeDeltaTicks = ref(Array.from(Array(maxDelta).keys()).map(x => x++))
 
-const timeDelta = ref(30) // Model value for the time delta parameter
-const ignore = ref(0) // Model value for the ignore parameter
-const means = ref('') // Model value for the source url result
-const meansLoading = ref(false) // Loading flag on means computing
-const meansError = ref('') // Error flag on means computing
-
-/**
- * Fetch the means graph from the backend API
- *
- * @returns The promise from the fetch API containing the means graph.
- * If it fails, return a promise with mocked data.
- */
-async function fecthMeans(): Promise<any> {
-	try {
-		const params: { [k: string]: any } = {}
-		if (!isNaN(timeDelta.value)) {
-			params.timeDelta = timeDelta.value
-		}
-		if (!isNaN(ignore.value)) {
-			params.ignore = ignore.value
-		}
-		const query = new URLSearchParams(params)
-		const res = await fetch('http://localhost:5173/api/compute/means', {
-			method: 'POST',
-			headers: {
-				'Accept': 'application/json',
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(params)
-		})
-		if (!res.ok) throw `${res.statusText} - ${res.status}`
-		return res.blob()
-	} catch (e) {
-		let msg = `Error while requesting /compute/means : ${e}`
-		console.error(msg)
-		throw msg
-	}
-}
-
 /**
  * Trigger the backend process to compute means
  */
 const computeMeans = async () => {
 	meansLoading.value = true
 	try {
-		const image = await fecthMeans()
+		const image = await gpsResource.getMeans(timeDelta.value, ignore.value)
 		means.value = URL.createObjectURL(image)
 		meansError.value = ''
 	} catch (e) {
-		if (ENV.VITE_IS_MOCK) {
+		if (ENV.MODE == Utils._MODE_MOCK) {
 			means.value = Utils.getMockImage('means')
 		} else {
 			meansError.value = `${e}`

@@ -1,13 +1,13 @@
 /// <reference types="vite/client" />
 
+declare const APP_NAME: string;
+declare const APP_VERSION: string;
+
 interface ImportMetaEnv {
-  readonly VITE_IS_MOCK: boolean // Flag to get Mocked data
+  readonly APP_ENV: string // Env
+  readonly BASE_API_URL: string // Base API URL
 }
 
 interface ImportMeta {
   readonly env: ImportMetaEnv
 }
-
-VITE_IS_MOCK=false
-declare const VITE_APP_NAME: string;
-declare const VITE_APP_VERSION: string;

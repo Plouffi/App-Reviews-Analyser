@@ -3,6 +3,7 @@ import ScoreDistribution from './ScoreDistribution.vue'
 import Means from './Means.vue'
 import Wordcloud from './Wordcloud.vue'
 import SelectApp from './SelectApp.vue';
+import Utils from '@/utils';
 
 const ENV = import.meta.env
 </script>
@@ -11,7 +12,7 @@ const ENV = import.meta.env
   <v-container fluid id="analyser">
     <v-row dense>
       <v-col cols="12">
-        <SelectApp v-if="!ENV.VITE_IS_MOCK" />
+        <SelectApp v-if="!(ENV.MODE == Utils._MODE_MOCK)" />
         <v-card class="pa-2" variant="flat" color="red-lighten-2" v-if="ENV.VITE_IS_MOCK">
           <v-card-title>
             <v-icon icon="mdi-alert" size="large"></v-icon>

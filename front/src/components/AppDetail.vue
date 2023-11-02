@@ -3,7 +3,10 @@ import { ref, computed, watchEffect } from 'vue'
 import { useDisplay } from 'vuetify';
 import { GpsApp } from '@/gpsApp';
 import GPSRestResource from '@/services/GPSRestResource';
+import Utils from '@/utils';
 //import ColorThief from 'colorthief'
+
+const ENV = import.meta.env // Environnements variables
 
 const props = defineProps({
 	appId: String // App ID 
@@ -68,8 +71,16 @@ watchEffect(async () => {
 	if (props.appId) {
 		loadDetail.value = true
 		app.value = new GpsApp()
-		const resApp = await gpsResource.getAppDetail(props.appId)
-		app.value.init(resApp)
+		try {
+			const resApp = await gpsResource.getAppDetail(props.appId)
+			app.value.init(resApp)
+		} catch (e) {
+			if (ENV.MODE == Utils._MODE_MOCK) {
+				app.value.init(Utils.getMockDetail(props.appId))
+			} else {
+				//TODO: handle errors
+			}
+		}
 
 		// const colorThief = new ColorThief()
 		// const sourceImage = document.createElement("img");
@@ -226,7 +237,8 @@ watchEffect(async () => {
 		</v-overlay>
 	</v-card>
 	<v-container class="text-center">
-		<v-btn @click="scrapApp()" color="teal-darken-2" variant="flat" elevation="4">{{ $t('scraper.detail.button') }}</v-btn>
+		<v-btn @click="scrapApp()" color="teal-darken-2" variant="flat" elevation="4">{{ $t('scraper.detail.button')
+		}}</v-btn>
 	</v-container>
 </template>
 

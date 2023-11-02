@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-const version = ref(VITE_APP_VERSION)
+const version = ref(APP_VERSION)
 </script>
 
 <template>
