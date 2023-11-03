@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Tuple
 from datetime import datetime
 from time import sleep
 from urllib.parse import quote
+from urllib.error import HTTPError
 
 from google_play_scraper import Sort
 from google_play_scraper.constants.element import ElementSpec, ElementSpecs
@@ -143,6 +144,8 @@ def reviews(
 		except (TypeError, IndexError):
 			token = None
 			break
+		except HTTPError as e:
+			raise e
 
 		for review in review_items:
 			extracted_review = {
@@ -173,24 +176,34 @@ def reviews_all(app_id: str, date: datetime, lang: str, country: str, sleep_mill
 	continuation_token = None
 
 	result = []
+	print(app_id)
+	print(f"--------------------------------------")
+	print(f"Reviews in {lang} : START ")
+	print(f"--------------------------------------")
 
 	while True:
-		_result, continuation_token = reviews(
-			app_id,
-			date,
-			lang=lang,
-			country=country,
-			count=MAX_COUNT_EACH_FETCH,
-			continuation_token=continuation_token,
-			**kwargs
-		)
+		try:
+			_result, continuation_token = reviews(
+				app_id,
+				date,
+				lang=lang,
+				country=country,
+				count=MAX_COUNT_EACH_FETCH,
+				continuation_token=continuation_token,
+				**kwargs
+			)
 
-		result += _result
+			result += _result
+			print(f"Reviews: " + str(len(result)))
+			if continuation_token.token is None:
+				break
 
-		if continuation_token.token is None:
-			break
+			if sleep_milliseconds:
+				sleep(sleep_milliseconds / 1000)
+		except:
+			print("error - continue")
 
-		if sleep_milliseconds:
-			sleep(sleep_milliseconds / 1000)
-
+	print(f"--------------------------------------")
+	print(f"TOTAL Reviews in {lang} :" + str(len(result)))
+	print(f"--------------------------------------")
 	return result

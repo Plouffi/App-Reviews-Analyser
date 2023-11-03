@@ -15,6 +15,7 @@
 		{"country": "CH", "lang": "fr"},
 		{"country": "ES", "lang": "es"},
 		{"country": "MX", "lang": "es"},
+		
 		{"country": "BR", "lang": "pt"},
 		{"country": "PT", "lang": "pt"},
 		{"country": "jp", "lang": "ja"},
@@ -25,8 +26,8 @@
 		{"country": "CH", "lang": "de"},
 		{"country": "DE", "lang": "nl"},
 		{"country": "NL", "lang": "nl"},
-		{"country": "DK", "lang": "da"},
-		{"country": "FI", "lang": "fi"},
+
+
 		{"country": "IT", "lang": "it"},
 		{"country": "NO", "lang": "no"},
 		{"country": "SE", "lang": "sv"}

@@ -29,6 +29,7 @@ class App:
         developerWebsite: str
         installs: str
         realInstalls: str
+        totalReviews: int
         reviews: int
         url: str
 	"""
@@ -54,6 +55,7 @@ class App:
     developerWebsite: str
     installs: str
     realInstalls: int
+    totalReviews: int
     reviews: int
     url: str
 
@@ -81,6 +83,7 @@ class App:
         self.developerWebsite = gps_app['developerWebsite'] if 'developerWebsite' in gps_app else ''
         self.installs = gps_app['installs'] if 'installs' in gps_app else ''
         self.realInstalls = gps_app['realInstalls'] if 'realInstalls' in gps_app else ''
+        self.totalReviews = gps_app['ratings'] if 'ratings' in gps_app else 0
         self.reviews = gps_app['reviews'] if 'reviews' in gps_app else 0
         self.url = gps_app['url'] if 'url' in gps_app else ''
 

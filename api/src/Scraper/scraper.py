@@ -1,5 +1,6 @@
 from typing import List, Any
 from datetime import datetime as dt
+import numpy as np
 from src.Model.gps_app import App
 from src.Scraper.scraper_utils import reviews_all as gps_reviews
 from src.Scraper.scraper_utils import search as gps_search
@@ -20,21 +21,11 @@ class Scraper:
 		return result
 	
 	def app_detail(self, id: str) -> Any:
-		gps_app = app(app_id=id, lang='en', country='us') # default info
-		print("en - US: " + str(gps_app['reviews']))
-		# there is a weird glitch in data for DK, FI and PR country where they have all the same HUGE number of reviews 
-		# I remove PR from the list to approach the total number of reviews (still not perfect)
-		for language in self.config['languages']:
-			if language['country'] != 'US':
-				detail_app = app(app_id=id, lang=language['lang'], country=language['country'])
-				print(language['lang'] + " - " + language['country'] + " : " + str(detail_app['reviews']))
-				gps_app['reviews'] += detail_app['reviews'] # We sum reviews to have the total
-		return gps_app
+		return app(app_id=id, lang='en', country='us') #TODO: handle language
 
 	def get_reviews(self, date):
 		def clear_data(reviews_to_clear, language_to_add):
 			for review in reviews_to_clear:
-				del review['userImage']
 				del review['userImage']
 				del review['replyContent']
 				del review['repliedAt']
@@ -43,16 +34,19 @@ class Scraper:
 
 		reviews = []
 
-		for language in self.config['languages']:
+		# there is a weird glitch in data for DK, FI and PR country where they have all the same HUGE number of reviews 
+		# I remove them from the list to approach the total number of reviews (still not perfect)
+		languages = np.unique(list(map(lambda l: l['lang'], self.config['languages'])))
+		for l in languages:
 			res = gps_reviews(
 				self.config['app'],
 				date,
-				lang=language['lang'],
-				country=language['country'],
+				lang=l,
+				country="US", #doesnt matter 
+				sleep_milliseconds=100,
 				sort=Sort.NEWEST
 			)
-			print(language['lang'] + " - " + language['country'] + " : Done")
-			res = clear_data(res, language)
-			reviews = [*reviews, *res]
+		res = clear_data(res, 'en')
+		reviews = [*reviews, *res]
 		print('Total reviews fetched: %d', len(reviews))
 		return reviews

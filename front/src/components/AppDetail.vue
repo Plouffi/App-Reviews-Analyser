@@ -166,7 +166,7 @@ watchEffect(async () => {
 										<v-card variant="text">
 											<v-card-subtitle>{{ $t('scraper.detail.reviews').toLocaleUpperCase() }}</v-card-subtitle>
 											<v-card-text>
-												{{ new Intl.NumberFormat("en-US").format(app.reviews) }}
+												{{ new Intl.NumberFormat("en-US").format(app.totalReviews) }} <!--TODO: handle lang-->
 											</v-card-text>
 										</v-card>
 									</v-col>
@@ -175,7 +175,7 @@ watchEffect(async () => {
 										<v-card variant="text">
 											<v-card-subtitle>{{ $t('scraper.detail.installs').toLocaleUpperCase() }}</v-card-subtitle>
 											<v-card-text>
-												{{ new Intl.NumberFormat("en-US").format(app.realInstalls) }}
+												{{ new Intl.NumberFormat("en-US").format(app.realInstalls) }} <!--TODO: handle lang-->
 											</v-card-text>
 										</v-card>
 									</v-col>

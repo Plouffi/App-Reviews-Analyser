@@ -23,6 +23,7 @@ export class GpsApp {
 	developerWebsite: string = ''
 	installs: string = ''
 	realInstalls: number = 0
+	totalReviews: number = 0
 	reviews: number = 0
 	comments: [string] = ['']
 	url: string = ''
@@ -52,6 +53,7 @@ export class GpsApp {
 		this.developerWebsite = json['developerWebsite']
 		this.installs = json['installs']
 		this.realInstalls = json['realInstalls']
+		this.totalReviews = json['totalReviews']
 		this.reviews = json['reviews']
 		this.comments = json['comments']
 		this.url = json['url']
