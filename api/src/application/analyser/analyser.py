@@ -4,7 +4,9 @@ import pandas as pd
 from datetime import datetime as dt
 from datetime import timedelta
 
-class DataManager:
+from src.domain.repository.reviews_df_repository import IReviewsDFRepository
+
+class Analyser:
 	"""
 	A class to handle and compute statistics.
 	...
@@ -22,73 +24,8 @@ class DataManager:
 				Program's configuration.
 
 		"""
-		columns = ["userName", "content", "score", "thumbsUpCount", "reviewCreatedVersion", "at", "language"]
-		self.df = pd.DataFrame(columns=columns)
 		self.config = config
-
-	def insert_reviews(self, reviews):
-		"""
-		Method to store data review in a Dataframe
-			Parameters
-			----------
-			reviews : Lis(Dict)
-				Array of dictionnary containing data review
-
-		"""
-		series_reviews = []
-		for review in reviews:
-			series_reviews.append(pd.Series(review.items(), index=self.df.columns))
-		self.df = self.df._append(reviews, ignore_index=True)
-
-	def get_reviews(self):
-		"""
-		Return the Dataframe
-		"""
-		return self.df
-
-	def get_reviews_as_dict(self, start_date: dt, end_date: dt, language: str = "en", score: int = -1) -> Dict:
-		"""
-		Method to research reviews by passing parameters (language, date, period, score). Return them as a dictionnary
-			Parameters
-			----------
-			start_date : datetime
-				Research parameter: date where we start the research.
-			end_date : datetime
-				Research parameter: date where we end the research.
-			language : str = "en"
-				Research parameter: review's language. Set up to "en" if language doesn't exist in configuration file.
-				/ "after" same logic
-			score : int = -1
-				Research parameter: review's score. Can be in [1...5] or anything else to have all range
-			Returns
-			-------
-				Dict
-					A dictionnary of reviews
-		"""
-		mask_language = self.df["language"] == language if language in self.config["languages"] else "en"
-		mask_start_period = start_date <= self.df.index
-		mask_end_period = self.df.index < end_date
-		mask_score = self.df["score"] == score if 0 < score <= 5 else self.df["score"].isin([1, 2, 3, 4, 5])
-		mask = mask_language & mask_start_period & mask_end_period & mask_score
-
-		return self.df.loc[mask].to_dict('records')
-
-	def load(self):
-		"""
-		Method to load reviews from csv file. Set up the dataframe's index on "at" column (publication date)
-		"""
-		self.df = pd.read_csv(self.config["export_path"])
-		# set up the index on publishing date and sort the dataframe
-		self.df["at"] = pd.to_datetime(self.df["at"])
-		self.df = self.df.set_index("at")
-		self.df = self.df.sort_values("at", ascending=True)
-
-	def export(self):
-		"""
-		Method to export reviews in csv.
-		"""
-		self.df.to_csv(self.config["export_path"], index=False)
-		print(f"Reviews exported in '{self.config['export_path']}'. Total: {len(self.df.index)} records.")
+		self.df = IReviewsDFRepository(config).load()
 
 	def get_num_reviews(self) -> int:
 		"""

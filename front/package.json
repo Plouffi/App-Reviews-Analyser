@@ -3,9 +3,10 @@
   "version": "1.4.1-alpha",
   "private": true,
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --mode dev",
     "mock": "vite --mode mock",
     "build": "run-p type-check \"build-only {@}\" --",
+    "build-local": "vite build --mode dev",
     "preview": "vite preview",
     "test:unit": "vitest",
     "build-only": "NODE_ENV=${NODE_ENV:-production} && vite build --mode $NODE_ENV",

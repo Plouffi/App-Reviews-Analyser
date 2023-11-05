@@ -1,11 +1,12 @@
 from typing import List, Any
-from datetime import datetime as dt
 import numpy as np
-from src.Model.gps_app import App
-from src.Scraper.scraper_utils import reviews_all as gps_reviews
-from src.Scraper.scraper_utils import search as gps_search
 from google_play_scraper import app
 from google_play_scraper import Sort
+
+from src.application.scraper.scraper_utils import reviews_all as gps_reviews
+from src.application.scraper.scraper_utils import search as gps_search
+from src.domain.model.gps_app import App
+from src.domain.repository.reviews_df_repository import IReviewsDFRepository
 
 
 
@@ -13,6 +14,7 @@ class Scraper:
 
 	def __init__(self, config):
 		self.config = config
+		self.df = IReviewsDFRepository(config)
 
 	def search_app(self, search: str) -> List[Any]:
 		result = []
@@ -20,10 +22,11 @@ class Scraper:
 		result += map(lambda a : a.shorten(), apps)
 		return result
 	
-	def app_detail(self, id: str) -> Any:
-		return app(app_id=id, lang='en', country='us') #TODO: handle language
+	def app_detail(self, id: str) -> App:
+		return App(app(app_id=id, lang='en', country='us')) #TODO: handle language
 
 	def get_reviews(self, date):
+
 		def clear_data(reviews_to_clear, language_to_add):
 			for review in reviews_to_clear:
 				del review['userImage']
@@ -50,3 +53,6 @@ class Scraper:
 		reviews = [*reviews, *res]
 		print('Total reviews fetched: %d', len(reviews))
 		return reviews
+	
+	def save_reviews(self, reviews):
+		self.df.insert_reviews(reviews=reviews)
