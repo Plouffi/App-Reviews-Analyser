@@ -1,7 +1,7 @@
 from typing import Any, List
 from datetime import datetime
 
-class App:
+class GPSApp:
     """
 		Class to representing an app from the Google Play Store
 		...

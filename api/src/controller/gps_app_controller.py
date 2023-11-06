@@ -2,19 +2,27 @@ from flask import jsonify, request
 from flask_classy import FlaskView, route
 import json
 
-from src.application.scraper.scraper import Scraper
-
+from src.application.gps.gps_service import GPSService
+from src.application.scraper.scraper_service import ScraperService
+from src.infrastructure.dataframe.impl.reviews_df import ReviewsDF
+from src.infrastructure.sqlite.impl.gps_app_sqlite_repository import GPSAppSQLite
 
 class GPSAppController(FlaskView):
 
 	config: any
-	scraper: Scraper
+	gps_service: GPSService
+	scraper: ScraperService
+	reviews_df_repo: ReviewsDF
+	gps_app_sqlite_repository: GPSAppSQLite
 
 	def __init__(self) -> None:
 		super().__init__()
-		with open('./ressources/config.json', errors='replace') as f:
+		with open('./resources/config.json', errors='replace') as f:
 			self.config = json.load(f)
-			self.scraper = Scraper(self.config)
+			self.reviews_df_repo = ReviewsDF(self.config, "reviews")
+			self.gps_app_sqlite_repository = GPSAppSQLite(self.config, "ara")
+			self.gps_service = GPSService(self.config, self.reviews_df_repo, self.gps_app_sqlite_repository)
+			self.scraper = ScraperService(self.config, self.reviews_df_repo)
 
 	@route('/search')
 	def search(self):
@@ -25,9 +33,8 @@ class GPSAppController(FlaskView):
 		
 		try:
 			return jsonify(self.scraper.search_app(search))
-
-		except FileNotFoundError:
-			return f"File '{self.config['export_path']}' not found. Launch scraping process to create it", 500
+		except:
+			return f"Error on '{super().route_base}/search' request", 500
 		
 	@route('/detail')
 	def detail(self):
@@ -37,12 +44,10 @@ class GPSAppController(FlaskView):
 		id = request.args.get('id')
 		
 		try:
-			
 			#TODO demander l'app detail pour toutes les langues/country pour avoir la somme du nombre de reviews
 			return self.scraper.app_detail(id).__dict__
-
-		except FileNotFoundError:
-			return f"File '{self.config['export_path']}' not found. Launch scraping process to create it", 500
+		except:
+			return f"Error on '{super().route_base}/detail' request", 500
 
 	@route('/scraping')
 	def scraping(self):
@@ -52,11 +57,8 @@ class GPSAppController(FlaskView):
 		id = request.args.get('id')
 		
 		try:
-			# TODO: save app and reviews with another service into DB
-			app = self.scraper.app_detail(id)
-			reviews = self.scraper.get_reviews(app.released)
-			self.scraper.save_reviews(reviews=reviews)
-
+			self.gps_service.save_app(id)
+			self.gps_service.save_reviews(id)
 			return 'OK', 200
-		except FileNotFoundError:
-			return f"File '{self.config['export_path']}' not found. Launch scraping process to create it", 500
+		except:
+			return f"Error on '{super().route_base}/scraping' request", 500

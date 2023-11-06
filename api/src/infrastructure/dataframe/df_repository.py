@@ -1,9 +1,11 @@
-from typing import Dict
-from datetime import datetime as dt
 import pandas as pd
+from pandas import DataFrame
+from abc import ABC, abstractmethod
 
-class DFRepository:
+class DFRepository(ABC):
 	
+	df: DataFrame
+
 	def __init__(self, config, schema):
 		"""
 			Parameters
@@ -12,12 +14,11 @@ class DFRepository:
 				Program's configuration.
 
 		"""
-		#columns = ["userName", "content", "score", "thumbsUpCount", "reviewCreatedVersion", "at", "language"]
 		columns = config["dataframe"][schema]
 		self.df = pd.DataFrame(columns=columns)
 		self.config = config
 
-	def load(self, path_to_csv: str):
+	def load(self, path_to_csv: str) -> DataFrame:
 		"""
 		Method to load reviews from csv file. Set up the dataframe's index on "at" column (publication date)
 		"""
@@ -25,13 +26,14 @@ class DFRepository:
 		self.indexing()
 		return self.get_df()
 
+	@abstractmethod
 	def indexing(self):
 		"""
 		Method to set up the index on records
 		"""
 		pass
 
-	def get_df(self):
+	def get_df(self) -> DataFrame:
 		"""
 		Return the Dataframe
 		"""

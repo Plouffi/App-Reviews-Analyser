@@ -1,12 +1,13 @@
 from typing import Dict, Tuple, List
 import numpy as np
 import pandas as pd
+from pandas import DataFrame
 from datetime import datetime as dt
 from datetime import timedelta
 
-from src.domain.repository.reviews_df_repository import IReviewsDFRepository
+from src.domain.repository.reviews_repository import IReviewsRepository
 
-class Analyser:
+class AnalyserService:
 	"""
 	A class to handle and compute statistics.
 	...
@@ -16,7 +17,10 @@ class Analyser:
 			Program's configuration.
 		df : Dataframe
 	"""
-	def __init__(self, config):
+	df: DataFrame
+	reviews_df_repo: IReviewsRepository
+	
+	def __init__(self, config, reviews_df_repo: IReviewsRepository):
 		"""
 			Parameters
 			----------
@@ -25,17 +29,18 @@ class Analyser:
 
 		"""
 		self.config = config
-		self.df = IReviewsDFRepository(config).load()
+		self.reviews_df_repo = reviews_df_repo
+		self.df = self.reviews_df_repo.load()
 
 	def get_num_reviews(self) -> int:
 		"""
 		Method to load reviews from csv file. Set up the dataframe's index on "at" column (publication date)
-			Returns
+			Returns 
 			-------
 				int
 				The number of reviews
 		"""
-		dfpy = self.df["score"].to_numpy()
+		dfpy = self.reviews_df_repo.get_series("score").to_numpy()
 		return len(dfpy)
 
 	def compute_mean(self) -> Tuple[np.ndarray, int]:
@@ -46,7 +51,7 @@ class Analyser:
 				Tuple[np.ndarray,int]
 					The mean and the number of reviews
 		"""
-		dfpy = self.df["score"].to_numpy()
+		dfpy = self.reviews_df_repo.get_series("score").to_numpy()
 		return np.mean(dfpy), len(dfpy)
 
 	def compute_rolling_mean(self, time_delta: int, nb_ignore: int = 1000) -> pd.Series:
@@ -59,7 +64,7 @@ class Analyser:
 				pd.Series
 		"""
 		time_delta = str(time_delta) + 'D'
-		return self.df["score"].iloc[nb_ignore:].rolling(time_delta).mean()
+		return self.reviews_df_repo.get_series("score").iloc[nb_ignore:].rolling(time_delta).mean()
 
 	def compute_cumulative_mean(self, nb_ignore: int = 1000) -> pd.Series:
 		"""
@@ -69,7 +74,7 @@ class Analyser:
 			-------
 				pd.Series
 		"""
-		return self.df["score"].iloc[nb_ignore:].expanding().mean()
+		return self.reviews_df_repo.get_series("score").iloc[nb_ignore:].expanding().mean()
 
 	def compute_rolling_sum(self, time_delta: int, nb_ignore: int = 1000) -> pd.Series:
 		"""
@@ -81,7 +86,7 @@ class Analyser:
 				pd.Series
 		"""
 		time_delta = str(time_delta) + 'D'
-		return self.df["score"].iloc[nb_ignore:].rolling(time_delta).count()
+		return self.reviews_df_repo.get_series("score").iloc[nb_ignore:].rolling(time_delta).count()
 	
 	def compute_score_distribution(self, date: dt) -> Tuple[List[List[float]], List[int]]:
 		"""
@@ -104,8 +109,9 @@ class Analyser:
 			return score_distribution
 
 		tomorrow = dt.now() + timedelta(1)
-		before_fp = self.df.loc[(self.df.index < date)] if date is not None else self.df.loc[(self.df.index < tomorrow)]
-		after_fp = self.df.loc[(self.df.index >= date)] if date is not None else None
+		mask_before = (self.df.index < date) if date is not None else (self.df.index < tomorrow)
+		before_fp = self.reviews_df_repo.get_reviews_from_mask(mask_before)
+		after_fp = self.reviews_df_repo.get_reviews_from_mask(self.df.index >= date) if date is not None else None
 
 		return [get_score_distribution(before_fp), get_score_distribution(after_fp)], [len(before_fp), len(after_fp) if date is not None else 0]
 
@@ -117,12 +123,14 @@ class Analyser:
 			-------
 			Tuple[pd.Series,  pd.Series, pd.Series]
 		"""
-		mask_language = self.df["language"] == lang
+		mask_language = self.reviews_df_repo.get_series("language") == lang
 		#mask_period = self.df.index >= self.feh_pass_date
-		mask_mention = self.df["content"].str.contains('|'.join(keywords))
-		mask_score = self.df["score"] == 1
+		mask_mention = self.reviews_df_repo.get_series("content").str.contains('|'.join(keywords))
+		mask_score = self.reviews_df_repo.get_series("score") == 1
 		mask = mask_language #& mask_period
 		mask_with_mention = mask & mask_mention
 		mask_1star_with_mention = mask_with_mention & mask_score
 
-		return self.df.loc[mask], self.df.loc[mask_with_mention], self.df.loc[mask_1star_with_mention]
+		return (self.reviews_df_repo.get_reviews_from_mask(mask),
+			self.reviews_df_repo.get_reviews_from_mask(mask_with_mention),
+			self.reviews_df_repo.get_reviews_from_mask(mask_1star_with_mention))

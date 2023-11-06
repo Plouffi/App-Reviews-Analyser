@@ -34,7 +34,15 @@
 	],
 	"n_search_result": 30,
 	"feh_release_date": "2017-02-02 1:00AM",
-	"export_path": "./ressources/out.csv",
+	"export_path": "./resources/export",
+	"database": {
+		"ara": {
+			"path": "/api/resources/database/ara.db"
+		}
+	},
+	"dataframe": {
+		"reviews": ["userName", "content", "score", "thumbsUpCount", "reviewCreatedVersion", "at", "language"]
+	},
 	"mockSearch": [
 		{
 			"icon": "https://play-lh.googleusercontent.com/5IR5tmAD35Sqfi-tDrFmb-mk9wronJDZm1w3h8xtFeK1rDX46Cyt0nauwUmUexSU9uM",

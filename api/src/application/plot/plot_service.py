@@ -7,7 +7,7 @@ import matplotlib
 
 matplotlib.use('agg')
 
-class Plot:
+class PlotService:
 	"""
 		A class to generate plot from DataManager.
 		...

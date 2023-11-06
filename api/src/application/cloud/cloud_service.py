@@ -1,25 +1,10 @@
 from typing import List, Tuple
 import numpy as np
 import re
-reg_token = re.compile(r"(?u)\b\w+\b")
+from re import Pattern
 
-def n_grams(tokens, n):
-	if n == 1:
-		return tokens
-	if len(tokens) <= n:
-		return [' '.join(tokens)]
-	return [' '.join(tokens[i:i + n]) for i in range(len(tokens) - n)]
 
-def tokenize(content: str) -> List[str]:
-	"""
-		Method to tokenize the review's content. Find all words and return them as a list of lowered string.
-		Return
-		----------
-			List[str]
-	"""
-	return reg_token.findall(content.lower())
-
-class Cloud:
+class CloudService:
 	"""
 		Class to generate word clouds
 		...
@@ -35,17 +20,21 @@ class Cloud:
 			All words found in reviews. Key: the word, Value: an index (0, 1, 2, ...)
 	"""
 	counts: np.ndarray
+	reg_token: Pattern
 
-	def __init__(self, alpha=1, n=2):
+	def __init__(self):
 		self.voc = {}
-		self.alpha = alpha
-		self.n = n
+		self.reg_token = re.compile(r"(?u)\b\w+\b")
 
-	def load_reviews(self, *data_reviews):
+	def load_reviews(self, alpha: int = 1, n: int = 2, *data_reviews):
 		"""
 			Method to fill vocabulary and occurences and counts.
 			Parameter
 			----------
+				alpha
+				Noise reducer
+				n
+				Number of words per token vocabulary
 				*data_reviews
 				2 set of data reviews (1 for reviews before FEH pass, 1 after)
 		"""
@@ -54,9 +43,9 @@ class Cloud:
 		for reviews in data_reviews:
 			tk_reviews = []
 			for review in reviews:
-				tokenized_review = n_grams(
-					tokenize(review["content"] if isinstance(review["content"], str) else ''),
-					self.n
+				tokenized_review = self.n_grams(
+					self.tokenize(review["content"] if isinstance(review["content"], str) else ''),
+					n
 				)
 				for token in tokenized_review:
 					if token not in self.voc:
@@ -65,7 +54,7 @@ class Cloud:
 			tk_data_reviews.append(tk_reviews)
 
 		# Initiliaze shape depending on vocabulary length, fill value alpha.
-		self.counts = np.full(shape=(len(self.voc), len(data_reviews)), fill_value=self.alpha)
+		self.counts = np.full(shape=(len(self.voc), len(data_reviews)), fill_value=alpha)
 
 		# Counting occurrences
 		for i, tk_reviews in enumerate(tk_data_reviews):
@@ -77,6 +66,22 @@ class Cloud:
 		# classified as "a pertinent word" because such word are commom in reviews before and after FEH pass
 		vector_words = np.sum(self.counts, 1)
 		self.counts = self.counts/vector_words[:, None]
+
+	def n_grams(self, tokens, n):
+		if n == 1:
+			return tokens
+		if len(tokens) <= n:
+			return [' '.join(tokens)]
+		return [' '.join(tokens[i:i + n]) for i in range(len(tokens) - n)]
+
+	def tokenize(self, content: str) -> List[str]:
+		"""
+			Method to tokenize the review's content. Find all words and return them as a list of lowered string.
+			Return
+			----------
+				List[str]
+		"""
+		return self.reg_token.findall(content.lower())
 
 	def word_cloud(self, index: int, words: int = 50) -> List[Tuple[str, float]]:
 		"""

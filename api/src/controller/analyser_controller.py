@@ -4,20 +4,25 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import io
 import json
 
-from src.domain.analyser.analyser import Analyser
-from src.domain.plot.plot import Plot
+from src.application.analyser.analyser_service import AnalyserService
+from src.application.plot.plot_service import PlotService
+from src.infrastructure.dataframe.impl.reviews_df import ReviewsDF
 
 
 class AnalyserController(FlaskView):
 
 	config: any
-	analyser: Analyser
+	analyser: AnalyserService
+	plot: PlotService
+	reviews_df_repo: ReviewsDF
 
 	def __init__(self) -> None:
 		super().__init__()
-		with open('./ressources/config.json', errors='replace') as f:
+		with open('./resources/config.json', errors='replace') as f:
 			self.config = json.load(f)
-			self.analyser = Analyser(self.config)
+			self.reviews_df_repo = ReviewsDF(self.config, "reviews")
+			self.analyser = AnalyserService(self.config, self.reviews_df_repo)
+			self.plot = PlotService(self.config)
 
 	@route('/scoreDistribution', methods=['POST'])
 	def score_distribution(self):
@@ -28,19 +33,18 @@ class AnalyserController(FlaskView):
 		
 		try:
 			# computing stats
-			score_distribution, review_distribution = self.analyser.compute_score_distribution(date=date)
+			score_distribution, review_distribution = self.analyser.compute_score_distribution(date)
 
 			# Convert plot to PNG image
-			plot = Plot(self.config)
-			figure_plot_SD = plot.score_distribution(score_distribution, review_distribution, date=date)
+			figure_plot_SD = self.plot.score_distribution(score_distribution, review_distribution, date)
 			image_plot_SD = io.BytesIO()
 			FigureCanvas(figure_plot_SD).print_png(image_plot_SD)
-			plot.refresh()
+			self.plot.refresh()
 			
 			return Response(image_plot_SD.getvalue(), mimetype='image/png')
 
-		except FileNotFoundError:
-			return f"File '{self.config['export_path']}' not found. Launch scraping process to create it", 500
+		except:
+			return f"Error on '{super().route_base}/scoreDistribution' request", 500
 
 	@route('/means', methods=['POST'])
 	def means(self):
@@ -60,15 +64,14 @@ class AnalyserController(FlaskView):
 			}
 
 			# Convert plot to PNG image
-			plot = Plot(self.config)
-			figure_plot_res = plot.means(means)
+			figure_plot_res = self.plot.means(means)
 			image_plot_res = io.BytesIO()
 			FigureCanvas(figure_plot_res).print_png(image_plot_res)
-			plot.refresh()
+			self.plot.refresh()
 		
 			return Response(image_plot_res.getvalue(), mimetype='image/png')
-		except FileNotFoundError:
-			return f"File '{self.config['export_path']}' not found. Launch scraping process to create it", 500
+		except:
+			return f"Error on '{super().route_base}/means' request", 500
 		
 	@route('/stats', methods=['POST'])
 	def overall_stats(self):
@@ -81,7 +84,7 @@ class AnalyserController(FlaskView):
 		try:
 			# computing stats
 			means, nb_reviews = self.analyser.compute_mean()
-			review_with_mention, review_in_lang, review_with_mention_1star = self.analyser.compute_mention(lang=lang, keywords=keywords)
+			review_with_mention, review_in_lang, review_with_mention_1star = self.analyser.compute_mention(lang, keywords)
 			stats = {
 				'means': means,
 				'nb_reviews': nb_reviews,
@@ -93,5 +96,5 @@ class AnalyserController(FlaskView):
 			# return stats
 			return stats, 200
 
-		except FileNotFoundError:
-			return f"File '{self.config['export_path']}' not found. Launch scraping process to create it", 500
+		except:
+			return f"Error on '{super().route_base}/stats' request", 500
