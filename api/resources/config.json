@@ -1,5 +1,4 @@
 {
-	"app": "com.nintendo.zaba",
 	"languages": [
 		{"country": "AU", "lang": "en"},
 		{"country": "CA", "lang": "en"},
@@ -34,7 +33,7 @@
 	],
 	"n_search_result": 30,
 	"feh_release_date": "2017-02-02 1:00AM",
-	"export_path": "./resources/export",
+	"export_path": "/api/resources/export",
 	"database": {
 		"ara": {
 			"path": "/api/resources/database/ara.db"

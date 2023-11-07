@@ -2,10 +2,11 @@ from flask import request, Response
 from flask_classy import FlaskView, route
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import io
-import json
 
+from config import CONFIG, ROOT_DIR
 from src.application.analyser.analyser_service import AnalyserService
 from src.application.plot.plot_service import PlotService
+from src.infrastructure.sqlite.impl.gps_app_sqlite_repository import GPSAppSQLite
 from src.infrastructure.dataframe.impl.reviews_df import ReviewsDF
 
 
@@ -14,26 +15,28 @@ class AnalyserController(FlaskView):
 	config: any
 	analyser: AnalyserService
 	plot: PlotService
+	gps_app_sqlite_repository: GPSAppSQLite
 	reviews_df_repo: ReviewsDF
 
 	def __init__(self) -> None:
 		super().__init__()
-		with open('./resources/config.json', errors='replace') as f:
-			self.config = json.load(f)
-			self.reviews_df_repo = ReviewsDF(self.config, "reviews")
-			self.analyser = AnalyserService(self.config, self.reviews_df_repo)
-			self.plot = PlotService(self.config)
+		self.config = CONFIG
+		self.reviews_df_repo = ReviewsDF(self.config, "reviews")
+		self.gps_app_sqlite_repository = GPSAppSQLite(f"{ROOT_DIR}/{self.config['dataframe']['reviews']['path']}")
+		self.analyser = AnalyserService(self.config, self.gps_app_sqlite_repository, self.reviews_df_repo)
+		self.plot = PlotService(self.config)
 
 	@route('/scoreDistribution', methods=['POST'])
 	def score_distribution(self):
 		"""
 			Method to compute scoren distribution from reviews data
 		"""
+		app_id = str(request.get_json()['app_id'])
 		date = request.get_json().get('date', None)
 		
 		try:
 			# computing stats
-			score_distribution, review_distribution = self.analyser.compute_score_distribution(date)
+			score_distribution, review_distribution = self.analyser.score_distribution(app_id, date)
 
 			# Convert plot to PNG image
 			figure_plot_SD = self.plot.score_distribution(score_distribution, review_distribution, date)
@@ -51,16 +54,17 @@ class AnalyserController(FlaskView):
 		"""
 			Method to compute statistics from reviews data
 		"""
-		# Retrieve url parameters
+		app_id = str(request.get_json()['app_id'])
 		time_delta = int(request.get_json().get('timeDelta', 30))
 		nb_ignore = int(request.get_json().get('ignore', 0))
 
 		try:
 			# computing stats
+			cumulative_mean, rolling_mean, rolling_sum = self.analyser.means_stats(app_id, time_delta, nb_ignore)
 			means = {
-				'Cumulative mean': self.analyser.compute_cumulative_mean(),
-				'Rolling average (1 month)': self.analyser.compute_rolling_mean(time_delta, nb_ignore),
-				'Rolling sum of reviews (1 month)': self.analyser.compute_rolling_sum(time_delta, nb_ignore)
+				'Cumulative mean': cumulative_mean,
+				'Rolling average (1 month)': rolling_mean,
+				'Rolling sum of reviews (1 month)': rolling_sum
 			}
 
 			# Convert plot to PNG image
@@ -78,13 +82,14 @@ class AnalyserController(FlaskView):
 		"""
 			Method to compute statistics from reviews data
 		"""
+		app_id = str(request.get_json()['app_id'])
 		lang = str(request.get_json()['lang'])
 		keywords = request.get_json()['keywords']
 		
 		try:
 			# computing stats
-			means, nb_reviews = self.analyser.compute_mean()
-			review_with_mention, review_in_lang, review_with_mention_1star = self.analyser.compute_mention(lang, keywords)
+			means, nb_reviews = self.analyser.mean()
+			review_with_mention, review_in_lang, review_with_mention_1star = self.analyser.mentions(lang, keywords)
 			stats = {
 				'means': means,
 				'nb_reviews': nb_reviews,

@@ -1,8 +1,8 @@
 from flask import  request, Response
 from flask_classy import FlaskView, route
 import io
-import json
 
+from config import CONFIG
 from src.application.cloud.cloud_service import CloudService
 from src.application.gps.gps_service import GPSService
 from src.infrastructure.dataframe.impl.reviews_df import ReviewsDF
@@ -18,11 +18,10 @@ class WordcloudController(FlaskView):
 
 	def __init__(self) -> None:
 		super().__init__()
-		with open('./resources/config.json', errors='replace') as f:
-			self.config = json.load(f)
-			self.cloud = CloudService()
-			self.reviews_df_repo = ReviewsDF(self.config, "reviews")
-			self.gps_service = GPSService(self.config, self.reviews_df_repo)
+		self.config = CONFIG
+		self.cloud = CloudService()
+		self.reviews_df_repo = ReviewsDF(self.config, "reviews")
+		self.gps_service = GPSService(self.config, self.reviews_df_repo)
 
 
 	@route('/words', methods=['POST'])
@@ -30,6 +29,7 @@ class WordcloudController(FlaskView):
 		"""
 			Method to generate a word cloud. Images are save in "resources" directory.
 		"""
+		app_id = str(request.get_json()['app_id'])
 		alpha = float(request.get_json().get('alpha', 10))
 		n = int(request.get_json().get('n', 2))
 		start_date_1 = request.get_json()['start1']
@@ -40,8 +40,8 @@ class WordcloudController(FlaskView):
 		score = int(request.get_json().get('score', 0))
 		
 		try:
-			reviews_before_fp = self.gps_service.get_reviews(start_date_1, end_date_1, lang, score)
-			reviews_after_fp = self.gps_service.get_reviews(start_date_2, end_date_2, lang, score)
+			reviews_before_fp = self.gps_service.get_reviews(app_id, start_date_1, end_date_1, lang, score)
+			reviews_after_fp = self.gps_service.get_reviews(app_id, start_date_2, end_date_2, lang, score)
 			self.cloud.load_reviews(alpha, n, [reviews_before_fp, reviews_after_fp])
 			return self.cloud.get_words(), 200
 		except:

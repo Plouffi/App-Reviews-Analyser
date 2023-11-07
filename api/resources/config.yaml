@@ -1,0 +1,70 @@
+languages:
+- country: AU
+  lang: en
+- country: CA
+  lang: en
+- country: IN
+  lang: en
+- country: IR
+  lang: en
+- country: NZ
+  lang: en
+- country: SG
+  lang: en
+- country: GB
+  lang: en
+- country: US
+  lang: en
+- country: BE
+  lang: fr
+- country: CA
+  lang: fr
+- country: FR
+  lang: fr
+- country: CH
+  lang: fr
+- country: ES
+  lang: es
+- country: MX
+  lang: es
+- country: BR
+  lang: pt
+- country: PT
+  lang: pt
+- country: jp
+  lang: ja
+- country: KR
+  lang: ko
+- country: TW
+  lang: zh
+- country: DE
+  lang: de
+- country: AT
+  lang: de
+- country: CH
+  lang: de
+- country: DE
+  lang: nl
+- country: NL
+  lang: nl
+- country: IT
+  lang: it
+- country: 'NO'
+  lang: 'no'
+- country: SE
+  lang: sv
+nSearchResult: 30
+feh_release_date: 2017-02-02 1:00AM
+exportPath: "/resources/export"
+database:
+  ara:
+    path: "/resources/database/ara.db"
+dataframe:
+  reviews:
+  - userName
+  - content
+  - score
+  - thumbsUpCount
+  - reviewCreatedVersion
+  - at
+  - language

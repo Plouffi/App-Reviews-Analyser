@@ -1,9 +1,11 @@
+from typing import List
 import pandas as pd
 from pandas import DataFrame
 from abc import ABC, abstractmethod
 
 class DFRepository(ABC):
 	
+	columns: List[str]
 	df: DataFrame
 
 	def __init__(self, config, schema):
@@ -14,20 +16,23 @@ class DFRepository(ABC):
 				Program's configuration.
 
 		"""
-		columns = config["dataframe"][schema]
-		self.df = pd.DataFrame(columns=columns)
+		self.columns = config["dataframe"][schema]
+		self.df = pd.DataFrame(columns=self.columns)
 		self.config = config
 
 	def load(self, path_to_csv: str) -> DataFrame:
 		"""
 		Method to load reviews from csv file. Set up the dataframe's index on "at" column (publication date)
 		"""
-		self.df = pd.read_csv(path_to_csv)
-		self.indexing()
-		return self.get_df()
+		try :
+			df = pd.read_csv(path_to_csv)
+			self.indexing(df)
+			return df
+		except FileNotFoundError:
+			return self.get_df()
 
 	@abstractmethod
-	def indexing(self):
+	def indexing(self, df: DataFrame):
 		"""
 		Method to set up the index on records
 		"""
@@ -35,12 +40,12 @@ class DFRepository(ABC):
 
 	def get_df(self) -> DataFrame:
 		"""
-		Return the Dataframe
+		Return a new Dataframe
 		"""
-		return self.df
+		return pd.DataFrame(columns=self.columns)
 	
-	def export(self, path_to_csv: str):
+	def export(self, df: DataFrame, export_path: str):
 		"""
 		Method to export reviews in csv.
 		"""
-		self.df.to_csv(path_to_csv, index=False)
+		df.to_csv(export_path, index=False)

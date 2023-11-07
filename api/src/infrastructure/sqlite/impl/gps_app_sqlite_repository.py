@@ -7,19 +7,26 @@ class GPSAppSQLite(SQLiteRepository, IGPSAppRepository):
   
 	table: str
 
-	def __init__(self, config, schema: str):
-		super().__init__(config, schema)
+	def __init__(self, path: str):
+		super().__init__(path)
 		self.table = "GPS_APP"
 
 	def insert(self, gps_app: GPSApp):
-		super().cursor.execute(f"INSERT INTO {self.table} VALUES (
-			'{gps_app.id}',
-			'{gps_app.icon}',
-			'{gps_app.headerImage}', 
-			NULL,
-			NULL,
-			NULL
-			)")
+		values = "'" + "','".join([
+			gps_app.id,
+			gps_app.title,
+			gps_app.developer,
+			gps_app.version,
+			gps_app.icon,
+			gps_app.headerImage, 
+			gps_app.score, 
+			gps_app.realInstalls, 
+			gps_app.released,
+			gps_app.exportPath, 
+			gps_app.exportDate, 
+			gps_app.exportPath
+		]) + "'"
+		super().cursor.execute(f"INSERT INTO {self.table} VALUES ({values})")
 
 	def get(self, app_id: str):
 		res = super().cursor.execute(f"SELECT * FROM {self.table} WHERE appId ='{app_id}'")

@@ -1,32 +1,33 @@
 from typing import Dict
 import pandas as pd
-import numpy as np
-from pandas import Index, Series
-from datetime import datetime as dt
+from pandas import DataFrame, Index, Series
 
 from src.infrastructure.dataframe.df_repository import DFRepository
 from src.domain.repository.reviews_repository import IReviewsRepository
 
 class ReviewsDF(DFRepository, IReviewsRepository):
 
-	def indexing(self):
-		pass
-		super().df["at"] = pd.to_datetime(super().df["at"])
-		super().df = super().df.set_index("at")
-		super().df = super().df.sort_values("at", ascending=True)
+	def indexing(self, df: DataFrame):
+		df["at"] = pd.to_datetime(df["at"])
+		df = df.set_index("at")
+		df = df.sort_values("at", ascending=True)
 		
-	def insert_reviews(self, reviews):
+	def insert(self, reviews, path_to_csv: str):
+		df = super().get_df()
 		series_reviews = []
 		for review in reviews:
-			series_reviews.append(pd.Series(review.items(), index=super().df.columns))
-		super().df = super().df._append(reviews, ignore_index=True)
-		self.export()
+			series_reviews.append(pd.Series(review.items(), index=df.columns))
+		df = df._append(reviews, ignore_index=True)
+		self.export(path_to_csv)
 	
-	def get_index(self) -> Index:
-		return super().df.index
+	def get_df(self, path_to_csv: str) -> DataFrame:
+		return super().load(path_to_csv) if path_to_csv is not None else super().get_df()
+	
+	def get_index(self, df: DataFrame) -> Index:
+		return df.index
 
-	def get_series(self, column: str) -> Series:
-		return super().df[column]
+	def get_series(self, df: DataFrame, column: str) -> Series:
+		return df[column]
 
-	def get_reviews(self, *mask):
-		return super().df.loc[mask]
+	def get(self, df: DataFrame, *mask):
+		return df.loc[mask]

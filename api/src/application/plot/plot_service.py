@@ -56,7 +56,7 @@ class PlotService:
 		formatter = mdates.DateFormatter("%b %Y")
 		ax.xaxis.set_major_formatter(formatter)
 
-		plt.xlim(dt.strptime(self.config["feh_release_date"], "%Y-%m-%d %I:%M%p"))
+		#plt.xlim(dt.strptime(self.config["feh_release_date"], "%Y-%m-%d %I:%M%p"))
 		plt.title("Cumulative mean, rolling average and cumulative number \n of reviews on FEH score from playstore")
 
 		# display
