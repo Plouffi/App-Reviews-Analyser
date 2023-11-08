@@ -1,26 +1,22 @@
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 import numpy as np
 import re
 from re import Pattern
 
+from src.domain.services.i_cloud_service import ICloudService
 
-class CloudService:
-	"""
-		Class to generate word clouds
-		...
-		Attributes
+
+class CloudService(ICloudService):
+	"""Class to generate word clouds
 		----------
-		counts : np.ndarray
-			Store the occurrences for each word.
-		alpha : float
-			Smoothing parameter, usefull to remove noise from data. (remove very uncommon words)
-		words : np.ndarray
-			The number of words in the words cloud
-		voc: Dict
-			All words found in reviews. Key: the word, Value: an index (0, 1, 2, ...)
+		Attributes
+		counts (np.ndarray): Store the occurrences for each word.
+		reg_token (Pattern): Pattern to identify a token.
+		voc (Dict):	All words found in reviews. Key: the word, Value: an index (0, 1, 2, ...)
 	"""
 	counts: np.ndarray
 	reg_token: Pattern
+	voc: Dict
 
 	def __init__(self):
 		self.voc = {}
@@ -67,7 +63,16 @@ class CloudService:
 		vector_words = np.sum(self.counts, 1)
 		self.counts = self.counts/vector_words[:, None]
 
-	def n_grams(self, tokens, n):
+	def n_grams(self, tokens: List[str], n: int):
+		"""Regroup adjacent tokens by n.
+			----------
+			Parameters:
+			tokens (List[str]): List of tokens
+			n (int): Size of token group
+			----------
+			Returns:
+			List[str]: List of token
+		"""
 		if n == 1:
 			return tokens
 		if len(tokens) <= n:
@@ -75,22 +80,17 @@ class CloudService:
 		return [' '.join(tokens[i:i + n]) for i in range(len(tokens) - n)]
 
 	def tokenize(self, content: str) -> List[str]:
-		"""
-			Method to tokenize the review's content. Find all words and return them as a list of lowered string.
-			Return
+		"""Method to tokenize the review's content. Find all words and return them as a list of lowered string.
 			----------
-				List[str]
+			Parameters:
+			content (str): Review content
+			----------
+			Returns:
+			List[str]: List of token
 		"""
 		return self.reg_token.findall(content.lower())
 
 	def word_cloud(self, index: int, words: int = 50) -> List[Tuple[str, float]]:
-		"""
-			Method to return the 50 words of each set of reviews.
-			Parameter
-			----------
-			index : int
-				the index of the set of review (0--> before, 1-->after)
-		"""
 		counts = self.counts[:, index]
 		# it works, don't ask what kind of black magic is it
 		return [

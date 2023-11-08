@@ -6,9 +6,8 @@ from abc import ABC, abstractmethod
 class DFRepository(ABC):
 	
 	columns: List[str]
-	df: DataFrame
 
-	def __init__(self, config, schema):
+	def __init__(self, columns):
 		"""
 			Parameters
 			----------
@@ -16,9 +15,8 @@ class DFRepository(ABC):
 				Program's configuration.
 
 		"""
-		self.columns = config["dataframe"][schema]
+		self.columns = columns
 		self.df = pd.DataFrame(columns=self.columns)
-		self.config = config
 
 	def load(self, path_to_csv: str) -> DataFrame:
 		"""

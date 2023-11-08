@@ -9,3 +9,7 @@ flask_classy
 werkzeug==2.1.2
 google-play-scraper
 pyyaml
+apispec
+apispec-webframeworks
+apispec[marshmallow]
+dependency_injector

@@ -2,11 +2,12 @@ from flask import  request, Response
 from flask_classy import FlaskView, route
 import io
 
-from config import CONFIG
-from src.application.cloud.cloud_service import CloudService
-from src.application.gps.gps_service import GPSService
+from config import CONFIG, ROOT_DIR
+from src.domain.services.cloud.cloud_service import CloudService
+from src.domain.services.gps.gps_service import GPSService
 from src.infrastructure.dataframe.impl.reviews_df import ReviewsDF
-import src.application.image.make_image as make_image
+from src.infrastructure.sqlite.impl.gps_app_sqlite_repository import GPSAppSQLite
+import src.domain.services.image.make_image as make_image
 
 
 class WordcloudController(FlaskView):
@@ -21,7 +22,8 @@ class WordcloudController(FlaskView):
 		self.config = CONFIG
 		self.cloud = CloudService()
 		self.reviews_df_repo = ReviewsDF(self.config, "reviews")
-		self.gps_service = GPSService(self.config, self.reviews_df_repo)
+		self.gps_app_sqlite_repo = GPSAppSQLite(f"{ROOT_DIR}/{self.config['database']['ara']['path']}")
+		self.gps_service = GPSService(self.config, self.reviews_df_repo, self.gps_app_sqlite_repo)
 
 
 	@route('/words', methods=['POST'])

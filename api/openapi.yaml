@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   version: 1.0.0
-  title: App Reviews Analyzer
+  title: App Reviews Analyser
   description: API for App Reviews Analyser
 
 components:
@@ -11,8 +11,28 @@ components:
       scheme: basic
 security:
   - BasicAuth: []
-
+servers:
+  - url: http://localhost:8080/api/v1.0
 paths:
+  /gpsApp/search:
+    get:
+      description: Return a list of app from playstore based on search terms
+      parameters:
+        - name: search
+          in: query
+          description: Search terms
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Returns a JSON object list containing search result
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
   /compute/scoreDistribution:
     post:
       description: Returns a bar chart as PNG image to show the review's score distribution between 2 period of time

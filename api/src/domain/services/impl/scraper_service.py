@@ -3,8 +3,8 @@ import numpy as np
 from google_play_scraper import app
 from google_play_scraper import Sort
 
-from src.application.scraper.scraper_utils import reviews_all as gps_reviews
-from src.application.scraper.scraper_utils import search as gps_search
+from src.domain.services.scraper.scraper_utils import reviews_all as gps_reviews
+from src.domain.services.scraper.scraper_utils import search as gps_search
 from src.domain.model.gps_app import GPSApp
 
 

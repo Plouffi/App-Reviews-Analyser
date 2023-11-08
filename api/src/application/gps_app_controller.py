@@ -2,8 +2,8 @@ from flask import jsonify, request
 from flask_classy import FlaskView, route
 
 from config import CONFIG, ROOT_DIR
-from src.application.gps.gps_service import GPSService
-from src.application.scraper.scraper_service import ScraperService
+from src.domain.services.gps.gps_service import GPSService
+from src.domain.services.scraper.scraper_service import ScraperService
 from src.infrastructure.dataframe.impl.reviews_df import ReviewsDF
 from src.infrastructure.sqlite.impl.gps_app_sqlite_repository import GPSAppSQLite
 
@@ -13,15 +13,15 @@ class GPSAppController(FlaskView):
 	gps_service: GPSService
 	scraper: ScraperService
 	reviews_df_repo: ReviewsDF
-	gps_app_sqlite_repository: GPSAppSQLite
+	gps_app_sqlite_repo: GPSAppSQLite
 
 	def __init__(self) -> None:
 		super().__init__()
 		self.config = CONFIG
 		self.reviews_df_repo = ReviewsDF(self.config, "reviews")
-		self.gps_app_sqlite_repository = GPSAppSQLite(f"{ROOT_DIR}/{self.config['dataframe']['reviews']['path']}")
-		self.gps_service = GPSService(self.config, self.reviews_df_repo, self.gps_app_sqlite_repository)
-		self.scraper = ScraperService(self.config, self.reviews_df_repo)
+		self.gps_app_sqlite_repo = GPSAppSQLite(f"{ROOT_DIR}/{self.config['database']['ara']['path']}")
+		self.gps_service = GPSService(self.config, self.reviews_df_repo, self.gps_app_sqlite_repo)
+		self.scraper = ScraperService(self.config)
 
 	@route('/search')
 	def search(self):

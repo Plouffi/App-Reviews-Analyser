@@ -1,27 +1,31 @@
+from typing import List
 from datetime import datetime as dt
 
-from src.application.scraper.scraper_service import ScraperService
+from src.domain.services.i_gps_service import IGPSService
+from src.domain.services.impl.scraper_service import ScraperService
 from src.domain.repository.reviews_repository import IReviewsRepository
 from src.domain.repository.gps_app_repository import IGPSAppRepository
 from src.domain.model.gps_app import GPSApp, ExportStatus
+from src.domain.model.review import Review
 
-class GPSService:
+
+class GPSService(IGPSService):
 
 	config: any
-	scraper: ScraperService
+	scraper_service: ScraperService
 	reviews_repo: IReviewsRepository
 	gps_app_repo: IGPSAppRepository
 
-	def __init__(self, config, reviews_repo: IReviewsRepository, gps_app_repo: IGPSAppRepository) -> None:
+	def __init__(self, config, scraper_service: ScraperService, reviews_repo: IReviewsRepository, gps_app_repo: IGPSAppRepository) -> None:
 		self.config = config
-		self.scraper = ScraperService(config=config)
+		self.scraper_service = scraper_service
 		self.reviews_repo = reviews_repo
 		self.gps_app_repo = gps_app_repo
 
 	def get_app(self, app_id: str) -> GPSApp:
 		return self.gps_app_repo.get(app_id)
 
-	def get_reviews(self, app_id:str, start_date: dt, end_date: dt, language: str = "en", score: int = -1):
+	def get_reviews(self, app_id:str, start_date: dt, end_date: dt, language: str = "en", score: int = -1) -> List[Review]:
 		app = GPSApp(self.gps_app_repo.get(app_id))
 		if app is not None:
 			df = self.reviews_repo.get_df(app.exportPath)
@@ -34,7 +38,7 @@ class GPSService:
 			return []
 
 	def save_app(self, app_id: str):
-		app = self.scraper.app_detail(app_id)
+		app = self.scraper_service.app_detail(app_id)
 		self.gps_app_repo.insert(app)
 		self.gps_app_repo.commit()
 
@@ -43,7 +47,7 @@ class GPSService:
 		if (app.exportStatus is ExportStatus.NO_EXPORT):
 			try :
 				self.change_export_status(app_id, ExportStatus.EXPORTING)
-				reviews = self.scraper.get_reviews(app.released)
+				reviews = self.scraper_service.get_reviews(app.released)
 				export_path = self.get_export_path(app.id)
 				self.reviews_repo.insert(reviews, export_path)
 				update = [("exportPath", export_path), ("exportDate", dt.now().strftime("%d/%m/%Y"))]

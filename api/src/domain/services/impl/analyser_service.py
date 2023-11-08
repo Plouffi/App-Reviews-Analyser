@@ -7,39 +7,26 @@ from datetime import timedelta
 from src.domain.model.gps_app import GPSApp
 from src.domain.repository.gps_app_repository import IGPSAppRepository
 from src.domain.repository.reviews_repository import IReviewsRepository
+from src.domain.services.i_analyser_service import IAnaliserService
 
-class AnalyserService:
-	"""
-	A class to handle and compute statistics.
-	...
-		Attributes
+class AnalyserService(IAnaliserService):
+	"""Service computing statics on app reviews
 		----------
-		config : Dict
-			Program's configuration.
+		Attributes:
+		config (Dict): Program's configuration
+		reviews_repo (IReviewsRepository): Reviews repository
+		gps_app_repo (IGPSAppRepository): GPS app repository
 	"""
-	gps_app_repo: IGPSAppRepository
+	config: Dict
 	reviews_repo: IReviewsRepository
+	gps_app_repo: IGPSAppRepository
 	
-	def __init__(self, config, gps_app_repo: IGPSAppRepository, reviews_repo: IReviewsRepository):
-		"""
-			Parameters
-			----------
-			config : Dict
-				Program's configuration.
-
-		"""
+	def __init__(self, config, reviews_repo: IReviewsRepository, gps_app_repo: IGPSAppRepository):
 		self.config = config
 		self.gps_app_repo = gps_app_repo
 		self.reviews_repo = reviews_repo
 
 	def num_reviews(self, app_id: str) -> int:
-		"""
-		Method to load reviews from csv file. Set up the dataframe's index on "at" column (publication date)
-			Returns 
-			-------
-				int
-				The number of reviews
-		"""
 		app = GPSApp(self.gps_app_repo.get(app_id))
 		if app is not None:
 			df = self.reviews_repo.get_df(app.exportPath)
@@ -49,13 +36,6 @@ class AnalyserService:
 			return 0
 
 	def mean(self, app_id:str) -> Tuple[np.ndarray, int]:
-		"""
-		Method to compute mean of reviews' score.
-			Returns
-			-------
-				Tuple[np.ndarray,int]
-					The mean and the number of reviews
-		"""
 		app = GPSApp(self.gps_app_repo.get(app_id))
 		if app is not None:
 			df = self.reviews_repo.get_df(app.exportPath)
@@ -73,52 +53,40 @@ class AnalyserService:
 			rolling_sum = self.rolling_sum(df, time_delta, nb_ignore)
 			return mean, rolling_mean, rolling_sum
 
-
 	def rolling_mean(self, df: DataFrame, time_delta: int, nb_ignore: int = 1000) -> Series:
 		"""
-		Method to compute rolling mean of reviews' score. Time_delta parameters define the rolling time window in days to compute result,
+		Compute rolling mean of reviews' score. Time_delta parameters define the rolling time window in days to compute result,
 		nb_ignore parameter remove an arbitrary amount of data in head to avoid irrelevant data while computing first values.
 		For more infos about time window, see https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases
-			Returns
-			-------
-				Series
+		----------
+		Returns:
+		Series: Rolling mean
 		"""
 		time_delta = str(time_delta) + 'D'
 		return self.reviews_repo.get_series(df, "score").iloc[nb_ignore:].rolling(time_delta).mean()
 
 	def cumulative_mean(self, df: DataFrame, nb_ignore: int = 1000) -> Series:
-		"""
-		Method to compute cumulative mean of reviews' score.
+		"""Compute cumulative mean of reviews' score.
 		nb_ignore parameter remove an arbitrary amount of data in head to avoid irrelevant data while computing first values.
-			Returns
-			-------
-				Series
+		----------
+		Returns:
+		Series: Cumulative mean
 		"""
 		return self.reviews_repo.get_series(df, "score").iloc[nb_ignore:].expanding().mean()
 
 	def rolling_sum(self, df: DataFrame, time_delta: int, nb_ignore: int = 1000) -> Series:
 		"""
-		Method to compute rolling sum of reviews. Time_delta parameters define the rolling time window in days to compute result,
+		Compute rolling sum of reviews. Time_delta parameters define the rolling time window in days to compute result,
 		nb_ignore parameter remove an arbitrary amount of data in head to avoid irrelevant data while computing first values.
 		For more infos about time window, see https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases
-			Returns
-			-------
-				Series
+		----------
+		Returns:
+		Series: Rolling sum
 		"""
 		time_delta = str(time_delta) + 'D'
 		return self.reviews_repo.get_series(df, "score").iloc[nb_ignore:].rolling(time_delta).count()
 	
 	def score_distribution(self, app_id: str, date: dt) -> Tuple[List[List[float]], List[int]]:
-		"""
-		Method to compute score distribution before and after the date parameter. If date is None, it is considered as tomorrow
-			Returns
-			-------
-			List(List(int))
-				A 2-dimensionnal array representing score distribution before and after FEH pass.
-				Shape should be (2, 5) 2--> before/after // 5--> score range
-			List(int)
-				An array stocking the number of reviews published before and after FEH pass
-		"""
 		def get_score_distribution(data):
 			if data is None:
 				return None
@@ -139,14 +107,7 @@ class AnalyserService:
 		else:
 			return None, None
 
-	def mentions(self, app_id: str, lang: str, keywords: List[str]) -> Tuple[Series,  Series, Series]:
-		""",
-		Method to compute stats about mentions in selected language reviews. Native detection, check if the content one
-		of the keywords defined in the configuration file.
-			Returns
-			-------
-			Tuple[Series,  Series, Series]
-		"""
+	def mentions(self, app_id: str, lang: str, keywords: List[str]) -> Tuple[Series, Series, Series]:
 		app = GPSApp(self.gps_app_repo.get(app_id))
 		if app is not None:
 			df = self.reviews_repo.get_df(app.exportPath)

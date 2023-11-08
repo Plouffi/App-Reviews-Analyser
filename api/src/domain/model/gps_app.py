@@ -1,48 +1,45 @@
-from typing import Any
+from typing import Dict
 from datetime import datetime
 
 class ExportStatus:
-	"""
-	Enum to represente the exporting status of reviews
-	"""
+	"""Enum to represente the exporting status of reviews
+	----------"""
 	NO_EXPORT: 0
 	EXPORTING: 1
 	EXPORTED: 2
 
 class GPSApp:
-	"""
-	Class to representing an app from the Google Play Store
-	...
-	Attributes
+	"""Class representing an app from the Google Playstore
 	----------
-	id : str
-	title: str
-	icon: str
-	headerImage: str
-	video: str
-	videoImage: str
-	screenshots: list[str]
-	score: float
-	genre: str
-	categories: list[str] 
-	price: float
-	currency: str
-	free: bool
-	summary: str
-	description: str
-	descriptionHTML: str
-	version: str
-	released: datetime
-	developer: str
-	developerWebsite: str
-	installs: str
-	realInstalls: str
-	totalReviews: int
-	reviews: int
-	url: str
-	exportPath: str
-	exportDate: datetime
-	exporting: ExportStatus
+	Attributes:
+	id (str)
+	title (str)
+	icon (str)
+	headerImage (str)
+	video (str)
+	videoImage (str)
+	screenshots (List[str])
+	score (float)
+	genre (str)
+	categories (List[str])
+	price (float)
+	currency (str)
+	free (bool)
+	summary (str)
+	description (str)
+	descriptionHTML (str)
+	version (str)
+	released (datetime)
+	developer (str)
+	developerWebsite (str)
+	installs (str)
+	realInstalls (str)
+	totalReviews (int)
+	reviews (int)
+	url (str)
+	exportPath (str)
+	exportDate (datetime)
+	exporting (ExportStatus)
 	"""
 
 	id: str
@@ -75,7 +72,7 @@ class GPSApp:
 	exportStatus: ExportStatus
 
 
-	def __init__(self, gps_app):
+	def __init__(self, gps_app: Dict) -> None :
 		self.id = gps_app['appId'] if 'appId' in gps_app else ''
 		self.title = gps_app['title'] if 'title' in gps_app else ''
 		self.icon = gps_app['icon'] if 'icon' in gps_app else ''
@@ -105,9 +102,11 @@ class GPSApp:
 		self.exportDate = gps_app['exportDate'] if 'exportDate' in gps_app else None
 		self.exportStatus = gps_app['exportStatus'] if 'exportStatus' in gps_app else ExportStatus.NO_EXPORT
 
-	def shorten(self) -> Any:
-		"""
-		Method shortening detail's app 
+	def shorten(self) -> Dict:
+		"""Shorten app detail.
+		----------
+		Returns:
+		Any: the shorten app
 		"""
 		return {
 			'id': self.id,
@@ -116,7 +115,13 @@ class GPSApp:
 		}
 
 	def formatDate(self, date: str, lang: str) -> datetime:
-		"""
-		Method to format the released date
+		"""Format the released date.
+		----------
+		Parameters:
+		date (str): the date to format.
+		lang (str): Determines the location for the date format
+		----------
+		Returns:
+		datetime: The formatted date
 		"""
 		return datetime.strptime(f"{date} 00:00", '%b %d, %Y %H:%M')

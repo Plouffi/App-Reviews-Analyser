@@ -4,8 +4,8 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import io
 
 from config import CONFIG, ROOT_DIR
-from src.application.analyser.analyser_service import AnalyserService
-from src.application.plot.plot_service import PlotService
+from src.domain.services.analyser.analyser_service import AnalyserService
+from src.domain.services.plot.plot_service import PlotService
 from src.infrastructure.sqlite.impl.gps_app_sqlite_repository import GPSAppSQLite
 from src.infrastructure.dataframe.impl.reviews_df import ReviewsDF
 
@@ -15,15 +15,15 @@ class AnalyserController(FlaskView):
 	config: any
 	analyser: AnalyserService
 	plot: PlotService
-	gps_app_sqlite_repository: GPSAppSQLite
+	gps_app_sqlite_repo: GPSAppSQLite
 	reviews_df_repo: ReviewsDF
 
 	def __init__(self) -> None:
 		super().__init__()
 		self.config = CONFIG
 		self.reviews_df_repo = ReviewsDF(self.config, "reviews")
-		self.gps_app_sqlite_repository = GPSAppSQLite(f"{ROOT_DIR}/{self.config['dataframe']['reviews']['path']}")
-		self.analyser = AnalyserService(self.config, self.gps_app_sqlite_repository, self.reviews_df_repo)
+		self.gps_app_sqlite_repo = GPSAppSQLite(f"{ROOT_DIR}/{self.config['database']['ara']['path']}")
+		self.analyser = AnalyserService(self.config, self.gps_app_sqlite_repo, self.reviews_df_repo)
 		self.plot = PlotService(self.config)
 
 	@route('/scoreDistribution', methods=['POST'])

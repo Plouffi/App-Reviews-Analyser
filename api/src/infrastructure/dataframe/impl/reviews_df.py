@@ -1,9 +1,10 @@
-from typing import Dict
+from typing import List
 import pandas as pd
 from pandas import DataFrame, Index, Series
 
 from src.infrastructure.dataframe.df_repository import DFRepository
 from src.domain.repository.reviews_repository import IReviewsRepository
+from src.domain.model.review import Review
 
 class ReviewsDF(DFRepository, IReviewsRepository):
 
@@ -29,5 +30,5 @@ class ReviewsDF(DFRepository, IReviewsRepository):
 	def get_series(self, df: DataFrame, column: str) -> Series:
 		return df[column]
 
-	def get(self, df: DataFrame, *mask):
+	def get(self, df: DataFrame, *mask) -> List[Review]:
 		return df.loc[mask]
