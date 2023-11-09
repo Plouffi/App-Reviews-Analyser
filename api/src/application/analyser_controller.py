@@ -1,30 +1,30 @@
+from typing import Dict
 from flask import request, Response
 from flask_classy import FlaskView, route
+from dependency_injector.wiring import Provide, inject
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 import io
 
-from config import CONFIG, ROOT_DIR
-from src.domain.services.analyser.analyser_service import AnalyserService
-from src.domain.services.plot.plot_service import PlotService
-from src.infrastructure.sqlite.impl.gps_app_sqlite_repository import GPSAppSQLite
-from src.infrastructure.dataframe.impl.reviews_df import ReviewsDF
+from config import CONFIG
+from application_container import ApplicationContainer
+from src.domain.services.i_analyser_service import IAnalyserService
+from src.domain.services.i_plot_service import IPlotService
 
 
 class AnalyserController(FlaskView):
 
-	config: any
-	analyser: AnalyserService
-	plot: PlotService
-	gps_app_sqlite_repo: GPSAppSQLite
-	reviews_df_repo: ReviewsDF
+	config: Dict
+	analyser_service: IAnalyserService
+	plot_service: IPlotService
 
-	def __init__(self) -> None:
+	@inject
+	def __init__(self, 
+							analyser_service: IAnalyserService = Provide[ApplicationContainer.analyser_service],
+							plot_service: IPlotService = Provide[ApplicationContainer.plot_service]) -> None:
 		super().__init__()
 		self.config = CONFIG
-		self.reviews_df_repo = ReviewsDF(self.config, "reviews")
-		self.gps_app_sqlite_repo = GPSAppSQLite(f"{ROOT_DIR}/{self.config['database']['ara']['path']}")
-		self.analyser = AnalyserService(self.config, self.gps_app_sqlite_repo, self.reviews_df_repo)
-		self.plot = PlotService(self.config)
+		self.analyser_service = analyser_service
+		self.plot_service = plot_service
 
 	@route('/scoreDistribution', methods=['POST'])
 	def score_distribution(self):
@@ -36,13 +36,13 @@ class AnalyserController(FlaskView):
 		
 		try:
 			# computing stats
-			score_distribution, review_distribution = self.analyser.score_distribution(app_id, date)
+			score_distribution, review_distribution = self.analyser_service.score_distribution(app_id, date)
 
 			# Convert plot to PNG image
-			figure_plot_SD = self.plot.score_distribution(score_distribution, review_distribution, date)
+			figure_plot_SD = self.plot_service.score_distribution(score_distribution, review_distribution, date)
 			image_plot_SD = io.BytesIO()
 			FigureCanvas(figure_plot_SD).print_png(image_plot_SD)
-			self.plot.refresh()
+			self.plot_service.refresh()
 			
 			return Response(image_plot_SD.getvalue(), mimetype='image/png')
 
@@ -60,7 +60,7 @@ class AnalyserController(FlaskView):
 
 		try:
 			# computing stats
-			cumulative_mean, rolling_mean, rolling_sum = self.analyser.means_stats(app_id, time_delta, nb_ignore)
+			cumulative_mean, rolling_mean, rolling_sum = self.analyser_service.means_stats(app_id, time_delta, nb_ignore)
 			means = {
 				'Cumulative mean': cumulative_mean,
 				'Rolling average (1 month)': rolling_mean,
@@ -68,10 +68,10 @@ class AnalyserController(FlaskView):
 			}
 
 			# Convert plot to PNG image
-			figure_plot_res = self.plot.means(means)
+			figure_plot_res = self.plot_service.means(means)
 			image_plot_res = io.BytesIO()
 			FigureCanvas(figure_plot_res).print_png(image_plot_res)
-			self.plot.refresh()
+			self.plot_service.refresh()
 		
 			return Response(image_plot_res.getvalue(), mimetype='image/png')
 		except:
@@ -88,8 +88,8 @@ class AnalyserController(FlaskView):
 		
 		try:
 			# computing stats
-			means, nb_reviews = self.analyser.mean()
-			review_with_mention, review_in_lang, review_with_mention_1star = self.analyser.mentions(lang, keywords)
+			means, nb_reviews = self.analyser_service.mean()
+			review_with_mention, review_in_lang, review_with_mention_1star = self.analyser_service.mentions(lang, keywords)
 			stats = {
 				'means': means,
 				'nb_reviews': nb_reviews,

@@ -1,8 +1,11 @@
 
-from application_container import ApplicationContainer
+from flask_cors import CORS
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 from apispec_webframeworks.flask import FlaskPlugin
+
+from application_container import ApplicationContainer
+
 
 spec = APISpec(
     title="App Reviews Analyser",
@@ -16,8 +19,11 @@ def create_app():
 	"""
 		Configure the app and views
 	"""
-	app = ApplicationContainer().app()
-	
+	container = ApplicationContainer()
+	app= container.app()
+	print(container.config())
+	CORS(app, resources={r"/api/*": {"origins": "*"}})
+
 	base_api_url = "/api/v1.0"
 	register_application(app, base_api_url)
 

@@ -1,34 +1,31 @@
-from typing import List
+from typing import List, Dict
 from datetime import datetime as dt
 import numpy as np
+import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-import matplotlib
+from matplotlib.figure import Figure
 
-matplotlib.use('agg')
+from src.domain.services.i_plot_service import IPlotService
 
-class PlotService:
-	"""
-		A class to generate plot from DataManager.
-		...
-		Attributes
+matplotlib.use('agg') # Enable plot on a web app context
+class PlotService(IPlotService):
+	"""A class to generate plot from app data.
 		----------
-		config : Dict
-			Program's configuration.
+		Attributes
+		config (Dict): Program's configuration.
 	"""
-	def __init__(self, config):
+	config: Dict
+	
+	def __init__(self, config: Dict):
 		"""
 			Parameters
 			----------
-			config : Dict
-				Program's configuration.
+			config (Dict): Program's configuration.
 		"""
 		self.config = config
 
-	def means(self, stats):
-		"""
-			Method to plot the graph displaying curves of rolling average and cumulative mean.
-		"""
+	def means(self, stats: Dict) -> Figure:
 		# plot grid
 
 		# plot feh pass announcement
@@ -62,17 +59,7 @@ class PlotService:
 		# display
 		return plt.gcf()
 
-	def score_distribution(self, reviews_distribution: List[List[float]], nb_reviews: List[int], date: dt):
-		"""
-			Plot a bar chart showing reviews' score ditribution.
-			Parameters
-			----------
-			reviews_distribution : List(List(float))
-				A 2-dimensionnal array representing score distribution before and after date.
-				Shape should be (2, 5) 2--> before/after // 5--> score range
-			nb_reviews : List(int)
-				An array stocking the number of reviews published before and after date
-		"""
+	def score_distribution(self, reviews_distribution: List[List[float]], nb_reviews: List[int], date: dt) -> Figure:
 		# remove the "after" data if date is None
 		if date is None:
 			reviews_distribution.pop()
@@ -107,9 +94,6 @@ class PlotService:
 		plt.legend()
 		return plt.gcf()
 
-	def refresh(self):
-		"""
-			Refresh the current plot
-		"""
+	def refresh(self) -> None:
 		plt.clf()
 		plt.cla()

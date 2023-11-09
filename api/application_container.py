@@ -2,13 +2,13 @@ import os
 from dependency_injector import containers, providers
 from dependency_injector.ext import flask
 from flask import Flask
-from flask_cors import CORS
 
-from src.domain.services.gps.gps_service import GPSService
-from src.domain.services.scraper.scraper_service import ScraperService
-from src.domain.services.analyser.analyser_service import AnalyserService
-from src.domain.services.plot.plot_service import PlotService
-from src.domain.services.cloud.cloud_service import CloudService
+from src.domain.services.impl.gps_service import GPSService
+from src.domain.services.impl.scraper_service import ScraperService
+from src.domain.services.impl.analyser_service import AnalyserService
+from src.domain.services.impl.plot_service import PlotService
+from src.domain.services.impl.cloud_service import CloudService
+from src.domain.services.impl.make_image import MakeImageService
 from src.infrastructure.dataframe.impl.reviews_df import ReviewsDF
 from src.infrastructure.sqlite.impl.gps_app_sqlite_repository import GPSAppSQLite
 
@@ -18,18 +18,17 @@ class ApplicationContainer(containers.DeclarativeContainer):
 	"""Application container."""
 
 	app = flask.Application(Flask, __name__)
-	CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 	config = providers.Configuration(yaml_files=["./resources/config.yaml"])
 
 	# Repositories
 	reviews_df_repo = providers.Factory(
 		ReviewsDF,
-		columns=config['dataframe']['reviews']
+		columns=config.dataframe.reviews
 	)
 	gps_app_sqlite_repo = providers.Factory(
 		GPSAppSQLite,
-		path=f"{ROOT_DIR}/{config['database']['ara']['path']}"
+		path=f"{ROOT_DIR}/{config.database.ara.path}"
 	)
 
 	# Services
@@ -56,4 +55,8 @@ class ApplicationContainer(containers.DeclarativeContainer):
 	)
 	cloud_service = providers.Factory(
 		CloudService
+	)
+	make_service = providers.Factory(
+		MakeImageService,
+		path_to_font=config.pathToFont
 	)

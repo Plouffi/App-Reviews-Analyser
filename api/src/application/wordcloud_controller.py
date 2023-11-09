@@ -1,29 +1,32 @@
+from typing import Dict
 from flask import  request, Response
 from flask_classy import FlaskView, route
+from dependency_injector.wiring import Provide, inject
 import io
 
-from config import CONFIG, ROOT_DIR
-from src.domain.services.cloud.cloud_service import CloudService
-from src.domain.services.gps.gps_service import GPSService
-from src.infrastructure.dataframe.impl.reviews_df import ReviewsDF
-from src.infrastructure.sqlite.impl.gps_app_sqlite_repository import GPSAppSQLite
-import src.domain.services.image.make_image as make_image
-
+from config import CONFIG
+from application_container import ApplicationContainer
+from src.domain.services.i_cloud_service import ICloudService
+from src.domain.services.i_gps_service import IGPSService
+from src.domain.services.i_make_image_service import IMakeImageService
 
 class WordcloudController(FlaskView):
 
-	config: any
-	cloud: CloudService
-	gps_service: GPSService
-	reviews_df_repo: ReviewsDF
+	config: Dict
+	cloud_service: ICloudService
+	gps_service: IGPSService
+	make_image_service: IMakeImageService
 
-	def __init__(self) -> None:
+	@inject
+	def __init__(self,
+							gps_service: IGPSService = Provide[ApplicationContainer.gps_service],
+							cloud_service: ICloudService = Provide[ApplicationContainer.cloud_service],
+							make_image_service: IMakeImageService = Provide[ApplicationContainer.scraper_service]) -> None:
 		super().__init__()
 		self.config = CONFIG
-		self.cloud = CloudService()
-		self.reviews_df_repo = ReviewsDF(self.config, "reviews")
-		self.gps_app_sqlite_repo = GPSAppSQLite(f"{ROOT_DIR}/{self.config['database']['ara']['path']}")
-		self.gps_service = GPSService(self.config, self.reviews_df_repo, self.gps_app_sqlite_repo)
+		self.gps_service = gps_service
+		self.cloud_service = cloud_service
+		self.make_image_service = make_image_service
 
 
 	@route('/words', methods=['POST'])
@@ -44,8 +47,8 @@ class WordcloudController(FlaskView):
 		try:
 			reviews_before_fp = self.gps_service.get_reviews(app_id, start_date_1, end_date_1, lang, score)
 			reviews_after_fp = self.gps_service.get_reviews(app_id, start_date_2, end_date_2, lang, score)
-			self.cloud.load_reviews(alpha, n, [reviews_before_fp, reviews_after_fp])
-			return self.cloud.get_words(), 200
+			self.cloud_service.load_reviews(alpha, n, [reviews_before_fp, reviews_after_fp])
+			return self.cloud_service.get_words(), 200
 		except:
 			return f"Error on '{super().route_base}/words' request", 500
 
@@ -56,7 +59,7 @@ class WordcloudController(FlaskView):
 		"""
 		words = request.get_json()['words']
 		try:
-			wordcloud = make_image.simple_image(words)
+			wordcloud = self.make_image_service.simple_image(words)
 
 			# Convert plot to PNG image
 			image = io.BytesIO()

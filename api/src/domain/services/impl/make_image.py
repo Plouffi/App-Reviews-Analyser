@@ -2,27 +2,35 @@ from typing import List, Tuple
 import numpy as np
 from PIL import Image
 from wordcloud import WordCloud
-defaultwords = [("No data", 0.70), ("NaN", 0.25), ("nada", 0.025), ("rien", 0.025)]
 
+from src.domain.services.i_make_image_service import IMakeImageService
 
+class MakeImageService(IMakeImageService):
+	"""A class to generate wordcloud image.
+		----------
+		Attributes
+		path_to_font (str): Path to the font file
+		defaultwords (List[Tuple[str, float]]): Default words if no is provided
+	"""
+	path_to_font: str
+	defaultwords: List[Tuple[str, float]]
 
-class MakeImageServiceImpl(MakeImageService):
+	def __init__(self, path_to_font: str):
+		self.path_to_font = path_to_font
+		self.defaultwords = [("No data", 0.70), ("NaN", 0.25), ("nada", 0.025), ("rien", 0.025)]
 
-	def __init():
-		pass
-
-	def simple_image(words: List[Tuple[str, float]]) -> Image:
+	def simple_image(self, words: List[Tuple[str, float]]) -> Image:
 		width = 400
 		height = 200
 		scaling = 2
 		if len(words) <= 0:
-			words = defaultwords
+			words = self.defaultwords
 		# we create the mask image
 		mask = np.zeros(shape=(height, width), dtype=int)
 
 		# generate the image
 		imgobject: Image = WordCloud(
-			"src/Image/Fonts/OpenSansEmoji.otf", scale=scaling, max_words=None, mask=mask,
+			self.path_to_font, scale=scaling, max_words=None, mask=mask,
 			background_color=None, mode="RGBA"
 		).fit_words(dict(words)).to_image()
 

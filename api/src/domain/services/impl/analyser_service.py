@@ -7,9 +7,9 @@ from datetime import timedelta
 from src.domain.model.gps_app import GPSApp
 from src.domain.repository.gps_app_repository import IGPSAppRepository
 from src.domain.repository.reviews_repository import IReviewsRepository
-from src.domain.services.i_analyser_service import IAnaliserService
+from src.domain.services.i_analyser_service import IAnalyserService
 
-class AnalyserService(IAnaliserService):
+class AnalyserService(IAnalyserService):
 	"""Service computing statics on app reviews
 		----------
 		Attributes:

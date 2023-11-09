@@ -29,7 +29,7 @@ class GPSService(IGPSService):
 		app = GPSApp(self.gps_app_repo.get(app_id))
 		if app is not None:
 			df = self.reviews_repo.get_df(app.exportPath)
-			mask_language = self.reviews_repo.get_series(df, "language") == language if language in self.config["languages"] else "en"
+			mask_language = self.reviews_repo.get_series(df, "language") == language if language in self.config.languages else "en"
 			mask_start_period = start_date <= self.reviews_repo.get_index(df)
 			mask_end_period = self.reviews_repo.get_index(df) < end_date
 			mask_score = self.reviews_repo.get_series(df, "score") == score if 0 < score <= 5 else self.reviews_repo.get_series(df, "score").isin([1, 2, 3, 4, 5])
@@ -70,4 +70,4 @@ class GPSService(IGPSService):
 			# TODO: throw error
 
 	def get_export_path(self, app_id: str) -> str:
-		return f"{self.config['exportPath']}/{app_id}_export.csv"
+		return f"{self.config.exportPath}/{app_id}_export.csv"

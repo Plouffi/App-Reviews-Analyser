@@ -1,27 +1,28 @@
+from typing import Dict
 from flask import jsonify, request
 from flask_classy import FlaskView, route
+from dependency_injector.wiring import Provide, inject
 
-from config import CONFIG, ROOT_DIR
-from src.domain.services.gps.gps_service import GPSService
-from src.domain.services.scraper.scraper_service import ScraperService
-from src.infrastructure.dataframe.impl.reviews_df import ReviewsDF
-from src.infrastructure.sqlite.impl.gps_app_sqlite_repository import GPSAppSQLite
+
+from config import CONFIG
+from application_container import ApplicationContainer
+from src.domain.services.i_gps_service import IGPSService
+from src.domain.services.i_scraper_service import IScraperService
 
 class GPSAppController(FlaskView):
 
-	config: any
-	gps_service: GPSService
-	scraper: ScraperService
-	reviews_df_repo: ReviewsDF
-	gps_app_sqlite_repo: GPSAppSQLite
+	config: Dict
+	gps_service: IGPSService
+	scraper_service: IScraperService
 
-	def __init__(self) -> None:
+	@inject
+	def __init__(self, 
+							gps_service: IGPSService = Provide[ApplicationContainer.gps_service],
+							scraper_service: IScraperService = Provide[ApplicationContainer.scraper_service]) -> None:
 		super().__init__()
 		self.config = CONFIG
-		self.reviews_df_repo = ReviewsDF(self.config, "reviews")
-		self.gps_app_sqlite_repo = GPSAppSQLite(f"{ROOT_DIR}/{self.config['database']['ara']['path']}")
-		self.gps_service = GPSService(self.config, self.reviews_df_repo, self.gps_app_sqlite_repo)
-		self.scraper = ScraperService(self.config)
+		self.gps_service = gps_service
+		self.scraper_service = scraper_service
 
 	@route('/search')
 	def search(self):
@@ -31,7 +32,7 @@ class GPSAppController(FlaskView):
 		search = request.args.get('search')
 		
 		try:
-			return jsonify(self.scraper.search_app(search))
+			return jsonify(self.scraper_service.search_app(search))
 		except:
 			return f"Error on '{super().route_base}/search' request", 500
 		
@@ -44,7 +45,7 @@ class GPSAppController(FlaskView):
 		
 		try:
 			#TODO demander l'app detail pour toutes les langues/country pour avoir la somme du nombre de reviews
-			return jsonify(self.scraper.app_detail(id))
+			return jsonify(self.scraper_service.app_detail(id))
 		except:
 			return f"Error on '{super().route_base}/detail' request", 500
 

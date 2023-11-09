@@ -5,7 +5,7 @@ from datetime import datetime as dt
 from abc import ABC, abstractmethod
 
 
-class IAnaliserService(ABC):
+class IAnalyserService(ABC):
   
 	@abstractmethod
 	def num_reviews(self, app_id: str) -> int:
