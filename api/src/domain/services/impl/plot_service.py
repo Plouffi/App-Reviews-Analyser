@@ -1,6 +1,7 @@
 from typing import List, Dict
 from datetime import datetime as dt
 import numpy as np
+from pandas import Series
 import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
@@ -25,10 +26,12 @@ class PlotService(IPlotService):
 		"""
 		self.config = config
 
-	def means(self, stats: Dict) -> Figure:
-		# plot grid
-
-		# plot feh pass announcement
+	def means(self, cumulative_mean: Series, rolling_mean: Series, rolling_sum: Series) -> Figure:
+		stats = { 
+			'Cumulative mean': cumulative_mean,
+			'Rolling average (1 month)': rolling_mean,
+			'Rolling sum of reviews (1 month)': rolling_sum
+		}
 		# plt.axvline(x=self.feh_pass_date, ls="--", color="#e55039", linewidth=1, label="Feh Pass announcement")
 
 		fig, ax_score = plt.subplots()

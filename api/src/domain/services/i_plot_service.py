@@ -7,7 +7,7 @@ from matplotlib.figure import Figure
 class IPlotService(ABC):
   
 	@abstractmethod
-	def means(self, stats: Dict) -> Figure:
+	def means(self, cumulative_mean: Series, rolling_mean: Series, rolling_sum: Series) -> Figure:
 		"""Return a Figure of a graph displaying curves of rolling average and cumulative mean.
 				----------
 		Parameters:
