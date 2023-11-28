@@ -8,6 +8,7 @@ class SQLiteRepository(ABC):
 	cursor: Cursor
 
 	def __init__(self, path: str):
+		print(path)
 		self.connection = sqlite3.connect(path)
 		self.cursor = self.connection.cursor()
 

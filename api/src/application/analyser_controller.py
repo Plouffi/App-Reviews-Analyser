@@ -2,9 +2,10 @@ from flask import request, Response
 from flask_classy import FlaskView, route
 from dependency_injector.wiring import Provide, inject
 
-
 from application_container import ApplicationContainer
+from src.application.response.a_response import TypeResponse
 from src.application.response.impl.stats_response import StatsResponse
+from src.application.response.impl.image_response import ImageResponse
 from src.application.request.score_distribution_request import ScoreDistributionRequest
 from src.application.request.means_request import MeansRequest
 from src.application.request.stats_request import StatsRequest
@@ -29,7 +30,15 @@ class AnalyserController(FlaskView):
 
 	@route('/scoreDistribution', methods=['POST'])
 	def score_distribution(self):
-		"""Compute score distribution from reviews data and returns it as a bar chart image"""
+		"""Compute score distribution from reviews data and returns it as a bar chart image
+			---
+			description: Get a gist
+			responses:
+				200:
+					content:
+						application/json:
+							schema: GistSchema
+			"""
 		req = ScoreDistributionRequest(request)
 		
 		try:
@@ -39,9 +48,9 @@ class AnalyserController(FlaskView):
 			# Convert plot to PNG image
 			figure_plot_SD = self.plot_service.score_distribution(score_distribution, review_distribution, req.date)
 			image_plot_SD = ApplicationUtils.get_image_from_plot(self.plot_service, figure_plot_SD)
-			
-			return Response(response=image_plot_SD.getvalue(), status=200, mimetype='image/png')
 
+			image_response = ImageResponse(image_plot_SD)
+			return image_response.response(TypeResponse.PNG)
 		except:
 			return Response(response=f"Error on '{super().route_base}/scoreDistribution' request", status=500)
 
@@ -59,7 +68,8 @@ class AnalyserController(FlaskView):
 			figure_plot_res = self.plot_service.means(cumulative_mean, rolling_mean, rolling_sum)
 			image_plot_res = ApplicationUtils.get_image_from_plot(self.plot_service, figure_plot_res)
 		
-			return Response(response=image_plot_res.getvalue(), status=200, mimetype='image/png')
+			image_response = ImageResponse(image_plot_res)
+			return image_response.response(TypeResponse.PNG)
 		except:
 			return Response(response=f"Error on '{super().route_base}/means' request", status=500)
 		
@@ -75,7 +85,6 @@ class AnalyserController(FlaskView):
 			stats = StatsResponse(means, nb_reviews, review_with_mention, review_in_lang, review_with_mention_1star)
 			
 			# return stats
-			return stats.response()
-
+			return stats.response(TypeResponse.JSON)
 		except:
 			return Response(response=f"Error on '{super().route_base}/stats' request", status=500)

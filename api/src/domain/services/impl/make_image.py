@@ -1,7 +1,8 @@
-from typing import List, Tuple
+from typing import List, Tuple, Dict
 import numpy as np
 from PIL import Image
 from wordcloud import WordCloud
+from dependency_injector.providers import Configuration
 
 from src.domain.services.i_make_image_service import IMakeImageService
 
@@ -15,8 +16,8 @@ class MakeImageService(IMakeImageService):
 	path_to_font: str
 	defaultwords: List[Tuple[str, float]]
 
-	def __init__(self, path_to_font: str):
-		self.path_to_font = path_to_font
+	def __init__(self, config: Dict):
+		self.path_to_font = config['wordcloudFont']
 		self.defaultwords = [("No data", 0.70), ("NaN", 0.25), ("nada", 0.025), ("rien", 0.025)]
 
 	def simple_image(self, words: List[Tuple[str, float]]) -> Image:

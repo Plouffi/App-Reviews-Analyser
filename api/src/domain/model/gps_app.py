@@ -1,12 +1,13 @@
 from typing import Dict
 from datetime import datetime
 
-class ExportStatus:
-	"""Enum to represente the exporting status of reviews
-	----------"""
-	NO_EXPORT: 0
-	EXPORTING: 1
-	EXPORTED: 2
+class ExportStatus():
+	"""
+	Enum to represente the exporting status of reviews
+	"""
+	NO_EXPORT = 0
+	EXPORTING = 1
+	EXPORTED = 2
 
 class GPSApp:
 	"""Class representing an app from the Google Playstore
@@ -39,7 +40,7 @@ class GPSApp:
 	url (str)
 	exportPath (str)
 	exportDate (datetime)
-	exporting (ExportStatus)
+	exporting (int)
 	"""
 
 	id: str
@@ -69,7 +70,7 @@ class GPSApp:
 	url: str
 	exportPath: str
 	exportDate: datetime
-	exportStatus: ExportStatus
+	exportStatus: int
 
 
 	def __init__(self, gps_app: Dict) -> None :
@@ -102,16 +103,53 @@ class GPSApp:
 		self.exportDate = gps_app['exportDate'] if 'exportDate' in gps_app else None
 		self.exportStatus = gps_app['exportStatus'] if 'exportStatus' in gps_app else ExportStatus.NO_EXPORT
 
-	def shorten(self) -> Dict:
+	def serialize_short(self) -> Dict:
 		"""Shorten app detail.
 		----------
 		Returns:
-		Any: the shorten app
+		Dict: the shorten app
 		"""
 		return {
 			'id': self.id,
 			'title': self.title,
 			'icon': self.icon
+		}
+	
+	def serialize(self) -> Dict:
+		"""Serialize the app detail.
+		----------
+		Returns:
+		Dict: the shorten app
+		"""
+		return {
+			'id': self.id,
+			'title': self.title,
+			'icon': self.icon,
+			'headerImage': self.headerImage,
+			'video': self.video,
+			'videoImage': self.videoImage,
+			'screenshots': self.screenshots,
+			'score': self.score,
+			'genre': self.genre,
+			'categories': self.categories,
+			'price': self.price,
+			'currency': self.currency,
+			'free': self.free,
+			'summary': self.summary,
+			'description': self.description,
+			'descriptionHTML': self.descriptionHTML,
+			'version': self.version,
+			'released': self.released,
+			'developer': self.developer,
+			'developerWebsite': self.developerWebsite,
+			'installs': self.installs,
+			'realInstalls': self.realInstalls,
+			'totalReviews': self.totalReviews,
+			'reviews': self.reviews,
+			'url': self.url,
+			'exportPath': self.exportPath,
+			'exportDate': self.exportDate,
+			'exportStatus': self.exportStatus
 		}
 
 	def formatDate(self, date: str, lang: str) -> datetime:

@@ -27,8 +27,11 @@ class GPSAppController(FlaskView):
 		"""Search app on playstore"""
 		search = request.args.get('search')
 		try:
-			return jsonify(self.scraper_service.search_app(search))
-		except:
+			result = []
+			result += map(lambda a : a.serialize_short(), self.scraper_service.search_app(search))
+			return jsonify(result)
+		except Exception as e:
+			print(e)
 			return Response(response=f"Error on '{super().route_base}/search' request", status=500)
 		
 	@route('/detail')
@@ -37,8 +40,9 @@ class GPSAppController(FlaskView):
 		id = request.args.get('id')
 		try:
 			#TODO demander l'app detail pour toutes les langues/country pour avoir la somme du nombre de reviews
-			return jsonify(self.scraper_service.app_detail(id))
-		except:
+			return jsonify(self.scraper_service.app_detail(id).serialize())
+		except Exception as e:
+			print(e)
 			return Response(response=f"Error on '{super().route_base}/detail' request", status=500)
 
 	@route('/scraping')
@@ -49,5 +53,6 @@ class GPSAppController(FlaskView):
 			self.gps_service.save_app(id)
 			self.gps_service.save_reviews(id)
 			return Response(response='OK', status=200)
-		except:
+		except Exception as e:
+			print(e)
 			return Response(response=f"Error on '{super().route_base}/scraping' request", status=500)

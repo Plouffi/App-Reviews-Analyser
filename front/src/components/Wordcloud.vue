@@ -2,13 +2,13 @@
 import { ref } from 'vue'
 import { useLocale } from 'vuetify';
 import araError from './Error.vue'
-import GPSRestResource from '@/services/GPSRestResource';
+import WordcloudRestResource from '@/services/WordcloudRestResource';
 import Utils from '@/utils'
 
 const ENV = import.meta.env // Environment variable
 const { t } = useLocale()
 
-const gpsResource = new GPSRestResource()
+const wordcloudResource = new WordcloudRestResource()
 // Request parameter for /wordcloud
 const alpha = ref()
 const nToken = ref()
@@ -53,9 +53,9 @@ const computeWordcloud = async () => {
 	wordcloud1Loading.value = true;
 	wordcloud2Loading.value = true;
 	try {
-		const wordsRes = await gpsResource.getWords(alpha.value, nToken.value, lang.value.value, score.value, start1.value, end1.value, start2.value, end2.value)
-		const image1 = await gpsResource.getImageWordcloud(wordsRes[0])
-		const image2 = await gpsResource.getImageWordcloud(wordsRes[1])
+		const wordsRes = await wordcloudResource.getWords(alpha.value, nToken.value, lang.value.value, score.value, start1.value, end1.value, start2.value, end2.value)
+		const image1 = await wordcloudResource.getImageWordcloud(wordsRes[0])
+		const image2 = await wordcloudResource.getImageWordcloud(wordsRes[1])
 		wordcloudImage1.value = URL.createObjectURL(image1)
 		wordcloudImage2.value = URL.createObjectURL(image2)
 		wordcloudError.value = ''

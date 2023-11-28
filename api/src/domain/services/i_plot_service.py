@@ -1,6 +1,7 @@
 from typing import Dict, List
 from abc import ABC, abstractmethod
 from datetime import datetime as dt
+from pandas import Series
 from matplotlib.figure import Figure
 
 

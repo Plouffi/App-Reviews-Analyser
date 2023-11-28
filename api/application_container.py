@@ -1,7 +1,5 @@
-import os
+import os, json
 from dependency_injector import containers, providers
-from dependency_injector.ext import flask
-from flask import Flask
 
 from src.domain.services.impl.gps_service import GPSService
 from src.domain.services.impl.scraper_service import ScraperService
@@ -17,18 +15,18 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 class ApplicationContainer(containers.DeclarativeContainer):
 	"""Application container."""
 
-	app = flask.Application(Flask, __name__)
-
 	config = providers.Configuration(yaml_files=["./resources/config.yaml"])
+	
+	wiring_config = containers.WiringConfiguration(packages=["src"])
 
-	# Repositories
 	reviews_df_repo = providers.Factory(
 		ReviewsDF,
-		columns=config.dataframe.reviews
+		config=config
 	)
 	gps_app_sqlite_repo = providers.Factory(
 		GPSAppSQLite,
-		path=f"{ROOT_DIR}/{config.database.ara.path}"
+		config=config,
+		root_dir=ROOT_DIR
 	)
 
 	# Services
@@ -45,7 +43,6 @@ class ApplicationContainer(containers.DeclarativeContainer):
 	)
 	analyser_service = providers.Factory(
 		AnalyserService,
-		config=config,
 		reviews_repo=reviews_df_repo,
 		gps_app_repo=gps_app_sqlite_repo
 	)
@@ -58,5 +55,5 @@ class ApplicationContainer(containers.DeclarativeContainer):
 	)
 	make_service = providers.Factory(
 		MakeImageService,
-		path_to_font=config.pathToFont
+		config=config
 	)

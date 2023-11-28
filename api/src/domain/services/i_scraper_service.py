@@ -8,14 +8,14 @@ from src.domain.model.review import Review
 class IScraperService(ABC):
 
 	@abstractmethod
-	def search_app(self, search: str) -> List[Dict]:
+	def search_app(self, search: str) -> List[GPSApp]:
 		"""Search apps on the Google Playstore based on search terms
 		----------
 		Parameters:
 		search (str): Search terms
 		----------
 		Returns:
-		List[Dict]: List of shorten detail app from the search result
+		List[GPSApp]: List of detail app from the search result
 		"""
 		pass
 

@@ -2,13 +2,13 @@
 import { ref } from 'vue'
 import { useLocale } from 'vuetify'
 import araError from './Error.vue'
-import GPSRestResource from '@/services/GPSRestResource';
+import AnalyserRestResource from '@/services/AnalyserRestResource'
 import Utils from '@/utils'
 
 const ENV = import.meta.env // Environment variable
 const { t } = useLocale()
 
-const gpsResource = new GPSRestResource()
+const analyserResource = new AnalyserRestResource()
 const timeDelta = ref(30) // Model value for the time delta parameter
 const ignore = ref(0) // Model value for the ignore parameter
 const means = ref('') // Model value for the source url result
@@ -28,7 +28,7 @@ const timeDeltaTicks = ref(Array.from(Array(maxDelta).keys()).map(x => x++))
 const computeMeans = async () => {
 	meansLoading.value = true
 	try {
-		const image = await gpsResource.getMeans(timeDelta.value, ignore.value)
+		const image = await analyserResource.getMeans(timeDelta.value, ignore.value)
 		means.value = URL.createObjectURL(image)
 		meansError.value = ''
 	} catch (err) {

@@ -1,4 +1,4 @@
-from typing import Dict, Tuple, List, Any
+from typing import Tuple, List
 import numpy as np
 from pandas import DataFrame, Series
 from datetime import datetime as dt
@@ -13,16 +13,13 @@ class AnalyserService(IAnalyserService):
 	"""Service computing statics on app reviews
 		----------
 		Attributes:
-		config (Dict): Program's configuration
 		reviews_repo (IReviewsRepository): Reviews repository
 		gps_app_repo (IGPSAppRepository): GPS app repository
 	"""
-	config: Dict
 	reviews_repo: IReviewsRepository
 	gps_app_repo: IGPSAppRepository
 	
-	def __init__(self, config, reviews_repo: IReviewsRepository, gps_app_repo: IGPSAppRepository):
-		self.config = config
+	def __init__(self, reviews_repo: IReviewsRepository, gps_app_repo: IGPSAppRepository):
 		self.gps_app_repo = gps_app_repo
 		self.reviews_repo = reviews_repo
 

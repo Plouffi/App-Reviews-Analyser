@@ -2,12 +2,13 @@ from typing import List
 import pandas as pd
 from pandas import DataFrame
 from abc import ABC, abstractmethod
+from dependency_injector.providers import Configuration
 
 class DFRepository(ABC):
 	
 	columns: List[str]
 
-	def __init__(self, columns):
+	def __init__(self, config: Configuration):
 		"""
 			Parameters
 			----------
@@ -15,7 +16,7 @@ class DFRepository(ABC):
 				Program's configuration.
 
 		"""
-		self.columns = columns
+		self.columns = config['dataframe']['reviews']
 		self.df = pd.DataFrame(columns=self.columns)
 
 	def load(self, path_to_csv: str) -> DataFrame:

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import araError from './Error.vue'
-import GPSRestResource from '@/services/GPSRestResource';
+import AnalyserRestResource from '@/services/AnalyserRestResource';
 import Utils from '@/utils';
 
 const ENV = import.meta.env // Environment variable
 
-const gpsResource = new GPSRestResource()
+const analyserResource = new AnalyserRestResource()
 const date = ref() // Model value for the date parameter
 const scoreDistribution = ref('') // Model value for the source url result
 const scoreDistributionLoading = ref(false) // Loading flag on score distribution computing
@@ -18,7 +18,7 @@ const scoreDistributionError = ref('') // Error flag on score distribution compu
 const computeScoreDistribution = async () => {
 	scoreDistributionLoading.value = true
 	try {
-		const image = await gpsResource.getScoreDistribution(date.value)
+		const image = await analyserResource.getScoreDistribution(date.value)
 		scoreDistribution.value = URL.createObjectURL(image)
 	} catch (err) {
 		if (ENV.MODE == Utils._MODE_MOCK) {

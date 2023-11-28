@@ -1,4 +1,5 @@
-from typing import Tuple
+from typing import Tuple, Dict
+
 from src.infrastructure.sqlite.sqlite_repository import SQLiteRepository
 from src.domain.repository.gps_app_repository import IGPSAppRepository
 from src.domain.model.gps_app import GPSApp
@@ -7,8 +8,8 @@ class GPSAppSQLite(SQLiteRepository, IGPSAppRepository):
   
 	table: str
 
-	def __init__(self, path: str):
-		super().__init__(path)
+	def __init__(self, config: Dict, root_dir: str):
+		super().__init__(f"{root_dir}{config['database']['ara']['path']}")
 		self.table = "GPS_APP"
 
 	def insert(self, gps_app: GPSApp):
