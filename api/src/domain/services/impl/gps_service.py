@@ -25,8 +25,11 @@ class GPSService(IGPSService):
 	def get_app(self, app_id: str) -> GPSApp:
 		return self.gps_app_repo.get(app_id)
 
+	def get_apps(self) -> GPSApp:
+		return self.gps_app_repo.list()
+	
 	def get_reviews(self, app_id:str, start_date: dt, end_date: dt, language: str = "en", score: int = -1) -> List[Review]:
-		app = GPSApp(self.gps_app_repo.get(app_id))
+		app = self.gps_app_repo.get(app_id)
 		if app is not None:
 			df = self.reviews_repo.get_df(app.exportPath)
 			mask_language = self.reviews_repo.get_series(df, "language") == language if language in self.config['languages'] else "en"
@@ -44,17 +47,19 @@ class GPSService(IGPSService):
 
 	def save_reviews(self, app_id):
 		app = self.get_app(app_id=app_id)
-		if (app.exportStatus is ExportStatus.NO_EXPORT):
+		if (app.exportStatus == ExportStatus.NO_EXPORT):
 			try :
+				print("allo save reviews")
 				self.change_export_status(app_id, ExportStatus.EXPORTING)
-				reviews = self.scraper_service.get_reviews(app.released)
+				reviews = self.scraper_service.get_reviews(app_id, app.released)
 				export_path = self.get_export_path(app.id)
 				self.reviews_repo.insert(reviews, export_path)
-				update = [("exportPath", export_path), ("exportDate", dt.now().strftime("%d/%m/%Y"))]
-				self.gps_app_repo.update(app_id, update)
+				self.gps_app_repo.update(app_id, ("exportPath", export_path), ("exportDate", dt.now().strftime("%d/%m/%Y")))
 				self.change_export_status(app_id, ExportStatus.EXPORTED)
-			except:
+			except Exception as e:
 				# TODO throw error
+				print(e)
+				print('GPSService')
 				self.gps_app_repo.rollback()
 		else:
 			# TODO renvoyer un message pour prévenir du status
@@ -70,4 +75,4 @@ class GPSService(IGPSService):
 			# TODO: throw error
 
 	def get_export_path(self, app_id: str) -> str:
-		return f"{self.config['exportPath']}/{app_id}_export.csv"
+		return f"{self.config['exportPath']}\\{app_id}_export.csv"

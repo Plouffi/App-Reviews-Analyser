@@ -24,7 +24,7 @@ const onSearch = async () => {
 	if (searchTerm.value) {
 		searchTab.value = 'list' // Return to the list tab if we were on detail tab
 		loadSearch.value = true
-		searchError.value =''
+		searchError.value = ''
 		appListResult.value = []
 		try {
 			const res = await gpsResource.searchApp(searchTerm.value)

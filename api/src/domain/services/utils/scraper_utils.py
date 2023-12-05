@@ -200,7 +200,8 @@ def reviews_all(app_id: str, date: datetime, lang: str, country: str, sleep_mill
 
 			if sleep_milliseconds:
 				sleep(sleep_milliseconds / 1000)
-		except:
+		except Exception as e:
+			print(e)
 			print("error - continue")
 
 	print(f"--------------------------------------")

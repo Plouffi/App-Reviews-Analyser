@@ -14,13 +14,13 @@ class AResponse(ABC):
 		pass
 
 	@abstractmethod
-	def image_data(self) -> bytes:
+	def to_image_data(self) -> bytes:
 		pass
 
 	def response(self, type) -> Response:
 		if (type == TypeResponse.JSON):
 			return Response(response=self.to_json(), status=200, mimetype='application/json')
 		elif (type == TypeResponse.PNG):
-			return Response(response=self.image_data(), status=200, mimetype='image/png')
+			return Response(response=self.to_image_data(), status=200, mimetype='image/png')
 		else:
 			raise TypeError(f"Can't handle response type: {type}")

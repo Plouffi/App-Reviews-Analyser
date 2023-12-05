@@ -1,5 +1,6 @@
 from typing import Tuple, List
 import numpy as np
+import pandas as pd
 from pandas import DataFrame, Series
 from datetime import datetime as dt
 from datetime import timedelta
@@ -42,10 +43,10 @@ class AnalyserService(IAnalyserService):
 			return None, 0
 
 	def means_stats(self, app_id: str, time_delta: int, nb_ignore: int = 1000) -> Tuple[Series,  Series, Series]:
-		app = GPSApp(self.gps_app_repo.get(app_id))
+		app = self.gps_app_repo.get(app_id)
 		if app is not None:
 			df = self.reviews_repo.get_df(app.exportPath)
-			mean = self.cumulative_mean(df, time_delta, nb_ignore)
+			mean = self.cumulative_mean(df, nb_ignore)
 			rolling_mean = self.rolling_mean(df, time_delta, nb_ignore)
 			rolling_sum = self.rolling_sum(df, time_delta, nb_ignore)
 			return mean, rolling_mean, rolling_sum
@@ -59,8 +60,8 @@ class AnalyserService(IAnalyserService):
 		Returns:
 		Series: Rolling mean
 		"""
-		time_delta = str(time_delta) + 'D'
-		return self.reviews_repo.get_series(df, "score").iloc[nb_ignore:].rolling(time_delta).mean()
+		time_delta_window = str(time_delta) + 'D'
+		return self.reviews_repo.get_series(df, "score").iloc[nb_ignore:].rolling(time_delta_window).mean()
 
 	def cumulative_mean(self, df: DataFrame, nb_ignore: int = 1000) -> Series:
 		"""Compute cumulative mean of reviews' score.
@@ -80,8 +81,8 @@ class AnalyserService(IAnalyserService):
 		Returns:
 		Series: Rolling sum
 		"""
-		time_delta = str(time_delta) + 'D'
-		return self.reviews_repo.get_series(df, "score").iloc[nb_ignore:].rolling(time_delta).count()
+		time_delta_window = str(time_delta) + 'D'
+		return self.reviews_repo.get_series(df, "score").iloc[nb_ignore:].rolling(time_delta_window).count()
 	
 	def score_distribution(self, app_id: str, date: dt) -> Tuple[List[List[float]], List[int]]:
 		def get_score_distribution(data):
@@ -93,19 +94,19 @@ class AnalyserService(IAnalyserService):
 				score_distribution.append(pourcent)
 			return score_distribution
 		
-		app = GPSApp(self.gps_app_repo.get(app_id))
+		app = self.gps_app_repo.get(app_id)
 		if app is not None:
 			df = self.reviews_repo.get_df(app.exportPath)
 			tomorrow = dt.now() + timedelta(1)
-			mask_before = (self.reviews_repo.get_index(df) < date) if date is not None else (self.reviews_repo.get_index(df) < tomorrow)
-			before_fp = self.reviews_repo.get(mask_before)
-			after_fp = self.reviews_repo.get(self.reviews_repo.get_index(df) >= date) if date is not None else None
+			mask_before = (self.reviews_repo.get_index(df) < date) if date else (self.reviews_repo.get_index(df) < tomorrow)
+			before_fp = self.reviews_repo.get(df, mask_before)
+			after_fp = self.reviews_repo.get(df, self.reviews_repo.get_index(df) >= date) if date else None
 			return [get_score_distribution(before_fp), get_score_distribution(after_fp)], [len(before_fp), len(after_fp) if date is not None else 0]
 		else:
 			return None, None
 
 	def mentions(self, app_id: str, lang: str, keywords: List[str]) -> Tuple[Series, Series, Series]:
-		app = GPSApp(self.gps_app_repo.get(app_id))
+		app = self.gps_app_repo.get(app_id)
 		if app is not None:
 			df = self.reviews_repo.get_df(app.exportPath)
 			mask_language = self.reviews_repo.get_series(df, "language") == lang

@@ -7,8 +7,9 @@ from dependency_injector.providers import Configuration
 class DFRepository(ABC):
 	
 	columns: List[str]
+	root_dir: str
 
-	def __init__(self, config: Configuration):
+	def __init__(self, config: Configuration, root_dir: str):
 		"""
 			Parameters
 			----------
@@ -18,20 +19,21 @@ class DFRepository(ABC):
 		"""
 		self.columns = config['dataframe']['reviews']
 		self.df = pd.DataFrame(columns=self.columns)
+		self.root_dir = root_dir
 
 	def load(self, path_to_csv: str) -> DataFrame:
 		"""
 		Method to load reviews from csv file. Set up the dataframe's index on "at" column (publication date)
 		"""
 		try :
-			df = pd.read_csv(path_to_csv)
-			self.indexing(df)
+			df = pd.read_csv(f"{self.root_dir}{path_to_csv}")
+			df = self.indexing(df)
 			return df
 		except FileNotFoundError:
 			return self.get_df()
 
 	@abstractmethod
-	def indexing(self, df: DataFrame):
+	def indexing(self, df: DataFrame) -> DataFrame:
 		"""
 		Method to set up the index on records
 		"""
@@ -47,4 +49,4 @@ class DFRepository(ABC):
 		"""
 		Method to export reviews in csv.
 		"""
-		df.to_csv(export_path, index=False)
+		df.to_csv(f"{self.root_dir}\\{export_path}", index=False)

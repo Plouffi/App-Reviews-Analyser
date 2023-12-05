@@ -8,5 +8,5 @@ class ScoreDistributionRequest():
 	date: datetime
 
 	def __init__(self, request: Request) -> None:
-		self.app_id = str(request.get_json()['app_id'])
+		self.app_id = str(request.get_json()['appId'])
 		self.date = request.get_json().get('date', None)

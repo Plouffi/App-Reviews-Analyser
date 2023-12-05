@@ -5,8 +5,11 @@ import AnalyserRestResource from '@/services/AnalyserRestResource';
 import Utils from '@/utils';
 
 const ENV = import.meta.env // Environment variable
-
 const analyserResource = new AnalyserRestResource()
+const props = defineProps({
+	appId: String // App ID 
+})
+
 const date = ref() // Model value for the date parameter
 const scoreDistribution = ref('') // Model value for the source url result
 const scoreDistributionLoading = ref(false) // Loading flag on score distribution computing
@@ -18,8 +21,10 @@ const scoreDistributionError = ref('') // Error flag on score distribution compu
 const computeScoreDistribution = async () => {
 	scoreDistributionLoading.value = true
 	try {
-		const image = await analyserResource.getScoreDistribution(date.value)
-		scoreDistribution.value = URL.createObjectURL(image)
+		if (props.appId) {
+			const image = await analyserResource.getScoreDistribution(props.appId, date.value)
+			scoreDistribution.value = URL.createObjectURL(image)
+		}
 	} catch (err) {
 		if (ENV.MODE == Utils._MODE_MOCK) {
 			scoreDistribution.value = Utils.getMockImage('score_distribution')
@@ -36,14 +41,15 @@ const computeScoreDistribution = async () => {
 		<v-container fluid class="input-analyser">
 			<v-row>
 				<v-col cols="12">
-					<v-text-field v-model="date" :label="$t('analyser.scoreDistribution.label')" type="datetime-local" variant="underlined"
-						:hint="$t('analyser.scoreDistribution.tooltip')">
+					<v-text-field v-model="date" :label="$t('analyser.scoreDistribution.label')" type="datetime-local"
+						variant="underlined" :hint="$t('analyser.scoreDistribution.tooltip')">
 					</v-text-field>
 				</v-col>
 			</v-row>
 		</v-container>
 		<v-card-actions>
-			<v-btn @click="computeScoreDistribution()" color="teal-darken-2" variant="flat" elevation="4">{{ $t('analyser.scoreDistribution.button') }}</v-btn>
+			<v-btn @click="computeScoreDistribution()" color="teal-darken-2" variant="flat" elevation="4">{{
+				$t('analyser.scoreDistribution.button') }}</v-btn>
 		</v-card-actions>
 		<v-container>
 			<v-expand-transition>

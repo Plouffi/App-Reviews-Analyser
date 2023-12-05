@@ -38,7 +38,8 @@ class WordcloudController(FlaskView):
 			self.cloud_service.load_reviews(req.alpha, req.n, [reviews_before_fp, reviews_after_fp])
 			
 			return jsonify(self.cloud_service.get_words())
-		except:
+		except Exception as e:
+			print(e)
 			return Response(response=f"Error on '{super().route_base}/words' request", status=500)
 
 	@route('/image', methods=['POST'])
@@ -53,5 +54,6 @@ class WordcloudController(FlaskView):
 			wordcloud.save(image, format='PNG')
 
 			return Response(image.getvalue(), status=200, mimetype='image/png')
-		except:
+		except Exception as e:
+			print(e)
 			return Response(response=f"Error on '{super().route_base}/image' request", status=500)

@@ -9,6 +9,10 @@ const ENV = import.meta.env // Environment variable
 const { t } = useLocale()
 
 const analyserResource = new AnalyserRestResource()
+const props = defineProps({
+	appId: String // App ID 
+})
+
 const timeDelta = ref(30) // Model value for the time delta parameter
 const ignore = ref(0) // Model value for the ignore parameter
 const means = ref('') // Model value for the source url result
@@ -28,9 +32,11 @@ const timeDeltaTicks = ref(Array.from(Array(maxDelta).keys()).map(x => x++))
 const computeMeans = async () => {
 	meansLoading.value = true
 	try {
-		const image = await analyserResource.getMeans(timeDelta.value, ignore.value)
-		means.value = URL.createObjectURL(image)
-		meansError.value = ''
+		if (props.appId) {
+			const image = await analyserResource.getMeans(props.appId, timeDelta.value, ignore.value)
+			means.value = URL.createObjectURL(image)
+			meansError.value = ''
+		}
 	} catch (err) {
 		if (ENV.MODE == Utils._MODE_MOCK) {
 			means.value = Utils.getMockImage('means')
@@ -38,6 +44,7 @@ const computeMeans = async () => {
 			meansError.value = `${err}`
 		}
 	}
+
 	meansLoading.value = false
 }
 </script>
@@ -47,8 +54,8 @@ const computeMeans = async () => {
 		<v-container fluid class="input-analiser">
 			<v-row>
 				<v-col cols="12">
-					<v-slider v-model="timeDelta" :ticks="timeDeltaTicks" :min="1" :max="maxDelta" step="1" :label="$t('analyser.means.label')"
-						thumb-color="teal-darken-2" color="teal-darken-2" :show-ticks="false"
+					<v-slider v-model="timeDelta" :ticks="timeDeltaTicks" :min="1" :max="maxDelta" step="1"
+						:label="$t('analyser.means.label')" thumb-color="teal-darken-2" color="teal-darken-2" :show-ticks="false"
 						:hint="$t('analyser.means.tooltip')">
 						<template v-slot:append>
 							<v-text-field v-model="timeDelta" type="number" :rules="[timeDeltaRule]" density="compact"
@@ -59,7 +66,8 @@ const computeMeans = async () => {
 			</v-row>
 		</v-container>
 		<v-card-actions>
-			<v-btn @click="computeMeans()" color="teal-darken-2" variant="flat" elevation="4">{{ $t('analyser.means.button') }}</v-btn>
+			<v-btn @click="computeMeans()" color="teal-darken-2" variant="flat" elevation="4">{{ $t('analyser.means.button')
+			}}</v-btn>
 		</v-card-actions>
 		<v-container>
 			<v-expand-transition>

@@ -54,15 +54,15 @@ languages:
 - country: SE
   lang: sv
 nSearchResult: 30
-wordcloudFont: "/resources/Fonts/OpenSansEmoji.otf"
+wordcloudFont: "\\resources\\Fonts\\OpenSansEmoji.otf"
 feh_release_date: 2017-02-02 1:00AM
-exportPath: "/resources/export"
+exportPath: "\\resources\\export"
 database:
   ara:
-    path: "/resources/database/ara.db"
+    path: "\\resources\\database\\ara.db"
 dataframe:
   reviews:
-  - userName
+  - username
   - content
   - score
   - thumbsUpCount

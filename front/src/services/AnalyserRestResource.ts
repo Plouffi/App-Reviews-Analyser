@@ -12,13 +12,20 @@ export default class AnalyserRestResource extends ServiceRestResource  {
 	 * @returns The promise from the fetch API containing the score distribution graph.
 	 * If it fails, return a promise with mocked data.
 	 */
-	async getScoreDistribution(date: Date): Promise<any> {
+	async getScoreDistribution(appId: string, date: Date): Promise<any> {
 		const endpoint = `${this._BASE_API}/scoreDistribution`
 		try {
+			const params: { [k: string]: any } = {}
+			if (appId) {
+				params.appId = appId
+			}
+			if (date) {
+				params.date = date.toLocaleString()
+			}
 			const res = await fetch(this.buildURL(endpoint), {
 				method: 'POST',
 				headers: this._HEADERS,
-				body: JSON.stringify(date ? { 'date': date.toLocaleString() } : {})
+				body: JSON.stringify(params)
 			})
 			if (!res.ok) throw `${res.statusText} - ${res.status}`
 			return res.blob()
@@ -36,10 +43,13 @@ export default class AnalyserRestResource extends ServiceRestResource  {
 	 * @returns The promise from the fetch API containing the means graph.
 	 * If it fails, return a promise with mocked data.
 	 */
-	async getMeans(timeDelta: number, ignore: number): Promise<any> {
+	async getMeans(appId: string, timeDelta: number, ignore: number): Promise<any> {
 		const endpoint = `${this._BASE_API}/means`
 		try {
 			const params: { [k: string]: any } = {}
+			if (appId) {
+				params.appId = appId
+			}
 			if (!isNaN(timeDelta)) {
 				params.timeDelta = timeDelta
 			}

@@ -15,7 +15,7 @@ class WordsRequest():
 	score: int
 
 	def __init__(self, request: Request) -> None:
-		self.app_id = str(request.get_json()['app_id'])
+		self.app_id = str(request.get_json()['appId'])
 		self.alpha = float(request.get_json().get('alpha', 10))
 		self.n = int(request.get_json().get('n', 2))
 		self.start_date_1 = request.get_json()['start1']

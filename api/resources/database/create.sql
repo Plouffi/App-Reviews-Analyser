@@ -1,15 +1,15 @@
-CREATE TABLE "GPS_TABLE" (
+CREATE TABLE "GPS_APP" (
 	"appId"	TEXT NOT NULL,
 	"title" TEXT NOT NULL,
 	"developer" TEXT NOT NULL,
 	"versison" TEXT NOT NULL,
-	"appLogo"	TEXT NOT NULL,
-  "appBackground"	TEXT NOT NULL,
+  "icon"	TEXT NOT NULL,
+  "headerImage"	TEXT NOT NULL,
 	"score" NUMERIC NOT NULL,
-	"reviews" NUMERIC NOT NULL,
+	"realInstalls" NUMERIC NOT NULL,
   "released"	DATE NOT NULL,
 	"exportPath"	TEXT,
 	"exportDate"	DATE,
-  "exporting"	BOOLEAN,
+  "exportStatus"	BOOLEAN,
 	PRIMARY KEY("appId")
 );

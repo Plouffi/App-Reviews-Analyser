@@ -21,7 +21,8 @@ class ApplicationContainer(containers.DeclarativeContainer):
 
 	reviews_df_repo = providers.Factory(
 		ReviewsDF,
-		config=config
+		config=config,
+		root_dir=ROOT_DIR
 	)
 	gps_app_sqlite_repo = providers.Factory(
 		GPSAppSQLite,

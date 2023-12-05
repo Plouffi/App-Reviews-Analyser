@@ -1,6 +1,6 @@
 import sqlite3
 from sqlite3 import Connection, Cursor
-from abc import ABC
+from abc import ABC, abstractmethod
 
 class SQLiteRepository(ABC):
 	
@@ -9,7 +9,7 @@ class SQLiteRepository(ABC):
 
 	def __init__(self, path: str):
 		print(path)
-		self.connection = sqlite3.connect(path)
+		self.connection = sqlite3.connect(path, check_same_thread=False)
 		self.cursor = self.connection.cursor()
 
 	def sqlite_commit(self): 

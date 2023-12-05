@@ -19,6 +19,13 @@ class IGPSAppRepository(ABC):
 		pass
 
 	@abstractmethod
+	def list(self):
+		"""
+		Return all GPS stored
+		"""
+		pass
+
+	@abstractmethod
 	def update(self, app_id: str, *fieldsValue: Tuple[str, str]):
 		"""
 		Update the selected fields of an app

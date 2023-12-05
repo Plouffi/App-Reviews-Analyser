@@ -33,6 +33,25 @@ export default class GPSRestResource extends ServiceRestResource {
 	}
 
 	/**
+	 * Fetch the list of scrapped apps from the backend API
+	 * 
+	 * @returns The promise from the fetch API containing search result.
+	 * If it fails, return a promise with mocked data.
+	 */
+	async getApps(): Promise<[{ [k: string]: any }]> {
+		const endpoint = `${this._BASE_API}/apps`
+		try {
+			const res = await fetch(`${this.buildURL(endpoint)}`, {
+				method: 'GET'
+			})
+			if (!res.ok) throw `${res.statusText} - ${res.status}`
+			return res.json()
+		} catch (err) {
+			throw this.handleError(endpoint, err)
+		}
+	}
+
+	/**
 	 * Fetch the detail app from the backend API
 	 *
 	 * @param appId the app ID 

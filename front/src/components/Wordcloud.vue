@@ -9,6 +9,10 @@ const ENV = import.meta.env // Environment variable
 const { t } = useLocale()
 
 const wordcloudResource = new WordcloudRestResource()
+const props = defineProps({
+	appId: String // App ID 
+})
+
 // Request parameter for /wordcloud
 const alpha = ref()
 const nToken = ref()
@@ -53,12 +57,14 @@ const computeWordcloud = async () => {
 	wordcloud1Loading.value = true;
 	wordcloud2Loading.value = true;
 	try {
-		const wordsRes = await wordcloudResource.getWords(alpha.value, nToken.value, lang.value.value, score.value, start1.value, end1.value, start2.value, end2.value)
-		const image1 = await wordcloudResource.getImageWordcloud(wordsRes[0])
-		const image2 = await wordcloudResource.getImageWordcloud(wordsRes[1])
-		wordcloudImage1.value = URL.createObjectURL(image1)
-		wordcloudImage2.value = URL.createObjectURL(image2)
-		wordcloudError.value = ''
+		if (props.appId) {
+			const wordsRes = await wordcloudResource.getWords(props.appId, alpha.value, nToken.value, lang.value.value, score.value, start1.value, end1.value, start2.value, end2.value)
+			const image1 = await wordcloudResource.getImageWordcloud(wordsRes[0])
+			const image2 = await wordcloudResource.getImageWordcloud(wordsRes[1])
+			wordcloudImage1.value = URL.createObjectURL(image1)
+			wordcloudImage2.value = URL.createObjectURL(image2)
+			wordcloudError.value = ''
+		}
 	} catch (err) {
 		if (ENV.MODE == Utils._MODE_MOCK) {
 			wordcloudImage1.value = Utils.getMockImage('wordcloud_1')

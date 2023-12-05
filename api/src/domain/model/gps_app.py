@@ -5,9 +5,9 @@ class ExportStatus():
 	"""
 	Enum to represente the exporting status of reviews
 	"""
-	NO_EXPORT = 0
-	EXPORTING = 1
-	EXPORTED = 2
+	NO_EXPORT: int = 0
+	EXPORTING: int  = 1
+	EXPORTED: int = 2
 
 class GPSApp:
 	"""Class representing an app from the Google Playstore
@@ -119,7 +119,7 @@ class GPSApp:
 		"""Serialize the app detail.
 		----------
 		Returns:
-		Dict: the shorten app
+		Dict: serialized app
 		"""
 		return {
 			'id': self.id,
@@ -162,4 +162,7 @@ class GPSApp:
 		Returns:
 		datetime: The formatted date
 		"""
-		return datetime.strptime(f"{date} 00:00", '%b %d, %Y %H:%M')
+		try:
+			return datetime.strptime(f"{date} 00:00", '%b %d, %Y %H:%M')
+		except ValueError:
+			return datetime.strptime(f"{date}", '%b %d, %Y %H:%M')

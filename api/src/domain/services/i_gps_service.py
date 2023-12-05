@@ -20,6 +20,15 @@ class IGPSService(ABC):
 		pass
 
 	@abstractmethod
+	def get_apps(self) -> List[GPSApp]:
+		"""Returns the list of scrapped app.
+		----------
+		Returns:
+		List[GPSApp]: List of GPS app
+		"""
+		pass
+
+	@abstractmethod
 	def get_reviews(self, app_id: str, start_date: dt, end_date: dt, language: str = "en", score: int = -1) -> List[Review]:
 		"""Returns a set of reviews based on various parameter of the selected app ID.
 		----------

@@ -51,7 +51,8 @@ class AnalyserController(FlaskView):
 
 			image_response = ImageResponse(image_plot_SD)
 			return image_response.response(TypeResponse.PNG)
-		except:
+		except Exception as e:
+			print(e)
 			return Response(response=f"Error on '{super().route_base}/scoreDistribution' request", status=500)
 
 	@route('/means', methods=['POST'])
@@ -70,7 +71,8 @@ class AnalyserController(FlaskView):
 		
 			image_response = ImageResponse(image_plot_res)
 			return image_response.response(TypeResponse.PNG)
-		except:
+		except Exception as e:
+			print(e)
 			return Response(response=f"Error on '{super().route_base}/means' request", status=500)
 		
 	@route('/stats', methods=['POST'])
@@ -86,5 +88,6 @@ class AnalyserController(FlaskView):
 			
 			# return stats
 			return stats.response(TypeResponse.JSON)
-		except:
+		except Exception as e:
+			print(e)
 			return Response(response=f"Error on '{super().route_base}/stats' request", status=500)

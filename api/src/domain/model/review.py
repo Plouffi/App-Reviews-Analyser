@@ -5,7 +5,7 @@ class Review:
 	"""Class representing a review of an app from the Google Playstore
 	----------
 	Attributes:
-	userName (str)
+	username (str)
 	content (str)
 	score (int)
 	thumbsUpCount (int)
@@ -13,7 +13,7 @@ class Review:
 	at (datetime)
 	language (str)
 	"""
-	userName: str
+	username: str
 	content: str
 	score: int
 	thumbsUpCount: int
@@ -30,3 +30,19 @@ class Review:
 		self.reviewCreatedVersion = review['reviewCreatedVersion'] if 'reviewCreatedVersion' in review else None
 		self.at = review['at'] if 'at' in review else None
 		self.language = review['language'] if 'language' in review else ''
+
+	def serialize(self) -> Dict:
+		"""Serialize the review.
+		----------
+		Returns:
+		Dict: serialized review
+		"""
+		return {
+			'username': self.username,
+			'content': self.content,
+			'score': self.score,
+			'thumbsUpCount': self.thumbsUpCount,
+			'reviewCreatedVersion': self.reviewCreatedVersion,
+			'at': self.at,
+			'language': self.language
+		}

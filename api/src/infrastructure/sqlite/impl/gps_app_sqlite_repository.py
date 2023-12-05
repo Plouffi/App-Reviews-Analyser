@@ -1,4 +1,5 @@
-from typing import Tuple, Dict
+from typing import Tuple, Dict, List
+from datetime import datetime
 
 from src.infrastructure.sqlite.sqlite_repository import SQLiteRepository
 from src.domain.repository.gps_app_repository import IGPSAppRepository
@@ -20,25 +21,48 @@ class GPSAppSQLite(SQLiteRepository, IGPSAppRepository):
 			gps_app.version,
 			gps_app.icon,
 			gps_app.headerImage, 
-			gps_app.score, 
-			gps_app.realInstalls, 
-			gps_app.released,
+			str(gps_app.score), 
+			str(gps_app.realInstalls), 
+			str(gps_app.released),
 			gps_app.exportPath, 
-			gps_app.exportDate, 
-			gps_app.exportPath
+			gps_app.exportDate if gps_app.exportDate is not None else 'NULL', 
+			str(gps_app.exportStatus)
 		]) + "'"
-		super().cursor.execute(f"INSERT INTO {self.table} VALUES ({values})")
+		self.cursor.execute(f"INSERT INTO {self.table} VALUES ({values})")
 
-	def get(self, app_id: str):
-		res = super().cursor.execute(f"SELECT * FROM {self.table} WHERE appId ='{app_id}'")
-		return res.fetchone()
+	def get(self, app_id: str) -> GPSApp:
+		res = self.cursor.execute(f"SELECT * FROM {self.table} WHERE appId ='{app_id}'")
+		row = res.fetchone()
+		if row is not None:
+			fields = [column[0] for column in self.cursor.description]
+			app = {key: value for key, value in zip(fields, row)}
+			app['released'] = datetime.strptime(app['released'], '%Y-%m-%d %H:%M:%S').strftime('%b %d, %Y %H:%M')
+			return GPSApp(app)
+		else:
+			# throw exception
+			return None
+
+	def list(self) -> List[GPSApp]:
+		res = self.cursor.execute(f"SELECT * FROM {self.table}")
+		rows = res.fetchall()
+		if rows:
+			apps = []
+			for row in rows:
+				fields = [column[0] for column in self.cursor.description]
+				app = {key: value for key, value in zip(fields, row)}
+				app['released'] = datetime.strptime(app['released'], '%Y-%m-%d %H:%M:%S').strftime('%b %d, %Y %H:%M')
+				apps.append(GPSApp(app))
+			return apps
+		else:
+			# throw exception
+			return rows
 
 	def update(self, app_id: str, *fieldsValue: Tuple[str, str]):
 		update = ", ".join([f"{field}='{value}'" for field, value in fieldsValue])
-		super().cursor.execute(f"UPDATE {self.table} SET {update} WHERE appId ='{app_id}'")
+		self.cursor.execute(f"UPDATE {self.table} SET {update} WHERE appId ='{app_id}'")
 
 	def commit(self): 
-		super().sqlite_commit()
+		self.sqlite_commit()
 
 	def rollback(self): 
-		super().sqlite_rollback()
+		self.sqlite_rollback()

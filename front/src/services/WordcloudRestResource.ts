@@ -18,10 +18,11 @@ export default class WordcloudRestResource extends ServiceRestResource  {
 	 * 
 	 * @returns The promise from the fetch API containing the words and their frequencies.
 	 */
-	async getWords(alpha: number, nToken: number, lang: string, score: number, start1: Date, end1: Date, start2: Date, end2: Date): Promise<any> {
+	async getWords(appId: string, alpha: number, nToken: number, lang: string, score: number, start1: Date, end1: Date, start2: Date, end2: Date): Promise<any> {
 		const endpoint = `${this._BASE_API}/words`
 		try {
 			const params: { [k: string]: any } = {}
+			params.appId = appId
 			params.alpha = alpha
 			params.n = nToken
 			params.lang = lang
