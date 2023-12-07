@@ -54,7 +54,8 @@ class ApplicationContainer(containers.DeclarativeContainer):
 	cloud_service = providers.Factory(
 		CloudService
 	)
-	make_service = providers.Factory(
+	make_image_service = providers.Factory(
 		MakeImageService,
-		config=config
+		config=config,
+		root_dir=ROOT_DIR
 	)

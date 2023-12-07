@@ -44,6 +44,6 @@ class ScraperService(IScraperService):
 				sleep_milliseconds=100,
 				sort=Sort.NEWEST
 			)
-			res = map(lambda review : extract_review(review, 'en'), res) #TODO: handle language
+			res = map(lambda review : extract_review(review, l), res)
 			reviews = [*reviews, *res]
 		return reviews

@@ -37,12 +37,11 @@ class GPSAppController(FlaskView):
 			return Response(response=f"Error on '{super().route_base}/search' request", status=500)
 		
 	@route('/apps')
-	def search(self):
+	def apps(self):
 		"""Return the list of scrapped app"""
 		try:
 			result = []
-			lista = self.gps_service.get_apps()
-			result += map(lambda a : a.serialize_short(), lista)
+			result += map(lambda a : a.serialize_short(), self.gps_service.get_apps())
 			return jsonify(result)
 		except Exception as e:
 			print(e)

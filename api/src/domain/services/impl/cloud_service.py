@@ -40,7 +40,7 @@ class CloudService(ICloudService):
 			tk_reviews = []
 			for review in reviews:
 				tokenized_review = self.n_grams(
-					self.tokenize(review["content"] if isinstance(review["content"], str) else ''),
+					self.tokenize(review.content if isinstance(review.content, str) else ''),
 					n
 				)
 				for token in tokenized_review:

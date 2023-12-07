@@ -16,8 +16,8 @@ class MakeImageService(IMakeImageService):
 	path_to_font: str
 	defaultwords: List[Tuple[str, float]]
 
-	def __init__(self, config: Dict):
-		self.path_to_font = config['wordcloudFont']
+	def __init__(self, config: Dict, root_dir: str):
+		self.path_to_font = f"{root_dir}{config['wordcloudFont']}"
 		self.defaultwords = [("No data", 0.70), ("NaN", 0.25), ("nada", 0.025), ("rien", 0.025)]
 
 	def simple_image(self, words: List[Tuple[str, float]]) -> Image:

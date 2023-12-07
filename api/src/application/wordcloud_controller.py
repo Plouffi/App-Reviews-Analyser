@@ -20,7 +20,7 @@ class WordcloudController(FlaskView):
 	def __init__(self,
 							gps_service: IGPSService = Provide[ApplicationContainer.gps_service],
 							cloud_service: ICloudService = Provide[ApplicationContainer.cloud_service],
-							make_image_service: IMakeImageService = Provide[ApplicationContainer.scraper_service]) -> None:
+							make_image_service: IMakeImageService = Provide[ApplicationContainer.make_image_service]) -> None:
 		super().__init__()
 		self.gps_service = gps_service
 		self.cloud_service = cloud_service
@@ -35,7 +35,7 @@ class WordcloudController(FlaskView):
 		try:
 			reviews_before_fp = self.gps_service.get_reviews(req.app_id, req.start_date_1, req.end_date_1, req.lang, req.score)
 			reviews_after_fp = self.gps_service.get_reviews(req.app_id, req.start_date_2, req.end_date_2, req.lang, req.score)
-			self.cloud_service.load_reviews(req.alpha, req.n, [reviews_before_fp, reviews_after_fp])
+			self.cloud_service.load_reviews(req.alpha, req.n, reviews_before_fp, reviews_after_fp)
 			
 			return jsonify(self.cloud_service.get_words())
 		except Exception as e:

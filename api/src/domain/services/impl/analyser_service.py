@@ -6,9 +6,11 @@ from datetime import datetime as dt
 from datetime import timedelta
 
 from src.domain.model.gps_app import GPSApp
+from src.domain.model.review import Review
 from src.domain.repository.gps_app_repository import IGPSAppRepository
 from src.domain.repository.reviews_repository import IReviewsRepository
 from src.domain.services.i_analyser_service import IAnalyserService
+
 
 class AnalyserService(IAnalyserService):
 	"""Service computing statics on app reviews
@@ -85,12 +87,12 @@ class AnalyserService(IAnalyserService):
 		return self.reviews_repo.get_series(df, "score").iloc[nb_ignore:].rolling(time_delta_window).count()
 	
 	def score_distribution(self, app_id: str, date: dt) -> Tuple[List[List[float]], List[int]]:
-		def get_score_distribution(data):
-			if data is None:
+		def get_score_distribution(reviews: List[Review]):
+			if reviews is None:
 				return None
 			score_distribution = []
 			for i in range(5, 0, -1):
-				pourcent = len(data.loc[data["score"] == i]) / len(data) * 100
+				pourcent = len(list(filter(lambda review: review.score == i, reviews))) / len(reviews) * 100
 				score_distribution.append(pourcent)
 			return score_distribution
 		

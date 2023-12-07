@@ -159,7 +159,7 @@ const computeWordcloud = async () => {
 							<ara-error :msg="wordcloudError" v-if="wordcloudError.length"></ara-error>
 						</v-expand-transition>
 						<v-overlay v-model="wordcloud2Loading" contained class="align-center justify-center">
-							<v-progress-circular :size="60" :witdh="60" color="teal-darken-2" indeterminate />
+							<v-progress-circular :size="30" :witdh="30" color="teal-darken-2" indeterminate />
 						</v-overlay>
 					</v-card>
 				</v-col>

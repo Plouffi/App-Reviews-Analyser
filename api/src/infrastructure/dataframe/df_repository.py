@@ -26,9 +26,9 @@ class DFRepository(ABC):
 		Method to load reviews from csv file. Set up the dataframe's index on "at" column (publication date)
 		"""
 		try :
-			df = pd.read_csv(f"{self.root_dir}{path_to_csv}")
-			df = self.indexing(df)
-			return df
+			self.df = pd.read_csv(f"{self.root_dir}{path_to_csv}")
+			self.df = self.indexing(self.df)
+			return self.df
 		except FileNotFoundError:
 			return self.get_df()
 

@@ -22,7 +22,7 @@ class Review:
 	language: str
 
 	def __init__(self, review: Dict) -> None:
-		""""""
+		"""""" 
 		self.username = review['username'] if 'username' in review else ''
 		self.content = review['content'] if 'content' in review else ''
 		self.score = review['score'] if 'score' in review else 1

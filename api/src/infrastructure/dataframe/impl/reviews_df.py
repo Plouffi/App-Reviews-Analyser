@@ -1,4 +1,6 @@
 from typing import List
+from operator import iand
+from functools import reduce
 import pandas as pd
 from pandas import DataFrame, Index, Series
 
@@ -35,4 +37,9 @@ class ReviewsDF(DFRepository, IReviewsRepository):
 		return df[column]
 
 	def get(self, df: DataFrame, *mask) -> List[Review]:
-		return df.loc[mask]
+		def to_reviews(data) -> List[Review]:
+			return list(map(lambda r: Review(r), data))
+		try:
+			return to_reviews(df.loc[reduce(iand, mask)].to_dict('records'))
+		except TypeError:
+			return to_reviews(df.loc[mask].to_dict())

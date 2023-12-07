@@ -10,6 +10,7 @@ import Utils from '@/utils';
 const ENV = import.meta.env
 
 const gpsResource = new GPSRestResource()
+const app = ref()
 const appId = ref('')
 const analyserTab = ref('selectTab') // Model value for the select tab window
 const filter = ref('')
@@ -58,12 +59,15 @@ const filterApps = (apps: [{ [k: string]: any; }], filter: string) => {
 }
 
 const selectApp = async (e: any) => {
+	app.value = apps.value.filter((app: { [k: string]: any; }) => app.value === e.id)[0]
 	appId.value = e.id
 	analyserTab.value = 'analyserTab'
 }
 
 const returnToSelect = () => {
 	filter.value = ''
+	app.value = null
+	appId.value = ''
 	analyserTab.value = 'selectTab'
 	loadApps()
 }
@@ -80,8 +84,12 @@ const returnToSelect = () => {
 					</transition>
 					<v-col cols="9" md="6" class="mx-4 p-0">
 						<v-text-field :label="$t('analyser.select.title')" v-model="filter" :disabled="loadSelectApp" variant="solo"
-							prepend-inner-icon="mdi-magnify" rounded>
+							prepend-inner-icon="mdi-magnify" rounded hide-details v-if="!appId">
 						</v-text-field>
+						<div class="d-flex flex-row justify-center align-center" v-if="appId">
+							<v-img :src="app.prependAvatar" class="gps-app-icon mx-2" max-height="64" max-width="64" style="border-radius: 20%;"></v-img>
+							<p class="text-h4 font-weight-bold mx-2">{{app.title}}</p>
+						</div>
 					</v-col>
 					<v-card class="pa-2" variant="flat" color="red-lighten-2" v-if="ENV.VITE_IS_MOCK">
 						<v-card-title>
@@ -144,7 +152,43 @@ h3 {
 	font-size: 1.2rem;
 }
 
+.btn-return {
+	font-size: 1.5em;
+	height: 56px;
+	width: 56px;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+	transition: opacity .5s
+}
+
+.fade-enter-from,
+.fade-leave-to {
+	opacity: 0
+}
+
 .v-card {
-	padding: 0 1em;
+	padding: 1em;
+}
+
+.v-list {
+	-ms-overflow-style: none;
+	scrollbar-width: none;
+}
+
+.v-list::-webkit-scrollbar {
+	display: none;
+}
+
+.v-window-item {
+	padding: 1em;
+}
+
+@media (width <=960px) {
+	.btn-return {
+		height: 36px;
+		width: 36px;
+	}
 }
 </style>
