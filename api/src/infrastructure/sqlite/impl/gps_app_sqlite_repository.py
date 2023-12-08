@@ -43,7 +43,7 @@ class GPSAppSQLite(SQLiteRepository, IGPSAppRepository):
 			return None
 
 	def list(self) -> List[GPSApp]:
-		res = self.cursor.execute(f"SELECT * FROM {self.table}")
+		res = self.cursor.execute(f"SELECT * FROM {self.table} WHERE exportStatus='2'")
 		rows = res.fetchall()
 		if rows:
 			apps = []

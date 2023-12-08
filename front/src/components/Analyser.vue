@@ -91,19 +91,19 @@ const returnToSelect = () => {
 							<p class="text-h4 font-weight-bold mx-2">{{app.title}}</p>
 						</div>
 					</v-col>
-					<v-card class="pa-2" variant="flat" color="red-lighten-2" v-if="ENV.VITE_IS_MOCK">
-						<v-card-title>
-							<v-icon icon="mdi-alert" size="large"></v-icon>
-							Mock data come from Fire Emblem Heroes reviews. Parameters used to generate the mock:
-						</v-card-title>
-						<v-card-text>
-							- Score distribution: 02/02/2020 04:00 <br />
-							- Means: 30 <br />
-							- Wordcloud: 10 / 2 / English / 0 / 02/02/2017 01:00 / 02/02/2020 04:00 / 02/02/2020 04:00 /
-							09/09/2023 10:00
-						</v-card-text>
-					</v-card>
 				</v-row>
+				<v-card class="pa-2" variant="flat" color="red-lighten-2" v-if="ENV.MODE === Utils._MODE_MOCK && analyserTab === 'analyserTab'">
+					<v-card-title>
+						<v-icon icon="mdi-alert" size="large"></v-icon>
+						Mock data come from Fire Emblem Heroes reviews. Parameters used to generate the mock:
+					</v-card-title>
+					<v-card-text>
+						- Score distribution: 02/02/2020 04:00 <br />
+						- Means: 30 <br />
+						- Wordcloud: 10 / 2 / English / 0 / 02/02/2017 01:00 / 02/02/2020 04:00 / 02/02/2020 04:00 /
+						09/09/2023 10:00
+					</v-card-text>
+				</v-card>
 			</v-col>
 			<v-col cols="12">
 				<v-window v-model="analyserTab">
