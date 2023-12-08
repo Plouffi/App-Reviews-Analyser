@@ -1,9 +1,9 @@
 {
   "name": "front",
-  "version": "1.4.1-alpha",
+  "version": "1.5.0-alpha",
   "private": true,
   "scripts": {
-    "dev": "vite --mode dev",
+    "dev": "vite",
     "mock": "vite --mode mock",
     "build": "run-p type-check \"build-only {@}\" --",
     "build-local": "vite build --mode dev",
